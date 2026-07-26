@@ -10,6 +10,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+
 Route::get('/haberler', BlogList::class)->name('blogs.index');
 
 // Genel Tek Login Route'u
