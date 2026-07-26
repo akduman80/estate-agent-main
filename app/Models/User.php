@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
+use App\Enums\UserRole;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -22,16 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
+        'role',
     ];
 
     /**
@@ -43,7 +35,21 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'role'              => UserRole::class, // Enum Casting
         ];
     }
+
+    // Panel Erişim Kontrolü
+public function canAccessPanel(Panel $panel): bool
+{
+    // Giriş (Login) kontrolü için admin paneline herkesin giriş yapabilmesine izin veriyoruz.
+    // Kullanıcı giriş yaptıktan sonra LoginResponse ile kendi rolünün paneline uçurulacak.
+    return match ($panel->getId()) {
+        'admin'  => true, // Giriş kapısı ortak olduğu için true yapıyoruz
+        'portal' => $this->role === UserRole::AGENT || $this->role === UserRole::SUPERVISOR,
+        'editor' => $this->role === UserRole::EDITOR || $this->role === UserRole::SUPERVISOR,
+        default  => false,
+    };
+}
 }
