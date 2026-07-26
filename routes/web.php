@@ -10,26 +10,43 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-
+// Haber & Blog Sayfası
 Route::get('/haberler', BlogList::class)->name('blogs.index');
 
 // Genel Tek Login Route'u
 Route::get('/login', fn() => redirect('/admin/login'))->name('login');
 Route::post('/github-deploy-webhook', function (Request $request) {
-    // Güvenlik için secret key kontrolü (Opsiyonel ama önerilir)
-    $githubSecret = config('app.deploy_secret', 'ziyadeemlak_deploy_2026');
+    // Secret Kontrolü (İstersen devre dışı bırakabilirsin)
+    $githubSecret = 'ziyadeemlak_deploy_2026';
     $signature = $request->header('X-Hub-Signature-256');
 
     if ($signature) {
         $hash = 'sha256=' . hash_hmac('sha256', $request->getContent(), $githubSecret);
         if (!hash_equals($hash, $signature)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            Log::warning('Webhook unauthorized signature match failure.');
+            return response()->json(['error' => 'Unauthorized Signature'], 401);
         }
     }
 
-    // Sunucuda bash betiğini veya git pull komutunu çalıştır
-    Process::path('/var/www/estate-agent')
-           ->run('git pull origin main && php artisan migrate --force && php artisan config:cache');
+    // Git Pull ve Deployment Komutları
+    $result = Process::path('/var/www/estate-agent')
+                     ->run('git pull origin main 2>&1');
 
-    return response()->json(['status' => 'success', 'message' => 'Pulled successfully']);
+    Log::info('Git Pull Result: ' . $result->output());
+
+    if ($result->successful()) {
+        // Cache ve Migrate İşlemleri
+        Process::path('/var/www/estate-agent')
+               ->run('php artisan migrate --force && php artisan config:cache && php artisan view:cache');
+
+        return response()->json([
+            'status'  => 'success',
+            'output'  => $result->output()
+        ]);
+    }
+
+    return response()->json([
+        'status' => 'error',
+        'output' => $result->output()
+    ], 500);
 });
