@@ -3,9 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>@yield('title', config('app.name', 'GARO ESTATE'))</title>
+    <title>@yield('title', 'Zyd Emlak')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ asset('ffe-assets/assets/img/logo.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('fe-assets/assets/img/logo.png') }}" type="image/x-icon">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800' rel='stylesheet' type='text/css'>
 
     <!-- CSS Varlıkları -->
@@ -76,7 +78,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="{{ asset('fe-assets/assets/img/logo.png') }}" alt="Garo Estate Logo">
+                <img src="{{ asset('fe-assets/assets/img/logo.png') }}" alt="Zyd Emlak">
             </a>
         </div>
 

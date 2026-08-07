@@ -1,5 +1,5 @@
 <x-layouts.app>
-    @section('title', 'GARO ESTATE | EİDS Onaylı Emlak Platformu')
+    @section('title', 'Zyd Emlak')
 
     <!-- Slider Area -->
     <div class="slider-area">
