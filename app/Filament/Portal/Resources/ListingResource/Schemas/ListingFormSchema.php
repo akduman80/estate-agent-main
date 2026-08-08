@@ -2,6 +2,10 @@
 /** Created by ramazanorak, Date: 8.08.2026 */
 namespace App\Filament\Portal\Resources\ListingResource\Schemas;
 
+use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\BasicInfoStep;
+use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\EidsAndLocationStep;
+use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\MediaStep;
+use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\RealEstateDetailsStep;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\RichEditor;
@@ -9,8 +13,11 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use App\Models\Setting;
 use App\Models\Listing;
+use App\Services\TurkeyAddressService;
 use Illuminate\Support\HtmlString;
 
 class ListingFormSchema
@@ -19,10 +26,10 @@ class ListingFormSchema
     {
         return [
             Wizard::make([
-                static::getBasicInfoStep(),
-                static::getRealEstateDetailsStep(),
-                static::getEidsAndLocationStep(),
-                static::getMediaStep(),
+                BasicInfoStep::make(),
+                RealEstateDetailsStep::make(),
+                EidsAndLocationStep::make(),
+                MediaStep::make(),
             ])->columnSpanFull()
         ];
     }
@@ -166,17 +173,15 @@ class ListingFormSchema
                                   ->schema([
                                       Select::make('city_id')
                                             ->label('İl')
-                                            ->options(static::getDynamicOptions('options_cities', [
-                                                'Osmaniye', 'İstanbul', 'Ankara'
-                                            ]))
+                                            ->options(TurkeyAddressService::getCities())
                                             ->searchable()
+                                            ->live() // İl değiştiğinde formu reaktif olarak günceller
+                                            ->afterStateUpdated(fn (Set $set) => $set('district_id', null)) // İl değiştiğinde eski seçili ilçeyi temizler
                                             ->required(),
 
                                       Select::make('district_id')
                                             ->label('İlçe')
-                                            ->options(static::getDynamicOptions('options_districts', [
-                                                'Sumbas', 'Kadirli', 'Kadıköy', 'Beşiktaş', 'Çankaya'
-                                            ]))
+                                            ->options(fn (Get $get) => TurkeyAddressService::getDistricts($get('city_id')))
                                             ->searchable()
                                             ->required(),
 

@@ -12,16 +12,17 @@
                             <div class="col-md-4">
                                 <select wire:model.live="city_id" class="form-control" style="width: 100%; height: 42px; border: 1px solid #E3E3E3; color: #777; background: #fff;">
                                     <option value="">Tüm İller</option>
-                                    @foreach($cities as $city)
-                                        <option value="{{ is_array($city) ? $city['id'] : $city->id }}">{{ is_array($city) ? $city['name'] : $city->name }}</option>
+                                    @foreach($cities as $key => $cityName)
+                                        <option value="{{ $key }}">{{ $cityName }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-4">
                                 <select wire:model.live="type" class="form-control" style="width: 100%; height: 42px; border: 1px solid #E3E3E3; color: #777; background: #fff;">
                                     <option value="">İlan Tipi (Tümü)</option>
-                                    <option value="sale">Satılık</option>
-                                    <option value="rent">Kiralık</option>
+                                    @foreach($typeOptions as $option)
+                                        <option value="{{ $option }}">{{ $option }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
