@@ -5,9 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@yield('title', 'Zyd Emlak')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    @php
+        // Redis belleğinden genel site ayarlarını çekiyoruz
+        $siteLogo  = \App\Models\Setting::get('site_logo');
+        $sitePhone = \App\Models\Setting::get('site_phone', '+90 (850) 000 00 00');
+        $siteEmail = \App\Models\Setting::get('site_email', 'info@estate.com');
+        $logoUrl   = $siteLogo ? \Illuminate\Support\Facades\Storage::url($siteLogo) : asset('fe-assets/assets/img/logo.png');
+    @endphp
+
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('ffe-assets/assets/img/logo.png') }}" type="image/x-icon">
-    <link rel="icon" href="{{ asset('fe-assets/assets/img/logo.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ $logoUrl }}" type="image/x-icon">
+    <link rel="icon" href="{{ $logoUrl }}" type="image/x-icon">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800' rel='stylesheet' type='text/css'>
 
     <!-- CSS Varlıkları -->
@@ -40,25 +49,32 @@
 <div class="header-connect">
     <div class="container">
         <div class="row">
+            <!-- Sol Taraf: Telefon ve E-posta -->
             <div class="col-md-5 col-sm-8 col-xs-12">
                 <div class="header-half header-call">
                     <p>
-                        <span><i class="pe-7s-call"></i> +90 (850) 000 00 00</span>
-                        <span><i class="pe-7s-mail"></i> info@estate.com</span>
+                        <span><i class="pe-7s-call"></i> {{ $sitePhone }}</span>
+                        <span><i class="pe-7s-mail"></i> {{ $siteEmail }}</span>
                     </p>
                 </div>
             </div>
+
+            <!-- Sağ Taraf: Panelim / Giriş Yap Butonu -->
             <div class="col-md-2 col-md-offset-5 col-sm-3 col-sm-offset-1 col-xs-12">
                 <div class="header-half header-social">
-                    <ul class="treeform-social">
+                    <ul class="treeform-social list-inline text-right mb-0 pt-0">
                         @auth
                             <li>
-                                <a href="{{ auth()->user()->role->getRedirectPath() }}" class="btn btn-xs btn-primary text-white">
+                                <a href="{{ auth()->user()->role->getRedirectPath() }}" class="btn btn-primary btn-sm padding-5">
                                     <i class="fa fa-dashboard"></i> Panelim
                                 </a>
                             </li>
                         @else
-                            <li><a href="{{ route('login') }}"><i class="fa fa-user"></i> Giriş Yap</a></li>
+                            <li>
+                                <a href="{{ route('login') }}">
+                                    <i class="fa fa-user"></i> Giriş Yap
+                                </a>
+                            </li>
                         @endauth
                     </ul>
                 </div>
@@ -78,7 +94,8 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="{{ asset('fe-assets/assets/img/logo.png') }}" alt="Zyd Emlak">
+                <!-- DİNAMİK LOGO -->
+                <img src="{{ $logoUrl }}" alt="Zyd Emlak">
             </a>
         </div>
 
@@ -107,7 +124,8 @@
                     <div class="single-footer">
                         <h4>Hakkımızda</h4>
                         <div class="footer-title-line"></div>
-                        <img src="{{ asset('fe-assets/assets/img/footer-logo.png') }}" alt="Logo">
+                        <!-- FOOTER DİNAMİK LOGO -->
+                        <img src="{{ $logoUrl }}" alt="Logo" style="max-height: 45px;">
                         <p>EİDS Onaylı Güvenilir Emlak Platformu.</p>
                     </div>
                 </div>

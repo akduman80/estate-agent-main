@@ -19,8 +19,22 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 15, 2);
             $table->string('currency', 3)->default('TRY');
-            $table->enum('type', ['sale', 'rent']); // Satılık / Kiralık
-            $table->enum('category', ['housing', 'workplace', 'land']); // Konut / İşyeri / Arsa
+            $table->string('type')->default('Satılık');
+            $table->string('category')->default('Konut');
+
+            // Sahibinden Gayrimenkul & Arsa Detayları
+            $table->string('zoning_status')->nullable(); // İmar Durumu
+            $table->decimal('square_meters', 10, 2)->nullable(); // m²
+            $table->string('deed_status')->nullable(); // Tapu Durumu
+            $table->string('block_number')->nullable(); // Ada No
+            $table->string('parcel_number')->nullable(); // Parsel No
+            $table->string('sheet_number')->nullable(); // Pafta No
+            $table->string('kaks_emsal')->nullable(); // Kaks (Emsal)
+            $table->string('gabari')->nullable(); // Gabari
+            $table->string('credit_eligibility')->nullable(); // Krediye Uygunluk
+            $table->string('owner_nationality')->nullable(); // Gayrimenkul Sahibi
+            $table->string('from_who')->nullable(); // Kimden
+            $table->string('swap_option')->nullable(); // Takaslı
 
             // EİDS & Tapu Doğrulama Alanları (Zorunlu TR Yapısı)
             $table->string('eids_status')->default('pending'); // pending, verified, rejected
@@ -28,8 +42,6 @@ return new class extends Migration
             $table->string('city_id'); // İl
             $table->string('district_id'); // İlçe
             $table->string('neighborhood_id')->nullable(); // Mahalle
-            $table->string('block_number')->nullable(); // Ada
-            $table->string('parcel_number')->nullable(); // Parsel
 
             // Video & Medya
             $table->string('video_url')->nullable(); // YouTube / Vimeo linki
