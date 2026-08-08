@@ -14,7 +14,7 @@
         $logoUrl   = $siteLogo ? \Illuminate\Support\Facades\Storage::url($siteLogo) : asset('fe-assets/assets/img/logo.png');
     @endphp
 
-    <!-- Favicon -->
+        <!-- Favicon -->
     <link rel="shortcut icon" href="{{ $logoUrl }}" type="image/x-icon">
     <link rel="icon" href="{{ $logoUrl }}" type="image/x-icon">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800' rel='stylesheet' type='text/css'>
@@ -94,7 +94,6 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ url('/') }}">
-                <!-- DİNAMİK LOGO -->
                 <img src="{{ $logoUrl }}" alt="Zyd Emlak">
             </a>
         </div>
@@ -115,7 +114,7 @@
     {{ $slot }}
 </main>
 
-<!-- Footer Area (Animasyon sınıfları kaldırılarak sabitlendi) -->
+<!-- Footer Area -->
 <div class="footer-area">
     <div class="footer">
         <div class="container">
@@ -124,7 +123,6 @@
                     <div class="single-footer">
                         <h4>Hakkımızda</h4>
                         <div class="footer-title-line"></div>
-                        <!-- FOOTER DİNAMİK LOGO -->
                         <img src="{{ $logoUrl }}" alt="Logo" style="max-height: 45px;">
                         <p>EİDS Onaylı Güvenilir Emlak Platformu.</p>
                     </div>
@@ -151,23 +149,29 @@
     </div>
 </div>
 
-<!-- JS Varlıkları -->
+<!-- JS Varlıkları (SIRALAMA KRİTİKTİR) -->
 <script src="{{ asset('fe-assets/assets/js/modernizr-2.6.2.min.js') }}"></script>
+
+<!-- 1. ÖNCE JQUERY YÜKLENİR -->
 <script src="{{ asset('fe-assets/assets/js/jquery-1.10.2.min.js') }}"></script>
+
+<!-- 2. BOOTSTRAP VE DİĞER EKLENTİLER YÜKLENİR -->
 <script src="{{ asset('fe-assets/bootstrap/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('fe-assets/assets/js/bootstrap-select.min.js') }}"></script>
 <script src="{{ asset('fe-assets/assets/js/bootstrap-hover-dropdown.js') }}"></script>
 <script src="{{ asset('fe-assets/assets/js/easypiechart.min.js') }}"></script>
 <script src="{{ asset('fe-assets/assets/js/jquery.easypiechart.min.js') }}"></script>
 <script src="{{ asset('fe-assets/assets/js/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('fe-assets/assets/js/wow.js') }}"></script>
 <script src="{{ asset('fe-assets/assets/js/icheck.min.js') }}"></script>
 <script src="{{ asset('fe-assets/assets/js/price-range.js') }}"></script>
 
 @livewireScripts
 
+<!-- 3. EN SON MAIN.JS YÜKLENİR -->
 <script src="{{ asset('fe-assets/assets/js/main.js') }}"></script>
 
-<!-- Slider ve Preloader Garanti Tetikleyicisi -->
+<!-- 4. JQUERY VE SWİTCHER KODLARI EN ALTTA ÇALIŞTIRILIR -->
 <script>
     $(document).ready(function() {
         $("#preloader").hide();
@@ -181,6 +185,27 @@
                 autoPlay: 5000
             });
         }
+
+        // --- LISTE / KART GEÇİŞİ ---
+        $('#btn-list-view').on('click', function(e) {
+            e.preventDefault();
+            $('#btn-grid-view').removeClass('active');
+            $(this).addClass('active');
+
+            $('#list-type').removeClass('proerty-th').addClass('proerty-format');
+            $('#list-type .listing-card-item').removeClass('col-sm-6 col-md-3').addClass('col-md-12');
+            $('#list-type .item-entry p').show();
+        });
+
+        $('#btn-grid-view').on('click', function(e) {
+            e.preventDefault();
+            $('#btn-list-view').removeClass('active');
+            $(this).addClass('active');
+
+            $('#list-type').removeClass('proerty-format').addClass('proerty-th');
+            $('#list-type .listing-card-item').removeClass('col-md-12').addClass('col-sm-6 col-md-3');
+            $('#list-type .item-entry p').hide();
+        });
     });
 </script>
 </body>

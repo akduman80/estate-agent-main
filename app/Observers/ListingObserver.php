@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Jobs\ProcessListingImage;
 use App\Models\Listing;
 use App\Services\EidsService;
+use Illuminate\Support\Facades\Cache;
 
 class ListingObserver
 {
@@ -39,13 +40,16 @@ class ListingObserver
     {
         //
     }
-
+    public function saved(Listing $listing): void
+    {
+        $this->clearListingCache();
+    }
     /**
      * Handle the Listing "deleted" event.
      */
     public function deleted(Listing $listing): void
     {
-        //
+        $this->clearListingCache();
     }
 
     /**
@@ -62,5 +66,10 @@ class ListingObserver
     public function forceDeleted(Listing $listing): void
     {
         //
+    }
+    private function clearListingCache(): void
+    {
+        // İlanlarla ilgili tüm Redis önbellekleri sıfırlanır
+        Cache::forget('home_recent_listings');
     }
 }
