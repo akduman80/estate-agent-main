@@ -6,78 +6,133 @@ use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Get;
 use App\Models\Setting;
 
 class RealEstateDetailsStep
 {
     public static function make(): Wizard\Step
     {
-        return Wizard\Step::make('Gayrimenkul & İmar Detayları')
-                          ->schema([
-                              Grid::make(['default' => 1, 'md' => 3])
-                                  ->schema([
-                                      Select::make('zoning_status')
-                                            ->label('İmar Durumu')
-                                            ->options(static::getDynamicOptions('options_zoning_status', [
-                                                'Tarla', 'Konut İmarlı', 'Ticari İmarlı', 'Sanayi İmarlı', 'Bağ & Bahçe', 'Zeytinlik'
-                                            ])),
+        return Wizard\Step::make('Gayrimenkul Detayları')
+            ->schema([
+                // --- GENEL ALAN (Tüm Türler İçin Ortak) ---
+                Grid::make(['default' => 1, 'md' => 3])
+                    ->schema([
+                        TextInput::make('square_meters')
+                            ->label('m² (Alan)')
+                            ->numeric()
+                            ->required()
+                            ->suffix('m²'),
 
-                                      TextInput::make('square_meters')
-                                               ->label('m² (Alan)')
-                                               ->numeric()
-                                               ->suffix('m²'),
+                        Select::make('deed_status')
+                            ->label('Tapu Durumu')
+                            ->options(static::getDynamicOptions('options_deed_status', [
+                                'Hisseli Tapu', 'Müstakil Parsel', 'Tahsis Tapu', 'Zilliyet'
+                            ])),
 
-                                      Select::make('deed_status')
-                                            ->label('Tapu Durumu')
-                                            ->options(static::getDynamicOptions('options_deed_status', [
-                                                'Hisseli Tapu', 'Müstakil Parsel', 'Tahsis Tapu', 'Zilliyet'
-                                            ])),
-                                  ]),
+                        Select::make('from_who')
+                            ->label('Kimden')
+                            ->options(static::getDynamicOptions('options_from_who', [
+                                'Emlak Ofisinden', 'Sahibinden', 'İnşaat Firmasından'
+                            ]))
+                            ->default('Emlak Ofisinden'),
+                    ]),
 
-                              Grid::make(['default' => 1, 'md' => 3])
-                                  ->schema([
-                                      TextInput::make('block_number')->label('Ada No'),
-                                      TextInput::make('parcel_number')->label('Parsel No'),
-                                      TextInput::make('sheet_number')->label('Pafta No'),
-                                  ]),
+                // --- 1. KONUT / EV DETAYLARI (Daire, Müstakil Ev vb. Seçilince Çıkar) ---
+                Grid::make(['default' => 1, 'md' => 3])
+                    ->visible(fn (Get $get) => in_array($get('category'), ['Daire', 'Müstakil Ev', 'İşyeri']))
+                    ->schema([
+                        Select::make('room_count')
+                            ->label('Oda Sayısı')
+                            ->options(static::getDynamicOptions('options_room_count', [
+                                '1+0', '1+1', '2+1', '3+1', '4+1'
+                            ])),
 
-                              Grid::make(['default' => 1, 'md' => 2])
-                                  ->schema([
-                                      TextInput::make('kaks_emsal')->label('Kaks (Emsal)')->placeholder('Örn: 0.20 / 0.40'),
-                                      TextInput::make('gabari')->label('Gabari')->placeholder('Örn: Serbest / 6.50 m'),
-                                  ]),
+                        Select::make('heating_type')
+                            ->label('Isıtma Tipi')
+                            ->options(static::getDynamicOptions('options_heating_type', [
+                                'Kombi (Doğalgaz)', 'Klima', 'Merkezi Sistem', 'Sobalı'
+                            ])),
 
-                              Grid::make(['default' => 1, 'md' => 3])
-                                  ->schema([
-                                      Select::make('credit_eligibility')
-                                            ->label('Krediye Uygunluk')
-                                            ->options(static::getDynamicOptions('options_credit_eligibility', [
-                                                'Evet', 'Hayır', 'Bilinmiyor'
-                                            ]))
-                                            ->default('Bilinmiyor'),
+                        Select::make('building_age')
+                            ->label('Bina Yaşı')
+                            ->options(static::getDynamicOptions('options_building_age', [
+                                '0 (Yeni)', '1-5 Arası', '6-10 Arası', '11-15 Arası', '16-20 Arası', '21 ve üzeri'
+                            ])),
 
-                                      Select::make('owner_nationality')
-                                            ->label('Gayrimenkul Sahibi')
-                                            ->options(static::getDynamicOptions('options_owner_nationality', [
-                                                'T.C. Vatandaşı', 'Yabancı'
-                                            ]))
-                                            ->default('T.C. Vatandaşı'),
+                        Select::make('furniture_status')
+                            ->label('Eşya Durumu')
+                            ->options(static::getDynamicOptions('options_furniture_status', [
+                                'Eşyalı', 'Eşyasız'
+                            ])),
 
-                                      Select::make('from_who')
-                                            ->label('Kimden')
-                                            ->options(static::getDynamicOptions('options_from_who', [
-                                                'Emlak Ofisinden', 'Sahibinden', 'İnşaat Firmasından'
-                                            ]))
-                                            ->default('Emlak Ofisinden'),
-                                  ]),
+                        TextInput::make('floor_number')
+                            ->label('Bulunduğu Kat')
+                            ->placeholder('Örn: 3. Kat / Giriş Kat'),
 
-                              Select::make('swap_option')
-                                    ->label('Takaslı')
-                                    ->options(static::getDynamicOptions('options_swap_option', [
-                                        'Evet', 'Hayır'
-                                    ]))
-                                    ->default('Hayır'),
-                          ]);
+                        TextInput::make('total_floors')
+                            ->label('Kat Sayısı')
+                            ->numeric()
+                            ->placeholder('Örn: 5'),
+                    ]),
+
+                // --- 2. KİRALIK İLANLARA ÖZEL EKLER (Kiralık Seçilince Çıkar) ---
+                Grid::make(['default' => 1, 'md' => 2])
+                    ->visible(fn (Get $get) => $get('type') === 'Kiralık')
+                    ->schema([
+                        TextInput::make('deposit_price')
+                            ->label('Depozito (TL)')
+                            ->numeric()
+                            ->suffix('TL'),
+
+                        TextInput::make('dues_price')
+                            ->label('Aidat (TL)')
+                            ->numeric()
+                            ->suffix('TL'),
+                    ]),
+
+                // --- 3. ARSA / TARLA / İMAR DETAYLARI (Arsa veya Tarla Seçilince Çıkar) ---
+                Grid::make(['default' => 1, 'md' => 3])
+                    ->visible(fn (Get $get) => in_array($get('category'), ['Arsa', 'Tarla']))
+                    ->schema([
+                        Select::make('zoning_status')
+                            ->label('İmar Durumu')
+                            ->options(static::getDynamicOptions('options_zoning_status', [
+                                'Tarla', 'Konut İmarlı', 'Ticari İmarlı', 'Sanayi İmarlı', 'Bağ & Bahçe', 'Zeytinlik'
+                            ])),
+
+                        TextInput::make('block_number')->label('Ada No'),
+                        TextInput::make('parcel_number')->label('Parsel No'),
+                        TextInput::make('sheet_number')->label('Pafta No'),
+                        TextInput::make('kaks_emsal')->label('Kaks (Emsal)')->placeholder('Örn: 0.20 / 0.40'),
+                        TextInput::make('gabari')->label('Gabari')->placeholder('Örn: Serbest / 6.50 m'),
+                    ]),
+
+                // --- DİĞER ORTAK AYARLAR ---
+                Grid::make(['default' => 1, 'md' => 3])
+                    ->schema([
+                        Select::make('credit_eligibility')
+                            ->label('Krediye Uygunluk')
+                            ->options(static::getDynamicOptions('options_credit_eligibility', [
+                                'Evet', 'Hayır', 'Bilinmiyor'
+                            ]))
+                            ->default('Bilinmiyor'),
+
+                        Select::make('owner_nationality')
+                            ->label('Gayrimenkul Sahibi')
+                            ->options(static::getDynamicOptions('options_owner_nationality', [
+                                'T.C. Vatandaşı', 'Yabancı'
+                            ]))
+                            ->default('T.C. Vatandaşı'),
+
+                        Select::make('swap_option')
+                            ->label('Takaslı')
+                            ->options(static::getDynamicOptions('options_swap_option', [
+                                'Evet', 'Hayır'
+                            ]))
+                            ->default('Hayır'),
+                    ]),
+            ]);
     }
 
     protected static function getDynamicOptions(string $key, array $defaultOptions): array

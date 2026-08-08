@@ -16,43 +16,52 @@ class BasicInfoStep
     public static function make(): Wizard\Step
     {
         return Wizard\Step::make('Temel Bilgiler')
-                          ->schema([
-                              TextInput::make('title')
-                                       ->label('İlan Başlığı')
-                                       ->placeholder('Örn: ZİYADE EMLAKTAN SUMBAS GAFFARLI KESMESUR YAYLASINDA YAYLALIK')
-                                       ->required()
-                                       ->maxLength(255)
-                                       ->columnSpanFull(),
+            ->schema([
+                TextInput::make('title')
+                    ->label('İlan Başlığı')
+                    ->placeholder('Örn: ZİYADE EMLAKTAN KİRALIK 3+1 LÜKS DEREBAHÇE DAİRESİ')
+                    ->required()
+                    ->maxLength(255)
+                    ->columnSpanFull(),
 
-                              RichEditor::make('description')
-                                        ->label('Açıklama')
-                                        ->columnSpanFull(),
+                RichEditor::make('description')
+                    ->label('Açıklama')
+                    ->columnSpanFull(),
 
-                              Grid::make(['default' => 1, 'md' => 2])
-                                  ->schema([
-                                      Select::make('type')
-                                            ->label('İlan Tipi')
-                                            ->options(static::getDynamicOptions('options_type', ['Satılık', 'Kiralık']))
-                                            ->required(),
+                Grid::make(['default' => 1, 'md' => 3])
+                    ->schema([
+                        Select::make('category')
+                            ->label('Gayrimenkul Türü')
+                            ->options(static::getDynamicOptions('options_category', [
+                                'Daire', 'Müstakil Ev', 'Arsa', 'Tarla', 'İşyeri'
+                            ]))
+                            ->live() // Seçim yapıldığında diğer adımları reaktif etkiler
+                            ->required(),
 
-                                      TextInput::make('price')
-                                               ->label('Fiyat (TL)')
-                                               ->numeric()
-                                               ->required()
-                                               ->suffix('TL'),
-                                  ]),
+                        Select::make('type')
+                            ->label('İlan Tipi')
+                            ->options(static::getDynamicOptions('options_type', ['Satılık', 'Kiralık']))
+                            ->live() // Kiralık/Satılık durumuna göre de reaktif tetikleme
+                            ->required(),
 
-                              Placeholder::make('eids_price_warning')
-                                         ->label('')
-                                         ->content(new HtmlString('
+                        TextInput::make('price')
+                            ->label('Fiyat (TL)')
+                            ->numeric()
+                            ->required()
+                            ->suffix('TL'),
+                    ]),
+
+                Placeholder::make('eids_price_warning')
+                    ->label('')
+                    ->content(new HtmlString('
                         <div style="background-color: #fff8e1; border-left: 4px solid #ffa000; padding: 10px; font-size: 12px; color: #555; border-radius: 4px; margin-top: 5px;">
                             <strong>Ticaret Bakanlığı</strong>, ilgili mevzuat gereğince ilanlardaki fiyat artışlarını yakından takip etmektedir.
                             <strong>Piyasa koşullarına uygun olmayan fiyat artışı yapılan ilanlara ilişkin bilgilerin</strong> Ticaret Bakanlığı tarafından talep edildiğini ve
                             <strong>aykırılık tespit edilen ilanlar için 858.620 TL\'ye varan idari para cezası uygulanabileceğini</strong> önemle hatırlatırız.
                         </div>
                     '))
-                                         ->columnSpanFull(),
-                          ]);
+                    ->columnSpanFull(),
+            ]);
     }
 
     protected static function getDynamicOptions(string $key, array $defaultOptions): array
