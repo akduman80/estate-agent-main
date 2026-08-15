@@ -8,7 +8,7 @@
         $eidsText    = \App\Models\Setting::get('eids_text', 'Ticaret Bakanlığı Elektronik İlan Doğrulama Sistemi (EİDS) güvencesiyle onaylı taşınmaz ilanları.');
         // Redis belleğinden son aktif 12 ilanı ilişkili resimleriyle çekiyoruz
         $recentListings = \Illuminate\Support\Facades\Cache::remember('home_recent_listings', 3600, function () {
-            return \App\Models\Listing::with('images')
+            return \App\Models\Listing::with(['images', 'eidsVerification'])
                 ->where('is_active', true)
                 ->latest()
                 ->take(12)

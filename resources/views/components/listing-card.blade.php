@@ -3,6 +3,7 @@
 @php
     $mainImage = $listing->images->first()?->image_path;
     $imageUrl  = $mainImage ? Storage::url($mainImage) : asset('fe-assets/assets/img/demo/property-1.jpg');
+    $eidsVerification = $listing->eidsVerification;
 @endphp
 
 <div class="col-sm-6 col-md-3 p0 listing-card-item">
@@ -35,7 +36,12 @@
             </p>
 
             <div class="property-icon" style="margin-top: 10px; clear: both;">
-                <span><i class="pe-7s-map-marker"></i> {{ $listing->city_id }} / {{ $listing->district_id }}</span>
+                <span><i class="pe-7s-map-marker"></i> {{ $listing->city_name }} / {{ $listing->district_name }}</span>
+                @if($listing->is_verified && ($eidsVerification?->block || $eidsVerification?->parcel))
+                    <span style="display: block; margin-top: 4px;">
+                        EİDS Ada/Parsel: {{ $eidsVerification?->block ?: '-' }} / {{ $eidsVerification?->parcel ?: '-' }}
+                    </span>
+                @endif
             </div>
         </div>
     </div>

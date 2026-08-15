@@ -5,8 +5,9 @@ namespace App\Models;
 use App\Observers\ListingObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[ObservedBy([ListingObserver::class])]
 class Listing extends Model
@@ -45,5 +46,25 @@ class Listing extends Model
     public function images(): HasMany
     {
         return $this->hasMany(ListingImage::class)->orderBy('sort_order');
+    }
+
+    public function eidsVerification(): HasOne
+    {
+        return $this->hasOne(ListingEidsVerification::class);
+    }
+
+    public function getIsVerifiedAttribute(): bool
+    {
+        return $this->eids_status === 'verified';
+    }
+
+    public function getCityNameAttribute(): ?string
+    {
+        return $this->eidsVerification?->city ?: $this->city_id;
+    }
+
+    public function getDistrictNameAttribute(): ?string
+    {
+        return $this->eidsVerification?->district ?: $this->district_id;
     }
 }

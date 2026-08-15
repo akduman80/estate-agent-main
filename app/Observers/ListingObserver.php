@@ -21,7 +21,7 @@ class ListingObserver
         $images = request()->input('components.0.snapshot', null); // Livewire v3 payload fallback
 
         // Veya doğrudan request'ten gelen veriyi alalım
-        if (request()->has('images') || !empty(request()->input('images'))) {
+        if (request()->has('images') || ! empty(request()->input('images'))) {
             $images = request()->input('images', []);
 
             foreach ($images as $index => $tempPath) {
@@ -38,12 +38,16 @@ class ListingObserver
      */
     public function updated(Listing $listing): void
     {
-        //
+        if ($listing->wasChanged(['eids_document_no'])) {
+            app(EidsService::class)->verifyListing($listing);
+        }
     }
+
     public function saved(Listing $listing): void
     {
         $this->clearListingCache();
     }
+
     /**
      * Handle the Listing "deleted" event.
      */
@@ -67,6 +71,7 @@ class ListingObserver
     {
         //
     }
+
     private function clearListingCache(): void
     {
         // İlanlarla ilgili tüm Redis önbellekleri sıfırlanır

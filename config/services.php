@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    'eids' => [
+        'company_code' => env('EIDS_COMPANY_CODE'),
+        'username' => env('EIDS_USERNAME'),
+        'password' => env('EIDS_PASSWORD'),
+        'user_code' => env('EIDS_USER_CODE'),
+        'tax_no' => env('EIDS_TAX_NO'),
+        'base_url' => env('EIDS_BASE_URL', 'https://ws.gtb.gov.tr:8443'),
+        'verify_path' => env('EIDS_VERIFY_PATH', '/EidsTasinmazAPI'),
+        'timeout' => (int) env('EIDS_TIMEOUT', 20),
+    ],
+
 ];
