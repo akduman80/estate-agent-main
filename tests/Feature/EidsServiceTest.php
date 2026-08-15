@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Listing;
+use App\Models\ListingEidsRequestLog;
 use App\Models\User;
 use App\Services\EidsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,6 +63,21 @@ class EidsServiceTest extends TestCase
         $this->assertSame('101', $listing->eidsVerification->block);
         $this->assertSame('12', $listing->eidsVerification->parcel);
         $this->assertNotNull($listing->eidsVerification->verified_at);
+        $this->assertDatabaseCount('listing_eids_request_logs', 1);
+
+        $log = ListingEidsRequestLog::query()->firstOrFail();
+
+        $this->assertSame($listing->id, $log->listing_id);
+        $this->assertSame('https://ws.gtb.gov.tr:8443/EidsTasinmazAPI', $log->endpoint);
+        $this->assertSame('POST', $log->method);
+        $this->assertSame('verified', $log->result_status);
+        $this->assertSame(200, $log->response_status);
+        $this->assertSame('11111111-1111-1111-1111-111111111111', $log->request_payload['FirmaKod']);
+        $this->assertSame('22222222-2222-2222-2222-222222222222', $log->request_payload['KullaniciKodu']);
+        $this->assertEquals(94536593.0, $log->request_payload['TasinmazId']);
+        $this->assertSame((string) $listing->id, $log->request_payload['IlanNo']);
+        $this->assertSame('Osmaniye', $log->response_payload['data']['Il']);
+        $this->assertNotNull($log->attempted_at);
 
         Http::assertSent(fn ($request) => $request->hasHeader('Authorization')
             && $request['FirmaKod'] === '11111111-1111-1111-1111-111111111111'

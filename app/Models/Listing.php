@@ -36,6 +36,9 @@ class Listing extends Model
         'district_id',
         'neighborhood_id',
         'video_url',
+        'error_message',
+        'response',
+        'verified_at',
     ];
 
     public function user(): BelongsTo
@@ -51,6 +54,11 @@ class Listing extends Model
     public function eidsVerification(): HasOne
     {
         return $this->hasOne(ListingEidsVerification::class);
+    }
+
+    public function eidsRequestLogs(): HasMany
+    {
+        return $this->hasMany(ListingEidsRequestLog::class);
     }
 
     public function getIsVerifiedAttribute(): bool
