@@ -58,6 +58,7 @@ class EidsServiceTest extends TestCase
         $this->assertTrue($result);
         $listing->refresh()->load('eidsVerification');
         $this->assertSame('verified', $listing->eids_status);
+        $this->assertTrue($listing->is_active);
         $this->assertSame('Osmaniye', $listing->eidsVerification->city);
         $this->assertSame('Sumbas', $listing->eidsVerification->district);
         $this->assertSame('Gaffarli', $listing->eidsVerification->neighborhood);
@@ -120,6 +121,7 @@ class EidsServiceTest extends TestCase
         $listing->refresh()->load('eidsVerification');
 
         $this->assertSame('rejected', $listing->eids_status);
+        $this->assertFalse($listing->is_active);
         $this->assertSame('Taşınmaz ID ve EIDS_USER_CODE ayarı zorunludur.', $listing->eidsVerification->error_message);
         Http::assertNothingSent();
     }

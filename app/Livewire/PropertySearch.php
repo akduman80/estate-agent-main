@@ -43,7 +43,7 @@ class PropertySearch extends Component
     {
         $listings = Listing::query()
             ->with(['images', 'eidsVerification'])
-            ->where('is_active', true)
+            ->published()
             ->when($this->search, fn ($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->city_id, fn ($q) => $q->where('city_id', $this->city_id))
             ->when($this->type, fn ($q) => $q->where('type', $this->type))

@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -137,7 +138,10 @@ class EidsService
     {
         $listing->forceFill([
             'eids_status' => 'verified',
+            'is_active' => true,
         ])->saveQuietly();
+
+        $this->clearListingCache();
 
         $listing->eidsVerification()->updateOrCreate([], [
             'error_message' => null,
@@ -156,7 +160,10 @@ class EidsService
     {
         $listing->forceFill([
             'eids_status' => 'rejected',
+            'is_active' => false,
         ])->saveQuietly();
+
+        $this->clearListingCache();
 
         $listing->eidsVerification()->updateOrCreate([], [
             'error_message' => implode(' ', array_filter($errors)),
@@ -169,7 +176,10 @@ class EidsService
     {
         $listing->forceFill([
             'eids_status' => 'pending',
+            'is_active' => false,
         ])->saveQuietly();
+
+        $this->clearListingCache();
 
         $listing->eidsVerification()->updateOrCreate([], [
             'error_message' => $message,
@@ -188,5 +198,10 @@ class EidsService
         } catch (Throwable) {
             return null;
         }
+    }
+
+    private function clearListingCache(): void
+    {
+        Cache::forget('home_recent_listings');
     }
 }

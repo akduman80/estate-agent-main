@@ -71,7 +71,7 @@ Route::get('/dokumanlar/{index}/indir', function (int $index) {
 Route::get('/ilanlar', function (Request $request) {
     $listings = Listing::query()
         ->with(['images', 'eidsVerification'])
-        ->where('is_active', true)
+        ->published()
         ->when($request->filled('q'), fn ($query) => $query->where('title', 'like', '%' . (string) $request->string('q') . '%'))
         ->when($request->filled('city'), fn ($query) => $query->where('city_id', (string) $request->string('city')))
         ->when($request->filled('type'), fn ($query) => $query->where('type', (string) $request->string('type')))
@@ -89,7 +89,7 @@ Route::get('/ilanlar', function (Request $request) {
 
     $recommendedListings = Listing::query()
         ->with(['images', 'eidsVerification'])
-        ->where('is_active', true)
+        ->published()
         ->orderByDesc('is_featured')
         ->latest()
         ->take(4)
@@ -104,7 +104,7 @@ Route::get('/ilanlar', function (Request $request) {
 })->name('listings.index');
 
 Route::get('/ilan/{listing:slug}', function (Listing $listing) {
-    abort_unless($listing->is_active, 404);
+    abort_unless($listing->is_active && $listing->eids_status === 'verified', 404);
 
     $listing->load(['images', 'eidsVerification']);
 

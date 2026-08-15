@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Observers\ListingObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,15 +32,24 @@ class Listing extends Model
         'owner_nationality',
         'from_who',
         'swap_option',
+        'eids_status',
         'eids_document_no',
         'city_id',
         'district_id',
         'neighborhood_id',
         'video_url',
+        'is_active',
         'error_message',
         'response',
         'verified_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function user(): BelongsTo
     {
@@ -64,6 +74,13 @@ class Listing extends Model
     public function getIsVerifiedAttribute(): bool
     {
         return $this->eids_status === 'verified';
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('eids_status', 'verified');
     }
 
     public function getCityNameAttribute(): ?string

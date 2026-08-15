@@ -9,7 +9,7 @@
         // Redis belleğinden son aktif 12 ilanı ilişkili resimleriyle çekiyoruz
         $recentListings = \Illuminate\Support\Facades\Cache::remember('home_recent_listings', 3600, function () {
             return \App\Models\Listing::with(['images', 'eidsVerification'])
-                ->where('is_active', true)
+                ->published()
                 ->latest()
                 ->take(12)
                 ->get();

@@ -80,7 +80,9 @@ class EidsAndLocationStep
 
                             Notification::make()
                                 ->title($verified ? 'EİDS doğrulandı' : 'EİDS doğrulanamadı')
-                                ->body($record->eidsVerification?->error_message ?: 'Doğrulama sonucu güncellendi.')
+                                ->body($verified
+                                    ? 'EİDS onayı alındığı için ilan sitede yayınlanabilir.'
+                                    : (($record->eidsVerification?->error_message ?: 'Doğrulama sonucu güncellendi.').' Bu ilan EİDS onayı almadığı için taslaklarda duracaktır ve sitede yayınlanmayacaktır.'))
                                 ->{$verified ? 'success' : 'warning'}()
                                 ->send();
                         }),
@@ -136,15 +138,19 @@ class EidsAndLocationStep
         [$label, $color, $background] = $labels[$status] ?? [$status, '#374151', '#f9fafb'];
         $error = $record?->eidsVerification?->error_message;
         $verifiedAt = $record?->eidsVerification?->verified_at?->format('d.m.Y H:i');
+        $draftWarning = $status !== 'verified'
+            ? '<br><strong>Yayın durumu:</strong> Bu ilan EİDS onayı almadığı için taslaklarda duracaktır ve sitede yayınlanmayacaktır.'
+            : '<br><strong>Yayın durumu:</strong> EİDS onayı mevcut, ilan sitede yayınlanabilir.';
 
         return sprintf(
-            '<div style="background:%s;border:1px solid %s22;color:%s;padding:10px;border-radius:6px;font-size:13px;"><strong>%s</strong>%s%s</div>',
+            '<div style="background:%s;border:1px solid %s22;color:%s;padding:10px;border-radius:6px;font-size:13px;"><strong>%s</strong>%s%s%s</div>',
             $background,
             $color,
             $color,
             e($label),
             $verifiedAt ? '<br>Doğrulama zamanı: '.e($verifiedAt) : '',
-            $error ? '<br>'.e($error) : ''
+            $error ? '<br>'.e($error) : '',
+            $draftWarning
         );
     }
 }
