@@ -41,8 +41,13 @@ return [
         'password' => env('EIDS_PASSWORD'),
         'user_code' => env('EIDS_USER_CODE'),
         'tax_no' => env('EIDS_TAX_NO'),
+        'gsm_no' => env('EIDS_GSM_NO'),
         'base_url' => env('EIDS_BASE_URL', 'https://ws.gtb.gov.tr:8443'),
         'verify_path' => env('EIDS_VERIFY_PATH', '/EidsTasinmazAPI'),
+        'user_code_path' => env('EIDS_USER_CODE_PATH', '/EidsApi/Kullanici/GetKullaniciKodu'),
+        'health_path' => env('EIDS_HEALTH_PATH', '/EidsApi/health'),
+        'sso_url' => env('EIDS_SSO_URL', 'https://eids.ticaret.gov.tr/oturum'),
+        'callback_url' => env('EIDS_CALLBACK_URL'),
         'timeout' => (int) env('EIDS_TIMEOUT', 20),
     ],
 

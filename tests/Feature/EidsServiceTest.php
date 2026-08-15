@@ -20,6 +20,7 @@ class EidsServiceTest extends TestCase
         config()->set('services.eids.username', 'eids-user');
         config()->set('services.eids.password', 'eids-pass');
         config()->set('services.eids.user_code', '22222222-2222-2222-2222-222222222222');
+        config()->set('services.eids.tax_no', '0230192423');
         config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
         config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
 
@@ -82,7 +83,44 @@ class EidsServiceTest extends TestCase
         Http::assertSent(fn ($request) => $request->hasHeader('Authorization')
             && $request['FirmaKod'] === '11111111-1111-1111-1111-111111111111'
             && $request['KullaniciKodu'] === '22222222-2222-2222-2222-222222222222'
+            && $request['VergiNo'] === '0230192423'
             && $request['TasinmazId'] === 94536593.0
             && $request['IlanNo'] === (string) $listing->id);
+    }
+
+    public function test_it_rejects_a_listing_when_user_code_is_missing(): void
+    {
+        config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.user_code', null);
+        config()->set('services.eids.tax_no', '0230192423');
+        config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
+        config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
+
+        Http::fake();
+
+        $user = User::factory()->create();
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $user->id,
+            'title' => 'EİDS eksik kullanici kodu test ilanı',
+            'slug' => 'eids-eksik-kullanici-kodu-test-ilani',
+            'price' => 1000000,
+            'type' => 'Satılık',
+            'category' => 'Arsa',
+            'square_meters' => 500,
+            'eids_document_no' => '94536593',
+            'city_id' => '80',
+            'district_id' => 'Merkez',
+        ]));
+
+        $result = app(EidsService::class)->verifyListing($listing);
+
+        $this->assertFalse($result);
+        $listing->refresh()->load('eidsVerification');
+
+        $this->assertSame('rejected', $listing->eids_status);
+        $this->assertSame('Taşınmaz ID ve EIDS_USER_CODE ayarı zorunludur.', $listing->eidsVerification->error_message);
+        Http::assertNothingSent();
     }
 }

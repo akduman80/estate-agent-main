@@ -1,13 +1,15 @@
 <?php
 
+use App\Http\Controllers\EidsCallbackController;
 use App\Livewire\BlogList;
 use App\Models\Listing;
 use App\Models\Post;
 use App\Models\Setting;
 use App\Services\TurkeyAddressService;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
@@ -40,6 +42,9 @@ Route::get('/haberler/{post:slug}', function (Post $post) {
 Route::get('/iletisim', function () {
     return view('contact');
 })->name('contact');
+
+Route::get('/eids/start', [EidsCallbackController::class, 'start'])->name('eids.start');
+Route::get('/eids/callback', [EidsCallbackController::class, 'callback'])->name('eids.callback');
 
 Route::get('/dokumanlar/{index}/indir', function (int $index) {
     $documents = collect(Setting::get('user_documents', []))
