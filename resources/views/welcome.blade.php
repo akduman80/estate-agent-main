@@ -44,7 +44,7 @@
     <!-- Livewire Arama ve İlan Listesi Bileşeni -->
     @livewire('property-search')
     <!-- Property Area -->
-    <div class="content-area recent-property" style="padding-bottom: 60px; background-color: rgb(252, 252, 252);">
+    <div class="content-area recent-property">
         <div class="container">
             <div class="row">
                 <div class="col-md-12 padding-top-40 properties-page">

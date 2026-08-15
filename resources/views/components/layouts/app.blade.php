@@ -12,6 +12,10 @@
         $sitePhone = \App\Models\Setting::get('site_phone', '+90 (850) 000 00 00');
         $siteEmail = \App\Models\Setting::get('site_email', 'info@estate.com');
         $logoUrl   = $siteLogo ? \Illuminate\Support\Facades\Storage::url($siteLogo) : asset('fe-assets/assets/img/logo.png');
+        $headerDocuments = collect(\App\Models\Setting::get('user_documents', []))
+            ->filter(fn ($document) => is_array($document) && ($document['is_active'] ?? true) && filled($document['title'] ?? null) && filled($document['file'] ?? null))
+            ->sortBy(fn ($document) => (int) ($document['sort'] ?? 0))
+            ->values();
     @endphp
 
         <!-- Favicon -->
@@ -41,7 +45,7 @@
 <body>
 
 <!-- Preloader (Devre Dışı / Sabit Gizli) -->
-<div id="preloader" style="display: none !important;">
+<div id="preloader">
     <div id="status">&nbsp;</div>
 </div>
 
@@ -59,10 +63,27 @@
                 </div>
             </div>
 
-            <!-- Sağ Taraf: Panelim / Giriş Yap Butonu -->
-            <div class="col-md-2 col-md-offset-5 col-sm-3 col-sm-offset-1 col-xs-12">
+            <!-- Sağ Taraf: Dokümanlar ve Panelim / Giriş Yap Butonu -->
+            <div class="col-md-7 col-sm-4 col-xs-12">
                 <div class="header-half header-social">
                     <ul class="treeform-social list-inline text-right mb-0 pt-0">
+                        @if($headerDocuments->isNotEmpty())
+                            <li class="dropdown header-documents-dropdown">
+                                <a href="#" class="dropdown-toggle header-documents-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-file-text-o"></i> Dokümanlar <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    @foreach($headerDocuments as $index => $document)
+                                        <li>
+                                            <a href="{{ route('documents.download', ['index' => $index]) }}">
+                                                <i class="fa fa-download"></i> {{ $document['title'] }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @endif
+
                         @auth
                             <li>
                                 <a href="{{ auth()->user()->role->getRedirectPath() }}" class="btn btn-primary btn-sm padding-5">
@@ -101,9 +122,9 @@
         <div class="collapse navbar-collapse yamm" id="navigation">
             <ul class="main-nav nav navbar-nav navbar-right">
                 <li class="{{ request()->is('/') ? 'active' : '' }}"><a href="{{ url('/') }}">Ana Sayfa</a></li>
-                <li class="{{ request()->is('ilanlar*') ? 'active' : '' }}"><a href="{{ url('/ilanlar') }}">İlanlar</a></li>
+                <li class="{{ request()->is('ilanlar*') ? 'active' : '' }}"><a href="{{ route('listings.index') }}">İlanlar</a></li>
                 <li class="{{ request()->is('haberler*') ? 'active' : '' }}"><a href="{{ url('/haberler') }}">Haberler / Blog</a></li>
-                <li><a href="{{ url('/iletisim') }}">İletişim</a></li>
+                <li class="{{ request()->is('iletisim') ? 'active' : '' }}"><a href="{{ route('contact') }}">İletişim</a></li>
             </ul>
         </div>
     </div>
@@ -123,7 +144,7 @@
                     <div class="single-footer">
                         <h4>Hakkımızda</h4>
                         <div class="footer-title-line"></div>
-                        <img src="{{ $logoUrl }}" alt="Logo" style="max-height: 45px;">
+                        <img src="{{ $logoUrl }}" alt="Logo" class="wow pulse">
                         <p>EİDS Onaylı Güvenilir Emlak Platformu.</p>
                     </div>
                 </div>
@@ -132,7 +153,7 @@
                         <h4>Hızlı Bağlantılar</h4>
                         <div class="footer-title-line"></div>
                         <ul class="footer-menu">
-                            <li><a href="{{ url('/ilanlar') }}">İlanlar</a></li>
+                            <li><a href="{{ route('listings.index') }}">İlanlar</a></li>
                             <li><a href="{{ url('/haberler') }}">Haberler</a></li>
                         </ul>
                     </div>

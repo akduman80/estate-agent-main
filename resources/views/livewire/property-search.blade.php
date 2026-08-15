@@ -1,6 +1,6 @@
 <div>
     <!-- Home Large Search Overlay Section -->
-    <div class="home-lager-shearch" style="padding-top: 25px; margin-top: -125px; padding-bottom: 60px; background-color: rgb(252, 252, 252); position: relative; z-index: 20;">
+    <div class="home-lager-shearch">
         <div class="container">
             <div class="col-md-12 large-search">
                 <div class="search-form wow pulse">
@@ -10,7 +10,7 @@
                                 <input type="text" wire:model.live.debounce.300ms="search" class="form-control" placeholder="Arama kelimesi (İlan, Mahalle vb.)">
                             </div>
                             <div class="col-md-4">
-                                <select wire:model.live="city_id" class="form-control" style="width: 100%; height: 42px; border: 1px solid #E3E3E3; color: #777; background: #fff;">
+                                <select wire:model.live="city_id" class="form-control">
                                     <option value="">Tüm İller</option>
                                     @foreach($cities as $key => $cityName)
                                         <option value="{{ $key }}">{{ $cityName }}</option>
@@ -18,7 +18,7 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <select wire:model.live="type" class="form-control" style="width: 100%; height: 42px; border: 1px solid #E3E3E3; color: #777; background: #fff;">
+                                <select wire:model.live="type" class="form-control">
                                     <option value="">İlan Tipi (Tümü)</option>
                                     @foreach($typeOptions as $option)
                                         <option value="{{ $option }}">{{ $option }}</option>
@@ -100,12 +100,12 @@
     </div>
 
     <!-- Güncel İlanlar Liste Alanı -->
-    <div class="content-area recent-property" style="padding-bottom: 60px; background-color: rgb(252, 252, 252);">
+    <div class="content-area recent-property">
         <div class="container">
             <div class="row">
                 <div class="col-md-12 padding-top-40 properties-page">
-                    <div class="col-md-12 text-center" style="margin-bottom: 30px;">
-                        <h2>Güncel EİDS Onaylı İlanlar</h2>
+                    <div class="col-md-12 text-center">
+                        <h2>Güncel İlanlar</h2>
                     </div>
 
                     <div class="col-md-12">
@@ -113,18 +113,10 @@
                             @forelse($listings as $listing)
                                 <div class="col-sm-6 col-md-3 p0">
                                     <div class="box-two proerty-item">
-                                        <div class="item-thumb" style="position: relative;">
+                                        <div class="item-thumb">
                                             <a href="{{ route('listings.show', $listing->slug) }}">
                                                 <img src="{{ $listing->images->first()?->image_path ? asset('storage/'.$listing->images->first()->image_path) : asset('fe-assets/assets/img/demo/property-1.jpg') }}" alt="{{ $listing->title }}">
                                             </a>
-
-                                            @if($listing->is_verified)
-                                                <div style="position: absolute; top: 10px; right: 10px; z-index: 5;">
-                                                    <span class="label label-success" style="background-color: #28a745; font-size: 11px; padding: 5px 8px;">
-                                                        <i class="fa fa-check-circle"></i> EİDS Onaylı
-                                                    </span>
-                                                </div>
-                                            @endif
                                         </div>
 
                                         <div class="item-entry overflow">
@@ -140,8 +132,8 @@
                                 </div>
                             @empty
                                 <div class="col-md-12 text-center">
-                                    <div class="alert alert-warning" style="margin-top: 20px;">
-                                        <i class="fa fa-info-circle"></i> Arama kriterlerinize uygun EİDS onaylı aktif ilan bulunamadı.
+                                    <div class="alert alert-warning">
+                                        <i class="fa fa-info-circle"></i> Arama kriterlerinize uygun aktif ilan bulunamadı.
                                     </div>
                                 </div>
                             @endforelse
@@ -149,7 +141,7 @@
                     </div>
 
                     @if(method_exists($listings, 'links'))
-                        <div class="col-md-12 text-center" style="margin-top: 30px;">
+                        <div class="col-md-12 text-center">
                             {{ $listings->links() }}
                         </div>
                     @endif

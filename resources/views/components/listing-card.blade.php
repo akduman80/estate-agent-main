@@ -9,14 +9,14 @@
 <div class="col-sm-6 col-md-3 p0 listing-card-item">
     <div class="box-two proerty-item">
         <div class="item-thumb">
-            <a href="{{ url('/ilan/' . $listing->slug) }}">
-                <img src="{{ $imageUrl }}" alt="{{ $listing->title }}" style="height: 200px; object-fit: cover; width: 100%;">
+            <a href="{{ route('listings.show', $listing->slug) }}">
+                <img src="{{ $imageUrl }}" alt="{{ $listing->title }}">
             </a>
         </div>
 
         <div class="item-entry overflow">
             <h5>
-                <a href="{{ url('/ilan/' . $listing->slug) }}" title="{{ $listing->title }}">
+                <a href="{{ route('listings.show', $listing->slug) }}" title="{{ $listing->title }}">
                     {{ Str::limit($listing->title, 35) }}
                 </a>
             </h5>
@@ -31,14 +31,14 @@
             </span>
 
             <!-- Liste Görünümünde Açılan Detay Açıklaması -->
-            <p style="display: none; margin-top: 15px; clear: both; font-size: 13px; color: #777;">
+            <p>
                 {{ Str::limit(strip_tags($listing->description), 150) }}
             </p>
 
-            <div class="property-icon" style="margin-top: 10px; clear: both;">
+            <div class="property-icon">
                 <span><i class="pe-7s-map-marker"></i> {{ $listing->city_name }} / {{ $listing->district_name }}</span>
                 @if($listing->is_verified && ($eidsVerification?->block || $eidsVerification?->parcel))
-                    <span style="display: block; margin-top: 4px;">
+                    <span>
                         EİDS Ada/Parsel: {{ $eidsVerification?->block ?: '-' }} / {{ $eidsVerification?->parcel ?: '-' }}
                     </span>
                 @endif

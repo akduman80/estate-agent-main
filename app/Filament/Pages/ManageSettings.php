@@ -55,11 +55,36 @@ class ManageSettings extends Page
         ];
     }
 
+    protected function getDefaultContactSettings(): array
+    {
+        return [
+            'contact_page_title'       => 'İletişim',
+            'contact_company_name'     => 'Zyd Emlak',
+            'site_address'             => 'Istanbul, Turkiye',
+            'contact_map_query'        => 'Istanbul, Turkiye',
+            'contact_phone_text'       => 'İlanlar, randevu ve danışmanlık talepleriniz için bize ulaşabilirsiniz.',
+            'contact_email_text'       => 'Mesajınızı e-posta ile iletebilir veya aşağıdaki iletişim formunu kullanabilirsiniz.',
+            'contact_form_title'       => 'İletişim formu',
+            'contact_submit_text'      => 'Mesaj gönder',
+        ];
+    }
+
+    protected function getDefaultDocumentSettings(): array
+    {
+        return [
+            'user_documents' => [],
+        ];
+    }
+
     public function mount(): void
     {
         // 1. Veritabanındaki tüm ayarları çekiyoruz[cite: 6]
         $settings = Setting::pluck('value', 'key')->toArray(); //[cite: 6]
-        $defaults = $this->getDefaultOptionSettings();
+        $defaults = array_merge(
+            $this->getDefaultOptionSettings(),
+            $this->getDefaultContactSettings(),
+            $this->getDefaultDocumentSettings(),
+        );
 
         // 2. Veritabanında boş olan/henüz kaydedilmemiş anahtarlara varsayılan dizileri atıyoruz
         foreach ($defaults as $key => $defaultValues) {
@@ -124,6 +149,101 @@ class ManageSettings extends Page
                                 Forms\Components\TextInput::make('site_phone')->label('Telefon Numarası'), //[cite: 15]
                                 Forms\Components\TextInput::make('site_email')->label('E-posta Adresi'), //[cite: 15]
                                 Forms\Components\Textarea::make('eids_text')->label('EİDS / Onaylı Taşınmaz Metni')->rows(2)->columnSpanFull(), //[cite: 15]
+                            ]),
+
+                        Forms\Components\Tabs\Tab::make('İletişim Sayfası')
+                            ->icon('heroicon-o-envelope')
+                            ->schema([
+                                Forms\Components\TextInput::make('contact_page_title')
+                                    ->label('Sayfa Başlığı')
+                                    ->default('İletişim')
+                                    ->required(),
+
+                                Forms\Components\TextInput::make('contact_company_name')
+                                    ->label('Firma / Marka Adı')
+                                    ->default('Zyd Emlak')
+                                    ->required(),
+
+                                Forms\Components\Textarea::make('site_address')
+                                    ->label('Adres')
+                                    ->default('Istanbul, Turkiye')
+                                    ->rows(3)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\TextInput::make('contact_map_query')
+                                    ->label('Harita Arama Metni')
+                                    ->default('Istanbul, Turkiye')
+                                    ->helperText('Boş bırakılırsa adres bilgisiyle harita oluşturulur.')
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Textarea::make('contact_phone_text')
+                                    ->label('Telefon Açıklaması')
+                                    ->default('İlanlar, randevu ve danışmanlık talepleriniz için bize ulaşabilirsiniz.')
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Textarea::make('contact_email_text')
+                                    ->label('E-posta Açıklaması')
+                                    ->default('Mesajınızı e-posta ile iletebilir veya aşağıdaki iletişim formunu kullanabilirsiniz.')
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\TextInput::make('contact_form_title')
+                                    ->label('Form Başlığı')
+                                    ->default('İletişim formu'),
+
+                                Forms\Components\TextInput::make('contact_submit_text')
+                                    ->label('Form Buton Yazısı')
+                                    ->default('Mesaj gönder'),
+                            ])
+                            ->columns(2),
+
+                        Forms\Components\Tabs\Tab::make('Kullanıcı Dokümanları')
+                            ->icon('heroicon-o-document-arrow-down')
+                            ->schema([
+                                Forms\Components\Repeater::make('user_documents')
+                                    ->label('Header Dokümanları')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('title')
+                                            ->label('Doküman Adı')
+                                            ->placeholder('Kira Kontratı')
+                                            ->required()
+                                            ->maxLength(100),
+
+                                        Forms\Components\FileUpload::make('file')
+                                            ->label('Dosya')
+                                            ->disk('public')
+                                            ->directory('user-documents')
+                                            ->acceptedFileTypes([
+                                                'application/pdf',
+                                                'application/msword',
+                                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                                'application/vnd.ms-excel',
+                                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                                'image/jpeg',
+                                                'image/png',
+                                            ])
+                                            ->downloadable()
+                                            ->openable()
+                                            ->required()
+                                            ->helperText('PDF, Word, Excel veya görsel dosyaları yükleyebilirsiniz.'),
+
+                                        Forms\Components\TextInput::make('sort')
+                                            ->label('Sıralama')
+                                            ->numeric()
+                                            ->default(0),
+
+                                        Forms\Components\Toggle::make('is_active')
+                                            ->label('Yayında')
+                                            ->default(true),
+                                    ])
+                                    ->columns(2)
+                                    ->collapsible()
+                                    ->cloneable()
+                                    ->reorderable()
+                                    ->defaultItems(0)
+                                    ->addActionLabel('Yeni Doküman Ekle')
+                                    ->columnSpanFull(),
                             ]),
 
                         // --- TAB 3: İLAN SEÇENEKLERİ ---[cite: 15]
