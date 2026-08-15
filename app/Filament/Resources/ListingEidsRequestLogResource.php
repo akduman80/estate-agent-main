@@ -161,7 +161,13 @@ class ListingEidsRequestLogResource extends Resource
         }
 
         if (is_string($payload)) {
-            return $payload;
+            $decodedPayload = json_decode($payload, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $payload = $decodedPayload;
+            } else {
+                return $payload;
+            }
         }
 
         return json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
