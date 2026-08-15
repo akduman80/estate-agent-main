@@ -25,6 +25,7 @@ class PortalPanelProvider extends PanelProvider
         return $panel
             ->id('portal')
             ->path('portal')
+            ->profile(isSimple: false)
             ->colors([
                 'primary' => Color::Blue,
             ])

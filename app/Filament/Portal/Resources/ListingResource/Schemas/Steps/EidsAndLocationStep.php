@@ -3,7 +3,10 @@
 namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 
 use App\Models\Listing;
+use App\Services\EidsService;
 use App\Services\TurkeyAddressService;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
@@ -12,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
 class EidsAndLocationStep
@@ -26,7 +30,61 @@ class EidsAndLocationStep
                     ->label('Tapu Taşınmaz ID')
                     ->placeholder('Örn: 94536593')
                     ->numeric()
+                    ->helperText('EİDS kullanıcı adı ve şifresi bu forma yazılmaz; .env dosyasındaki EIDS_USERNAME ve EIDS_PASSWORD değerlerinden okunur.')
+                    ->live(onBlur: true)
                     ->required(),
+
+                Actions::make([
+                    Action::make('verifyEids')
+                        ->label('EİDS Sorgula')
+                        ->icon('heroicon-o-shield-check')
+                        ->color('success')
+                        ->disabled(fn (?Listing $record): bool => ! $record?->exists)
+                        ->tooltip(fn (?Listing $record): string => $record?->exists
+                            ? 'Taşınmaz ID ile EİDS doğrulaması yap'
+                            : 'EİDS sorgusu için önce ilanı kaydedin')
+                        ->requiresConfirmation()
+                        ->modalHeading('EİDS sorgulaması yapılsın mı?')
+                        ->modalDescription('Bu işlem kayıtlı ilanın Taşınmaz ID bilgisini Ticaret Bakanlığı EİDS servisine gönderir.')
+                        ->modalSubmitActionLabel('Sorgula')
+                        ->action(function (?Listing $record, Get $get, Set $set): void {
+                            if (! $record?->exists) {
+                                Notification::make()
+                                    ->title('Önce ilanı kaydedin')
+                                    ->body('EİDS sorgusu için ilanın kayıt numarası oluşmuş olmalı.')
+                                    ->warning()
+                                    ->send();
+
+                                return;
+                            }
+
+                            $documentNo = $get('eids_document_no');
+
+                            if (blank($documentNo)) {
+                                Notification::make()
+                                    ->title('Taşınmaz ID zorunlu')
+                                    ->body('Sorgulama yapmadan önce Tapu Taşınmaz ID alanını doldurun.')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            if ($record->eids_document_no !== $documentNo) {
+                                $record->forceFill(['eids_document_no' => $documentNo])->saveQuietly();
+                            }
+
+                            $verified = app(EidsService::class)->verifyListing($record);
+                            $record->refresh()->load('eidsVerification');
+                            $set('eids_status', $record->eids_status);
+
+                            Notification::make()
+                                ->title($verified ? 'EİDS doğrulandı' : 'EİDS doğrulanamadı')
+                                ->body($record->eidsVerification?->error_message ?: 'Doğrulama sonucu güncellendi.')
+                                ->{$verified ? 'success' : 'warning'}()
+                                ->send();
+                        }),
+                ])->columnSpanFull(),
 
                 Placeholder::make('eids_status_summary')
                     ->label('EİDS Doğrulama Sonucu')

@@ -25,6 +25,7 @@ class EditorPanelProvider extends PanelProvider
         return $panel
             ->id('editor')
             ->path('editor')
+            ->profile(isSimple: false)
             ->colors([
                 'primary' => Color::Green,
             ])
