@@ -7,9 +7,9 @@ use App\Models\ListingEidsRequestLog;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\FontFamily;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -133,22 +133,18 @@ class ListingEidsRequestLogResource extends Resource
                     ]),
                 Section::make('Gönderilen Bilgiler')
                     ->schema([
-                        TextEntry::make('request_payload_json')
+                        ViewEntry::make('request_payload_json')
                             ->label('Request')
                             ->state(fn (ListingEidsRequestLog $record): string => self::formatPayload($record->request_payload))
-                            ->fontFamily(FontFamily::Mono)
-                            ->extraAttributes(['class' => 'whitespace-pre-wrap break-words'])
-                            ->copyable()
+                            ->view('filament.infolists.json-entry')
                             ->columnSpanFull(),
                     ]),
                 Section::make('Dönen Cevap')
                     ->schema([
-                        TextEntry::make('response_payload_json')
+                        ViewEntry::make('response_payload_json')
                             ->label('Response')
                             ->state(fn (ListingEidsRequestLog $record): string => self::formatPayload($record->response_payload))
-                            ->fontFamily(FontFamily::Mono)
-                            ->extraAttributes(['class' => 'whitespace-pre-wrap break-words'])
-                            ->copyable()
+                            ->view('filament.infolists.json-entry')
                             ->columnSpanFull(),
                     ]),
             ]);
