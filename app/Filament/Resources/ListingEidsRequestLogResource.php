@@ -5,11 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ListingEidsRequestLogResource\Pages;
 use App\Models\ListingEidsRequestLog;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontFamily;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -133,13 +133,39 @@ class ListingEidsRequestLogResource extends Resource
                     ]),
                 Section::make('Gönderilen Bilgiler')
                     ->schema([
-                        KeyValueEntry::make('request_payload')->label('Request'),
+                        TextEntry::make('request_payload_json')
+                            ->label('Request')
+                            ->state(fn (ListingEidsRequestLog $record): string => self::formatPayload($record->request_payload))
+                            ->fontFamily(FontFamily::Mono)
+                            ->extraAttributes(['class' => 'whitespace-pre-wrap break-words'])
+                            ->copyable()
+                            ->columnSpanFull(),
                     ]),
                 Section::make('Dönen Cevap')
                     ->schema([
-                        KeyValueEntry::make('response_payload')->label('Response'),
+                        TextEntry::make('response_payload_json')
+                            ->label('Response')
+                            ->state(fn (ListingEidsRequestLog $record): string => self::formatPayload($record->response_payload))
+                            ->fontFamily(FontFamily::Mono)
+                            ->extraAttributes(['class' => 'whitespace-pre-wrap break-words'])
+                            ->copyable()
+                            ->columnSpanFull(),
                     ]),
             ]);
+    }
+
+    private static function formatPayload(mixed $payload): string
+    {
+        if ($payload === null || $payload === []) {
+            return '-';
+        }
+
+        if (is_string($payload)) {
+            return $payload;
+        }
+
+        return json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            ?: print_r($payload, true);
     }
 
     public static function getEloquentQuery(): Builder
