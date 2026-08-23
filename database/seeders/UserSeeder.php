@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AccountStatus;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -15,9 +16,11 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@admin.com'],
             [
-                'name'     => 'Süpervizör Admin',
-                'password' => Hash::make('12345678'),
-                'role'     => UserRole::SUPERVISOR,
+                'name' => 'Süpervizör Admin',
+                'password' => Hash::make(env('SEED_ADMIN_PASSWORD', 'LocalAdmin123!')),
+                'role' => UserRole::SUPERVISOR,
+                'email_verified_at' => now(),
+                'account_status' => AccountStatus::ACTIVE,
             ]
         );
 
@@ -25,9 +28,11 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'emlakci@test.com'],
             [
-                'name'     => 'Emlak Ofisi Yetkilisi',
-                'password' => Hash::make('12345678'),
-                'role'     => UserRole::AGENT,
+                'name' => 'Emlak Ofisi Yetkilisi',
+                'password' => Hash::make(env('SEED_AGENT_PASSWORD', 'LocalAgent123!')),
+                'role' => UserRole::AGENT,
+                'email_verified_at' => now(),
+                'account_status' => AccountStatus::ACTIVE,
             ]
         );
 
@@ -35,9 +40,11 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'editor@test.com'],
             [
-                'name'     => 'Haber Editörü',
-                'password' => Hash::make('12345678'),
-                'role'     => UserRole::EDITOR,
+                'name' => 'Haber Editörü',
+                'password' => Hash::make(env('SEED_EDITOR_PASSWORD', 'LocalEditor123!')),
+                'role' => UserRole::EDITOR,
+                'email_verified_at' => now(),
+                'account_status' => AccountStatus::ACTIVE,
             ]
         );
     }

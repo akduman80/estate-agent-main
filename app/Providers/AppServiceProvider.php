@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse as LoginResponseContract;
+use App\Contracts\PhoneOtpSender;
 use App\Http\Responses\LoginResponse;
+use App\Services\LogPhoneOtpSender;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse as LoginResponseContract;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+        $this->app->bind(PhoneOtpSender::class, LogPhoneOtpSender::class);
     }
 
     /**
@@ -21,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        ResetPassword::createUrlUsing(fn ($user, string $token): string => route('password.reset', [
+            'token' => $token,
+            'email' => $user->getEmailForPasswordReset(),
+        ]));
         //
     }
 }

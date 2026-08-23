@@ -17,15 +17,19 @@ class EidsIdentityService
         ]);
     }
 
-    public function requestUserCode(string $authorizationCode, ?string $gsmNo = null): array
-    {
+    public function requestUserCode(
+        string $authorizationCode,
+        ?string $gsmNo = null,
+        ?string $taxNumber = null,
+        bool $usePlatformTaxNumber = true,
+    ): array {
         $response = Http::withBasicAuth(config('services.eids.username'), config('services.eids.password'))
             ->acceptJson()
             ->asJson()
             ->timeout(config('services.eids.timeout', 20))
             ->post($this->userCodeUrl(), [
                 'yetkiKodu' => $authorizationCode,
-                'vergiNo' => config('services.eids.tax_no'),
+                'vergiNo' => $usePlatformTaxNumber ? ($taxNumber ?? config('services.eids.tax_no')) : $taxNumber,
                 'gsmNo' => $gsmNo ?: config('services.eids.gsm_no'),
             ])
             ->throw();
@@ -38,11 +42,11 @@ class EidsIdentityService
         return filled(config('services.eids.company_code'));
     }
 
-    public function isConfiguredForUserCode(): bool
+    public function isConfiguredForUserCode(?string $gsmNo = null): bool
     {
         return filled(config('services.eids.username'))
             && filled(config('services.eids.password'))
-            && filled(config('services.eids.gsm_no'));
+            && filled($gsmNo ?: config('services.eids.gsm_no'));
     }
 
     private function userCodeUrl(): string

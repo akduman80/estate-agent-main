@@ -9,6 +9,9 @@ class ListingEidsVerification extends Model
 {
     protected $fillable = [
         'listing_id',
+        'user_id',
+        'business_profile_id',
+        'eids_user_code_hash',
         'error_message',
         'response',
         'verified_at',

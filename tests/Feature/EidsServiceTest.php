@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Enums\AccountStatus;
+use App\Enums\UserRole;
 use App\Models\Listing;
 use App\Models\ListingEidsRequestLog;
 use App\Models\User;
@@ -75,7 +77,7 @@ class EidsServiceTest extends TestCase
         $this->assertSame('verified', $log->result_status);
         $this->assertSame(200, $log->response_status);
         $this->assertSame('11111111-1111-1111-1111-111111111111', $log->request_payload['FirmaKod']);
-        $this->assertSame('22222222-2222-2222-2222-222222222222', $log->request_payload['KullaniciKodu']);
+        $this->assertSame('sha256:'.hash('sha256', '22222222-2222-2222-2222-222222222222'), $log->request_payload['KullaniciKodu']);
         $this->assertEquals(94536593.0, $log->request_payload['TasinmazId']);
         $this->assertSame((string) $listing->id, $log->request_payload['IlanNo']);
         $this->assertSame('Osmaniye', $log->response_payload['data']['Il']);
@@ -124,5 +126,36 @@ class EidsServiceTest extends TestCase
         $this->assertFalse($listing->is_active);
         $this->assertSame('Taşınmaz ID ve EIDS_USER_CODE ayarı zorunludur.', $listing->eidsVerification->error_message);
         Http::assertNothingSent();
+    }
+
+    public function test_it_uses_individual_members_own_eids_code_without_platform_tax_number(): void
+    {
+        config()->set('services.eids.company_code', 'platform-guid');
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.user_code', 'platform-user-guid');
+        config()->set('services.eids.tax_no', '0230192423');
+        config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
+        config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
+        Http::fake(['ws.gtb.gov.tr:8443/EidsTasinmazAPI' => Http::response([
+            'data' => ['Il' => 'Osmaniye', 'Ilce' => 'Merkez', 'Mahalle' => 'Alibeyli', 'Ada' => '1', 'Parsel' => '2', 'IlanSuresi' => now()->addMonth()->toIso8601String()],
+            'statusCode' => 200, 'errors' => null,
+        ])]);
+
+        $user = User::factory()->create([
+            'role' => UserRole::INDIVIDUAL,
+            'account_status' => AccountStatus::ACTIVE,
+            'eids_user_code' => 'individual-user-guid',
+        ]);
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $user->id, 'title' => 'Bireysel EİDS', 'slug' => 'bireysel-eids',
+            'price' => 1000, 'type' => 'Satılık', 'category' => 'Arsa', 'source_type' => 'owner',
+            'eids_document_no' => '123', 'city_id' => '80', 'district_id' => 'Merkez',
+        ]));
+
+        $this->assertTrue(app(EidsService::class)->verifyListing($listing));
+        Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === 'individual-user-guid' && $request['VergiNo'] === null);
+        $this->assertSame($user->id, $listing->fresh()->eidsVerification->user_id);
+        $this->assertNull($listing->fresh()->eidsVerification->business_profile_id);
     }
 }

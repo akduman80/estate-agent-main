@@ -101,10 +101,18 @@ class EidsService
 
     private function requestPayload(Listing $listing): array
     {
+        $listing->loadMissing(['user.businessProfile', 'businessProfile']);
+        $userCode = $listing->user?->eids_user_code ?: config('services.eids.user_code');
+        $taxNumber = match ($listing->source_type) {
+            'owner' => null,
+            'real_estate_office' => $listing->businessProfile?->tax_number ?: $listing->user?->businessProfile?->tax_number,
+            default => config('services.eids.tax_no'),
+        };
+
         return [
             'FirmaKod' => config('services.eids.company_code'),
-            'KullaniciKodu' => config('services.eids.user_code'),
-            'VergiNo' => config('services.eids.tax_no'),
+            'KullaniciKodu' => $userCode,
+            'VergiNo' => $taxNumber,
             'TasinmazId' => is_numeric($listing->eids_document_no) ? (float) $listing->eids_document_no : $listing->eids_document_no,
             'IlanNo' => (string) $listing->id,
         ];
@@ -124,7 +132,7 @@ class EidsService
             'listing_id' => $listing->id,
             'endpoint' => $endpoint,
             'method' => 'POST',
-            'request_payload' => $requestPayload,
+            'request_payload' => $this->sanitizeRequestPayload($requestPayload),
             'response_status' => $response?->status(),
             'response_payload' => $response?->json(),
             'result_status' => $resultStatus,
@@ -136,18 +144,24 @@ class EidsService
 
     private function markAsVerified(Listing $listing, array $data, array $payload): void
     {
+        $expiresAt = $this->parseDate(data_get($data, 'IlanSuresi'));
         $listing->forceFill([
             'eids_status' => 'verified',
-            'is_active' => true,
+            'is_active' => ($listing->publication_status ?? 'approved') === 'approved' && (! $expiresAt || $expiresAt->isFuture()),
         ])->saveQuietly();
 
         $this->clearListingCache();
 
         $listing->eidsVerification()->updateOrCreate([], [
+            'user_id' => $listing->user_id,
+            'business_profile_id' => $listing->business_profile_id,
+            'eids_user_code_hash' => filled($listing->user?->eids_user_code)
+                ? hash('sha256', $listing->user->eids_user_code)
+                : (filled(config('services.eids.user_code')) ? hash('sha256', config('services.eids.user_code')) : null),
             'error_message' => null,
             'response' => $payload,
             'verified_at' => now(),
-            'expires_at' => $this->parseDate(data_get($data, 'IlanSuresi')),
+            'expires_at' => $expiresAt,
             'city' => data_get($data, 'Il'),
             'district' => data_get($data, 'Ilce'),
             'neighborhood' => data_get($data, 'Mahalle'),
@@ -203,5 +217,19 @@ class EidsService
     private function clearListingCache(): void
     {
         Cache::forget('home_recent_listings');
+    }
+
+    private function sanitizeRequestPayload(array $payload): array
+    {
+        if (filled($payload['KullaniciKodu'] ?? null)) {
+            $payload['KullaniciKodu'] = 'sha256:'.hash('sha256', (string) $payload['KullaniciKodu']);
+        }
+
+        if (filled($payload['VergiNo'] ?? null)) {
+            $taxNumber = (string) $payload['VergiNo'];
+            $payload['VergiNo'] = str_repeat('*', max(strlen($taxNumber) - 4, 0)).substr($taxNumber, -4);
+        }
+
+        return $payload;
     }
 }

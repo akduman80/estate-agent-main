@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AccountStatus;
 use App\Enums\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -21,9 +22,19 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'name',
+        'first_name',
+        'last_name',
         'email',
+        'phone',
+        'phone_verified_at',
+        'identity_number',
+        'identity_number_hash',
         'password',
         'role',
+        'account_status',
+        'eids_user_code',
+        'eids_identity_verified_at',
+        'last_two_factor_at',
     ];
 
     /**
@@ -35,21 +46,44 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'role'              => UserRole::class, // Enum Casting
+            'phone_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'role' => UserRole::class,
+            'account_status' => AccountStatus::class,
+            'identity_number' => 'encrypted',
+            'eids_user_code' => 'encrypted',
+            'eids_identity_verified_at' => 'datetime',
+            'last_two_factor_at' => 'datetime',
         ];
     }
 
+    public function businessProfile()
+    {
+        return $this->hasOne(BusinessProfile::class);
+    }
+
+    public function consents()
+    {
+        return $this->hasMany(UserConsent::class);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->account_status === AccountStatus::ACTIVE;
+    }
+
     // Panel Erişim Kontrolü
-public function canAccessPanel(Panel $panel): bool
-{
-    // Giriş (Login) kontrolü için admin paneline herkesin giriş yapabilmesine izin veriyoruz.
-    // Kullanıcı giriş yaptıktan sonra LoginResponse ile kendi rolünün paneline uçurulacak.
-    return match ($panel->getId()) {
-        'admin'  => true, // Giriş kapısı ortak olduğu için true yapıyoruz
-        'portal' => $this->role === UserRole::AGENT || $this->role === UserRole::SUPERVISOR,
-        'editor' => $this->role === UserRole::EDITOR || $this->role === UserRole::SUPERVISOR,
-        default  => false,
-    };
-}
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if (! $this->isActive() || ! $this->email_verified_at) {
+            return false;
+        }
+
+        return match ($panel->getId()) {
+            'admin' => $this->role === UserRole::SUPERVISOR,
+            'portal' => in_array($this->role, [UserRole::AGENT, UserRole::INDIVIDUAL, UserRole::SUPERVISOR], true),
+            'editor' => in_array($this->role, [UserRole::EDITOR, UserRole::SUPERVISOR], true),
+            default => false,
+        };
+    }
 }

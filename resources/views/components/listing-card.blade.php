@@ -15,6 +15,7 @@
         </div>
 
         <div class="item-entry overflow">
+            <span class="label label-warning" style="display:inline-block;margin-bottom:8px;">{{ $listing->source_label }}</span>
             <h5>
                 <a href="{{ route('listings.show', $listing->slug) }}" title="{{ $listing->title }}">
                     {{ Str::limit($listing->title, 35) }}

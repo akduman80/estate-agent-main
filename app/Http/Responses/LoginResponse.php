@@ -1,4 +1,5 @@
 <?php
+
 /** Created by ramazanorak, Date: 26.07.2026 */
 
 namespace App\Http\Responses;
@@ -11,6 +12,14 @@ class LoginResponse implements LoginResponseContract
 {
     public function toResponse($request): RedirectResponse|Redirector
     {
+        if ($request->session()->has('pending_login_user_id')) {
+            return redirect()->route('two-factor.show');
+        }
+
+        if ($request->session()->has('verification_user_id')) {
+            return redirect()->route('verification.notice');
+        }
+
         $user = auth()->user();
 
         // Rolün getRedirectPath() metodunu kullanarak yönlendir

@@ -42,10 +42,13 @@ class ManageSettings extends Page
         return [
             'options_type'              => ['Satılık', 'Kiralık'],
             'options_category'          => ['Daire', 'Müstakil Ev', 'Arsa', 'Tarla', 'İşyeri'],
+            'options_subcategory'       => ['Standart', 'Lüks', 'Müstakil', 'Ticari', 'Yatırımlık'],
             'options_room_count'        => ['1+0', '1+1', '2+1', '3+1', '4+1'],
             'options_heating_type'      => ['Kombi (Doğalgaz)', 'Klima', 'Merkezi Sistem', 'Sobalı'],
             'options_building_age'      => ['0 (Yeni)', '1-5 Arası', '6-10 Arası', '11-15 Arası', '16-20 Arası', '21 ve üzeri'],
             'options_furniture_status'  => ['Eşyalı', 'Eşyasız'],
+            'options_usage_status'      => ['Boş', 'Kiracılı', 'Mülk Sahibi', 'Yapım Aşamasında'],
+            'options_facade'            => ['Kuzey', 'Güney', 'Doğu', 'Batı'],
             'options_zoning_status'     => ['Tarla', 'Konut İmarlı', 'Ticari İmarlı', 'Sanayi İmarlı', 'Bağ & Bahçe', 'Zeytinlik'],
             'options_deed_status'       => ['Hisseli Tapu', 'Müstakil Parsel', 'Tahsis Tapu', 'Zilliyet'],
             'options_owner_nationality' => ['T.C. Vatandaşı', 'Yabancı'],
@@ -258,6 +261,10 @@ class ManageSettings extends Page
                                     ->label('Gayrimenkul Türü Seçenekleri')
                                     ->default($defaults['options_category']),
 
+                                Forms\Components\TagsInput::make('options_subcategory')
+                                    ->label('Alt Kategori Seçenekleri')
+                                    ->default($defaults['options_subcategory']),
+
                                 Forms\Components\TagsInput::make('options_room_count')
                                     ->label('Oda Sayısı Seçenekleri')
                                     ->default($defaults['options_room_count']),
@@ -273,6 +280,14 @@ class ManageSettings extends Page
                                 Forms\Components\TagsInput::make('options_furniture_status')
                                     ->label('Eşya Durumu Seçenekleri')
                                     ->default($defaults['options_furniture_status']),
+
+                                Forms\Components\TagsInput::make('options_usage_status')
+                                    ->label('Kullanım Durumu Seçenekleri')
+                                    ->default($defaults['options_usage_status']),
+
+                                Forms\Components\TagsInput::make('options_facade')
+                                    ->label('Cephe Seçenekleri')
+                                    ->default($defaults['options_facade']),
 
                                 Forms\Components\TagsInput::make('options_zoning_status')
                                     ->label('İmar Durumu Seçenekleri (Arsa/Tarla için)')

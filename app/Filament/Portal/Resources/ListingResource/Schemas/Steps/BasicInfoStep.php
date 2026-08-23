@@ -2,13 +2,14 @@
 
 namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 
-use Filament\Forms\Components\Wizard;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Select;
+use App\Models\Listing;
+use App\Models\Setting;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
-use App\Models\Setting;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Wizard;
 use Illuminate\Support\HtmlString;
 
 class BasicInfoStep
@@ -33,15 +34,25 @@ class BasicInfoStep
                         Select::make('category')
                             ->label('Gayrimenkul Türü')
                             ->options(static::getDynamicOptions('options_category', [
-                                'Daire', 'Müstakil Ev', 'Arsa', 'Tarla', 'İşyeri'
+                                'Daire', 'Müstakil Ev', 'Arsa', 'Tarla', 'İşyeri',
                             ]))
                             ->live() // Seçim yapıldığında diğer adımları reaktif etkiler
+                            ->disabled(fn (?Listing $record): bool => (bool) $record?->published_at)
                             ->required(),
+
+                        Select::make('subcategory')
+                            ->label('Son Alt Kategori')
+                            ->options(static::getDynamicOptions('options_subcategory', [
+                                'Standart', 'Lüks', 'Müstakil', 'Ticari', 'Yatırımlık',
+                            ]))
+                            ->searchable()
+                            ->disabled(fn (?Listing $record): bool => (bool) ($record?->published_at && $record->published_at->copy()->addHours(48)->isPast())),
 
                         Select::make('type')
                             ->label('İlan Tipi')
                             ->options(static::getDynamicOptions('options_type', ['Satılık', 'Kiralık']))
                             ->live() // Kiralık/Satılık durumuna göre de reaktif tetikleme
+                            ->disabled(fn (?Listing $record): bool => (bool) $record?->published_at)
                             ->required(),
 
                         TextInput::make('price')
@@ -67,7 +78,7 @@ class BasicInfoStep
     protected static function getDynamicOptions(string $key, array $defaultOptions): array
     {
         $settings = Setting::get($key, $defaultOptions);
-        if (empty($settings) || !is_array($settings)) {
+        if (empty($settings) || ! is_array($settings)) {
             $settings = $defaultOptions;
         }
 
@@ -75,6 +86,7 @@ class BasicInfoStep
         foreach ($settings as $option) {
             $formatted[$option] = $option;
         }
+
         return $formatted;
     }
 }

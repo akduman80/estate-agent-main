@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
+use App\Models\User;
 use App\Services\EidsIdentityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -12,6 +14,16 @@ class EidsCallbackController extends Controller
     public function start(EidsIdentityService $eidsIdentityService)
     {
         abort_unless($eidsIdentityService->isConfiguredForSso(), 503, 'EIDS_COMPANY_CODE tanımlı değil.');
+
+        return redirect()->away($eidsIdentityService->ssoUrl());
+    }
+
+    public function startForAccount(Request $request, EidsIdentityService $eidsIdentityService)
+    {
+        abort_unless($eidsIdentityService->isConfiguredForSso(), 503, 'EIDS_COMPANY_CODE tanımlı değil.');
+        abort_unless($request->user()?->phone_verified_at, 409, 'EİDS işleminden önce telefon numaranızı OTP ile doğrulayın.');
+
+        $request->session()->put('eids_identity_user_id', $request->user()->id);
 
         return redirect()->away($eidsIdentityService->ssoUrl());
     }
@@ -30,7 +42,15 @@ class EidsCallbackController extends Controller
             ], 422);
         }
 
-        if (! $eidsIdentityService->isConfiguredForUserCode()) {
+        $accountUser = $request->session()->has('eids_identity_user_id')
+            ? User::query()->with('businessProfile')->find($request->session()->get('eids_identity_user_id'))
+            : null;
+        $gsmNumber = $accountUser?->phone ?: config('services.eids.gsm_no');
+        $taxNumber = $accountUser?->role === UserRole::AGENT
+            ? $accountUser->businessProfile?->tax_number
+            : ($accountUser ? null : config('services.eids.tax_no'));
+
+        if (! $eidsIdentityService->isConfiguredForUserCode($gsmNumber)) {
             return response()->view('eids.callback', [
                 'status' => 'error',
                 'message' => 'EIDS_USERNAME, EIDS_PASSWORD ve EIDS_GSM_NO tanımlı olmalı.',
@@ -40,7 +60,7 @@ class EidsCallbackController extends Controller
         }
 
         try {
-            $result = $eidsIdentityService->requestUserCode($authorizationCode, $request->query('gsmNo'));
+            $result = $eidsIdentityService->requestUserCode($authorizationCode, $gsmNumber, $taxNumber, $accountUser === null);
         } catch (Throwable $exception) {
             Log::warning('EİDS kullanıcı kodu sorgusu başarısız.', [
                 'message' => $exception->getMessage(),
@@ -70,6 +90,21 @@ class EidsCallbackController extends Controller
             'durum' => $status,
             'hata_kodu' => $result['error_code'],
         ]);
+
+        if ($accountUser) {
+            $accountUser->forceFill([
+                'eids_user_code' => $userCode,
+                'eids_identity_verified_at' => now(),
+            ])->save();
+            $request->session()->forget('eids_identity_user_id');
+
+            return view('eids.callback', [
+                'status' => 'success',
+                'message' => 'EİDS kimlik doğrulamanız hesabınıza güvenli biçimde kaydedildi.',
+                'userCode' => null,
+                'envLine' => null,
+            ]);
+        }
 
         return view('eids.callback', [
             'status' => 'success',

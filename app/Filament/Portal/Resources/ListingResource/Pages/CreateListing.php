@@ -2,6 +2,7 @@
 
 namespace App\Filament\Portal\Resources\ListingResource\Pages;
 
+use App\Enums\UserRole;
 use App\Filament\Portal\Resources\ListingResource;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -13,25 +14,31 @@ class CreateListing extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['user_id'] = auth()->id() ?? 1; // Giriş yapan kullanıcının ID'si
-        $data['slug'] = Str::slug($data['title']) . '-' . rand(1000, 9999);
+        $user = auth()->user();
+        $data['user_id'] = $user->id;
+        $data['slug'] = Str::slug($data['title']).'-'.rand(1000, 9999);
         $data['is_active'] = false;
+        $data['publication_status'] = 'draft';
+        $data['source_type'] = match ($user->role) {
+            UserRole::INDIVIDUAL => 'owner',
+            UserRole::AGENT => 'real_estate_office',
+            default => 'zydemlak',
+        };
+        $data['business_profile_id'] = $user->role === UserRole::AGENT ? $user->businessProfile?->id : null;
+        $data['from_who'] = match ($data['source_type']) {
+            'owner' => 'Sahibinden',
+            'real_estate_office' => 'Emlak Ofisinden',
+            default => 'ZYDEMLAK',
+        };
 
         return $data;
     }
 
     protected function getCreatedNotification(): ?Notification
     {
-        if ($this->record?->eids_status === 'verified') {
-            return Notification::make()
-                ->success()
-                ->title('İlan yayına alındı')
-                ->body('EİDS onayı alındığı için ilan sitede yayınlanabilir.');
-        }
-
         return Notification::make()
             ->warning()
-            ->title('İlan taslakta kalacak')
-            ->body('Bu ilan EİDS onayı almadığı için taslaklarda duracaktır ve sitede yayınlanmayacaktır.');
+            ->title('İlan taslak olarak kaydedildi')
+            ->body('EİDS sorgusunu tamamlayıp ilanı yönetici onayına gönderebilirsiniz.');
     }
 }

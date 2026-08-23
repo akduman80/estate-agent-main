@@ -29,6 +29,7 @@
 
                     <div class="single-property-wrapper">
                         <div class="single-property-header">
+                            <span class="label label-warning">{{ $listing->source_label }}</span>
                             <h1 class="property-title pull-left">{{ $listing->title }}</h1>
                             <span class="property-price pull-right">₺{{ number_format($listing->price, 0, ',', '.') }}</span>
                         </div>
@@ -59,9 +60,10 @@
                                     <li><strong>İlan Tipi:</strong> {{ $listing->type }}</li>
                                     <li><strong>Fiyat:</strong> ₺{{ number_format($listing->price, 0, ',', '.') }}</li>
                                     <li><strong>İl / İlçe:</strong> {{ $listing->city_name }} / {{ $listing->district_name }}</li>
-                                    @if($listing->neighborhood_id)
-                                        <li><strong>Mahalle:</strong> {{ $listing->neighborhood_id }}</li>
+                                    @if($listing->eidsVerification?->neighborhood || $listing->neighborhood_id)
+                                        <li><strong>Mahalle:</strong> {{ $listing->eidsVerification?->neighborhood ?: $listing->neighborhood_id }}</li>
                                     @endif
+                                    <li><strong>İlan Kaynağı:</strong> {{ $listing->source_label }}</li>
                                     @if($listing->square_meters)
                                         <li><strong>Alan:</strong> {{ number_format($listing->square_meters, 0, ',', '.') }} m²</li>
                                     @endif

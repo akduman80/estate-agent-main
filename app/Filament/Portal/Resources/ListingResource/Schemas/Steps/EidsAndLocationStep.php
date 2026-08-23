@@ -32,6 +32,7 @@ class EidsAndLocationStep
                     ->numeric()
                     ->helperText('EİDS kullanıcı adı ve şifresi bu forma yazılmaz; .env dosyasındaki EIDS_USERNAME ve EIDS_PASSWORD değerlerinden okunur.')
                     ->live(onBlur: true)
+                    ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
                     ->required(),
 
                 Actions::make([
@@ -101,16 +102,19 @@ class EidsAndLocationStep
                             ->searchable()
                             ->live()
                             ->afterStateUpdated(fn (Set $set) => $set('district_id', null))
+                            ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
                             ->required(),
 
                         Select::make('district_id')
                             ->label('İlçe')
                             ->options(fn (Get $get) => TurkeyAddressService::getDistricts($get('city_id')))
                             ->searchable()
+                            ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
                             ->required(),
 
                         TextInput::make('neighborhood_id')
                             ->label('Mahalle / Yayla')
+                            ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
                             ->placeholder('Gaffarli Kesmesur Yaylası'),
                     ]),
 
@@ -140,7 +144,7 @@ class EidsAndLocationStep
         $verifiedAt = $record?->eidsVerification?->verified_at?->format('d.m.Y H:i');
         $draftWarning = $status !== 'verified'
             ? '<br><strong>Yayın durumu:</strong> Bu ilan EİDS onayı almadığı için taslaklarda duracaktır ve sitede yayınlanmayacaktır.'
-            : '<br><strong>Yayın durumu:</strong> EİDS onayı mevcut, ilan sitede yayınlanabilir.';
+            : '<br><strong>Yayın durumu:</strong> EİDS onayı mevcut; yayın için ayrıca yönetici onayı gereklidir.';
 
         return sprintf(
             '<div style="background:%s;border:1px solid %s22;color:%s;padding:10px;border-radius:6px;font-size:13px;"><strong>%s</strong>%s%s%s</div>',

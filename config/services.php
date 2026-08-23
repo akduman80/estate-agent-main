@@ -51,4 +51,10 @@ return [
         'timeout' => (int) env('EIDS_TIMEOUT', 20),
     ],
 
+    'phone_otp' => [
+        // Yerelde "log" kullanılır. Canlı sağlayıcı adaptörü ve erişim bilgileri
+        // temin edildiğinde bu sürücü değiştirilmelidir.
+        'driver' => env('PHONE_OTP_DRIVER', 'log'),
+    ],
+
 ];

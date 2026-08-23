@@ -15,11 +15,15 @@ class Listing extends Model
 {
     protected $fillable = [
         'user_id',
+        'business_profile_id',
+        'source_type',
         'title',
         'slug',
         'description',
         'type',
+        'category',
         'price',
+        'currency',
         'zoning_status',
         'square_meters',
         'deed_status',
@@ -33,21 +37,47 @@ class Listing extends Model
         'from_who',
         'swap_option',
         'eids_status',
+        'publication_status',
+        'submitted_at',
+        'approved_at',
+        'approved_by',
+        'published_at',
+        'publication_terms_accepted_at',
+        'immutable_snapshot',
         'eids_document_no',
         'city_id',
         'district_id',
         'neighborhood_id',
         'video_url',
         'is_active',
+        'is_featured',
         'error_message',
         'response',
         'verified_at',
+        'net_square_meters',
+        'room_count',
+        'heating_type',
+        'building_age',
+        'furniture_status',
+        'floor_number',
+        'total_floors',
+        'deposit_price',
+        'dues_price',
+        'usage_status',
+        'facade',
+        'site_name',
+        'subcategory',
     ];
 
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'submitted_at' => 'datetime',
+            'approved_at' => 'datetime',
+            'published_at' => 'datetime',
+            'publication_terms_accepted_at' => 'datetime',
+            'immutable_snapshot' => 'array',
         ];
     }
 
@@ -59,6 +89,30 @@ class Listing extends Model
     public function images(): HasMany
     {
         return $this->hasMany(ListingImage::class)->orderBy('sort_order');
+    }
+
+    public function businessProfile(): BelongsTo
+    {
+        return $this->belongsTo(BusinessProfile::class);
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function changeLogs(): HasMany
+    {
+        return $this->hasMany(ListingChangeLog::class);
+    }
+
+    public function getSourceLabelAttribute(): string
+    {
+        return match ($this->source_type) {
+            'owner' => 'SAHİBİNDEN',
+            'real_estate_office' => 'EMLAK OFİSİ',
+            default => 'ZYDEMLAK',
+        };
     }
 
     public function eidsVerification(): HasOne
@@ -80,7 +134,14 @@ class Listing extends Model
     {
         return $query
             ->where('is_active', true)
-            ->where('eids_status', 'verified');
+            ->where('eids_status', 'verified')
+            ->where('publication_status', 'approved')
+            ->where(function (Builder $query): void {
+                $query->whereDoesntHave('eidsVerification')
+                    ->orWhereHas('eidsVerification', fn (Builder $verification) => $verification
+                        ->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now()));
+            });
     }
 
     public function getCityNameAttribute(): ?string
