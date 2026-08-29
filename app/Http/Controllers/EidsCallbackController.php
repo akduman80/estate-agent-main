@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\UserRole;
 use App\Models\User;
 use App\Services\EidsIdentityService;
+use App\Services\OtpFeatureService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -18,10 +19,14 @@ class EidsCallbackController extends Controller
         return redirect()->away($eidsIdentityService->ssoUrl());
     }
 
-    public function startForAccount(Request $request, EidsIdentityService $eidsIdentityService)
+    public function startForAccount(Request $request, EidsIdentityService $eidsIdentityService, OtpFeatureService $otpFeatures)
     {
         abort_unless($eidsIdentityService->isConfiguredForSso(), 503, 'EIDS_COMPANY_CODE tanımlı değil.');
-        abort_unless($request->user()?->phone_verified_at, 409, 'EİDS işleminden önce telefon numaranızı OTP ile doğrulayın.');
+        abort_unless(
+            ! $otpFeatures->phoneEnabled() || $request->user()?->phone_verified_at,
+            409,
+            'EİDS işleminden önce telefon numaranızı OTP ile doğrulayın.'
+        );
 
         $request->session()->put('eids_identity_user_id', $request->user()->id);
 

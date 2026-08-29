@@ -47,11 +47,27 @@ class SettingsSeeder extends Seeder
         );
 
         Setting::clearCache('user_documents');
+
+        $securitySettings = [
+            'smtp_enabled' => false,
+            'email_otp_enabled' => false,
+            'email_otp_ttl_minutes' => 5,
+            'email_otp_max_attempts' => 5,
+            'email_otp_lock_minutes' => 15,
+            'email_otp_resend_seconds' => 60,
+            'email_otp_hourly_limit' => 5,
+            'phone_otp_enabled' => false,
+        ];
+
+        foreach ($securitySettings as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            Setting::clearCache($key);
+        }
     }
 
     private function makeSamplePdf(string $title): string
     {
-        $text = $this->escapePdfText($title . ' - Ornek Dokuman');
+        $text = $this->escapePdfText($title.' - Ornek Dokuman');
         $stream = "BT /F1 20 Tf 72 740 Td ({$text}) Tj ET";
 
         $objects = [
@@ -59,7 +75,7 @@ class SettingsSeeder extends Seeder
             "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n",
             "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>\nendobj\n",
             "4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n",
-            "5 0 obj\n<< /Length " . strlen($stream) . " >>\nstream\n{$stream}\nendstream\nendobj\n",
+            "5 0 obj\n<< /Length ".strlen($stream)." >>\nstream\n{$stream}\nendstream\nendobj\n",
         ];
 
         $pdf = "%PDF-1.4\n";
@@ -71,14 +87,14 @@ class SettingsSeeder extends Seeder
         }
 
         $xrefOffset = strlen($pdf);
-        $pdf .= "xref\n0 " . (count($objects) + 1) . "\n";
+        $pdf .= "xref\n0 ".(count($objects) + 1)."\n";
         $pdf .= "0000000000 65535 f \n";
 
         foreach (array_slice($offsets, 1) as $offset) {
-            $pdf .= str_pad((string) $offset, 10, '0', STR_PAD_LEFT) . " 00000 n \n";
+            $pdf .= str_pad((string) $offset, 10, '0', STR_PAD_LEFT)." 00000 n \n";
         }
 
-        $pdf .= "trailer\n<< /Size " . (count($objects) + 1) . " /Root 1 0 R >>\n";
+        $pdf .= "trailer\n<< /Size ".(count($objects) + 1)." /Root 1 0 R >>\n";
         $pdf .= "startxref\n{$xrefOffset}\n%%EOF\n";
 
         return $pdf;

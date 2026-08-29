@@ -6,21 +6,24 @@ use App\Enums\AccountStatus;
 use App\Enums\OtpPurpose;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Mail\ApprovalRequestedMail;
 use App\Models\BusinessProfile;
 use App\Models\LegalDocument;
 use App\Models\User;
 use App\Rules\TurkishIdentityNumber;
 use App\Services\EmailOtpService;
+use App\Services\OtpFeatureService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
 class RegistrationController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request, OtpFeatureService $otpFeatures)
     {
         $type = $request->query('type', 'individual');
         abort_unless(in_array($type, ['individual', 'business'], true), 404);
@@ -28,12 +31,14 @@ class RegistrationController extends Controller
         return view('auth.register', [
             'type' => $type,
             'documents' => LegalDocument::query()->where('is_active', true)->latest('published_at')->get()->unique('slug'),
+            'emailOtpEnabled' => $otpFeatures->emailEnabled(),
         ]);
     }
 
-    public function store(Request $request, EmailOtpService $otpService)
+    public function store(Request $request, EmailOtpService $otpService, OtpFeatureService $otpFeatures)
     {
         $type = $request->string('account_type')->toString();
+        $emailOtpEnabled = $otpFeatures->emailEnabled();
 
         $rules = [
             'account_type' => ['required', Rule::in(['individual', 'business'])],
@@ -81,7 +86,7 @@ class RegistrationController extends Controller
             return back()->withErrors(['consents' => 'Zorunlu sözleşme ve aydınlatma metinlerini kabul etmelisiniz.'])->withInput();
         }
 
-        $user = DB::transaction(function () use ($data, $type, $request, $acceptedDocuments): User {
+        $user = DB::transaction(function () use ($data, $type, $request, $acceptedDocuments, $emailOtpEnabled): User {
             $identity = $type === 'individual' ? preg_replace('/\D/', '', $data['identity_number']) : null;
 
             $user = User::create([
@@ -94,8 +99,14 @@ class RegistrationController extends Controller
                 'identity_number_hash' => $identity ? hash('sha256', $identity) : null,
                 'password' => Hash::make($data['password']),
                 'role' => $type === 'individual' ? UserRole::INDIVIDUAL : UserRole::AGENT,
-                'account_status' => AccountStatus::PENDING_EMAIL,
+                'account_status' => $emailOtpEnabled
+                    ? AccountStatus::PENDING_EMAIL
+                    : ($type === 'business' ? AccountStatus::PENDING_APPROVAL : AccountStatus::ACTIVE),
             ]);
+
+            if (! $emailOtpEnabled) {
+                $user->forceFill(['email_verified_at' => now()])->save();
+            }
 
             if ($type === 'business') {
                 $taxNumber = preg_replace('/\D/', '', $data['tax_number']);
@@ -124,9 +135,19 @@ class RegistrationController extends Controller
             return $user;
         });
 
-        $otpService->issue($user, OtpPurpose::EMAIL_VERIFICATION, $request->ip());
-        $request->session()->put('verification_user_id', $user->id);
+        if ($emailOtpEnabled) {
+            $otpService->issue($user, OtpPurpose::EMAIL_VERIFICATION, $request->ip());
+            $request->session()->put('verification_user_id', $user->id);
 
-        return redirect()->route('verification.notice')->with('status', 'Doğrulama kodu e-posta adresinize gönderildi.');
+            return redirect()->route('verification.notice')->with('status', 'Doğrulama kodu e-posta adresinize gönderildi.');
+        }
+
+        if ($type === 'business') {
+            Mail::to(config('security.approval_email'))->send(new ApprovalRequestedMail('emlak işletmesi üyeliği', $user, $user->businessProfile?->id));
+        }
+
+        return redirect()->route('login')->with('status', $type === 'business'
+            ? 'Kaydınız alındı. İşletme hesabınız supervisor onayına gönderildi.'
+            : 'Üyeliğiniz oluşturuldu. Giriş yapabilirsiniz.');
     }
 }

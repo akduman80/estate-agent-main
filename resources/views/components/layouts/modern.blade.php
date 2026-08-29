@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ $title ?? 'ZYDEMLAK' }}</title>
+    <meta name="description" content="{{ $description ?? 'Osmaniye emlak ilanları ve güncel gayrimenkul haberleri.' }}">
+
+    @php
+        $siteLogo = \App\Models\Setting::get('site_logo');
+        $sitePhone = \App\Models\Setting::get('site_phone', '0530 360 77 69');
+        $siteEmail = \App\Models\Setting::get('site_email', 'info@zydemlak.com');
+        $logoUrl = $siteLogo ? \Illuminate\Support\Facades\Storage::url($siteLogo) : asset('fe-assets/assets/img/logo.png');
+    @endphp
+
+    <link rel="icon" href="{{ $logoUrl }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
+    @stack('head')
+</head>
+<body class="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-800 antialiased">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
+        <div class="mx-auto flex h-24 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+            <a href="{{ route('home') }}" class="group flex shrink-0 items-center" aria-label="ZYDEMLAK ana sayfa">
+                <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-14 w-auto max-w-48 object-contain transition duration-300 group-hover:scale-105 sm:h-16 sm:max-w-64">
+            </a>
+
+            <nav class="hidden items-center gap-1 text-sm font-medium lg:flex" aria-label="Ana menü">
+                <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 transition {{ request()->routeIs('home') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Anasayfa</a>
+                <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">Tüm İlanlar</a>
+                <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 transition {{ request()->routeIs('blogs.*') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Emlak Haberleri</a>
+                <a href="{{ route('contact') }}" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">İletişim</a>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                @auth
+                    <a href="{{ auth()->user()->role->getRedirectPath() }}" class="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:flex">
+                        <i class="fa-solid fa-gauge-high"></i><span>Panelim</span>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:flex">
+                        <i class="fa-solid fa-right-to-bracket"></i><span>Giriş Yap</span>
+                    </a>
+                @endauth
+                <a href="{{ url('/portal/listings/create') }}" class="flex items-center gap-2 rounded-lg bg-orange-500 px-3 py-2 text-sm font-bold text-white shadow transition hover:bg-orange-600 sm:px-4">
+                    <i class="fa-solid fa-circle-plus"></i><span class="hidden sm:inline">İlan Ver</span>
+                </a>
+                <button type="button" data-mobile-menu-button class="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 lg:hidden" aria-label="Menüyü aç" aria-expanded="false">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <nav data-mobile-menu class="hidden border-t border-slate-100 bg-white px-4 py-3 lg:hidden" aria-label="Mobil menü">
+            <div class="mx-auto grid max-w-7xl gap-1 text-sm font-semibold">
+                <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Anasayfa</a>
+                <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Tüm İlanlar</a>
+                <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Emlak Haberleri</a>
+                <a href="{{ route('contact') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">İletişim</a>
+            </div>
+        </nav>
+    </header>
+
+    {{ $slot }}
+
+    <footer class="mt-auto border-t border-slate-800 bg-blue-950 text-slate-300">
+        <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
+                <div>
+                    <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-14 w-auto rounded bg-white object-contain p-1">
+                    <p class="mt-4 text-xs leading-6 text-slate-400">Osmaniye'nin emlak ilan ve haber sitesi. Güvenli, şeffaf ve profesyonel gayrimenkul hizmetleri.</p>
+                </div>
+                <div>
+                    <h2 class="mb-4 border-l-2 border-orange-500 pl-2 text-sm font-bold text-white">Hızlı Menü</h2>
+                    <div class="space-y-2 text-xs">
+                        <a href="{{ route('home') }}" class="block hover:text-orange-400">Anasayfa</a>
+                        <a href="{{ route('listings.index') }}" class="block hover:text-orange-400">Tüm İlanlar</a>
+                        <a href="{{ route('blogs.index') }}" class="block hover:text-orange-400">Emlak Haberleri</a>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="mb-4 border-l-2 border-orange-500 pl-2 text-sm font-bold text-white">Kurumsal</h2>
+                    <div class="space-y-2 text-xs">
+                        <a href="{{ route('contact') }}" class="block hover:text-orange-400">İletişim</a>
+                        <a href="{{ route('register') }}" class="block hover:text-orange-400">Üye Ol</a>
+                        <a href="{{ route('login') }}" class="block hover:text-orange-400">Giriş Yap</a>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="mb-4 border-l-2 border-orange-500 pl-2 text-sm font-bold text-white">İletişim</h2>
+                    <div class="space-y-3 text-xs text-slate-400">
+                        <p><i class="fa-solid fa-location-dot mr-2 text-orange-500"></i>Osmaniye, Türkiye</p>
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $sitePhone) }}" class="block hover:text-orange-400"><i class="fa-solid fa-phone mr-2 text-orange-500"></i>{{ $sitePhone }}</a>
+                        <a href="mailto:{{ $siteEmail }}" class="block hover:text-orange-400"><i class="fa-solid fa-envelope mr-2 text-orange-500"></i>{{ $siteEmail }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-800 pt-6 text-xs text-slate-500 sm:flex-row">
+                <p>&copy; {{ now()->year }} ZYDEMLAK. Tüm hakları saklıdır.</p>
+                <p>EİDS doğrulamalı güvenilir emlak platformu</p>
+            </div>
+        </div>
+    </footer>
+
+    @livewireScripts
+    @stack('scripts')
+</body>
+</html>

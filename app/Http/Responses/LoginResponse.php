@@ -12,11 +12,11 @@ class LoginResponse implements LoginResponseContract
 {
     public function toResponse($request): RedirectResponse|Redirector
     {
-        if ($request->session()->has('pending_login_user_id')) {
+        if (session()->has('pending_login_user_id')) {
             return redirect()->route('two-factor.show');
         }
 
-        if ($request->session()->has('verification_user_id')) {
+        if (session()->has('verification_user_id')) {
             return redirect()->route('verification.notice');
         }
 

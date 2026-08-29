@@ -1,123 +1,71 @@
-<x-layouts.app>
-    @php
-        $sitePhone = \App\Models\Setting::get('site_phone', '+90 (850) 000 00 00');
-        $siteEmail = \App\Models\Setting::get('site_email', 'info@estate.com');
-        $pageTitle = \App\Models\Setting::get('contact_page_title', 'İletişim');
-        $companyName = \App\Models\Setting::get('contact_company_name', 'Zyd Emlak');
-        $siteAddress = \App\Models\Setting::get('site_address', 'Istanbul, Turkiye');
-        $mapQuery = \App\Models\Setting::get('contact_map_query', $siteAddress) ?: $siteAddress;
-        $phoneText = \App\Models\Setting::get('contact_phone_text', 'İlanlar, randevu ve danışmanlık talepleriniz için bize ulaşabilirsiniz.');
-        $emailText = \App\Models\Setting::get('contact_email_text', 'Mesajınızı e-posta ile iletebilir veya aşağıdaki iletişim formunu kullanabilirsiniz.');
-        $formTitle = \App\Models\Setting::get('contact_form_title', 'İletişim formu');
-        $submitText = \App\Models\Setting::get('contact_submit_text', 'Mesaj gönder');
-    @endphp
+@php
+    $sitePhone = \App\Models\Setting::get('site_phone', '+90 (850) 000 00 00');
+    $siteEmail = \App\Models\Setting::get('site_email', 'info@zydemlak.com');
+    $pageTitle = \App\Models\Setting::get('contact_page_title', 'İletişim');
+    $companyName = \App\Models\Setting::get('contact_company_name', 'ZYDEMLAK');
+    $siteAddress = \App\Models\Setting::get('site_address', 'Osmaniye, Türkiye');
+    $mapQuery = \App\Models\Setting::get('contact_map_query', $siteAddress) ?: $siteAddress;
+    $phoneText = \App\Models\Setting::get('contact_phone_text', 'İlanlar, randevu ve danışmanlık talepleriniz için bize ulaşabilirsiniz.');
+    $emailText = \App\Models\Setting::get('contact_email_text', 'Sorularınızı e-posta ile iletebilirsiniz.');
+    $formTitle = \App\Models\Setting::get('contact_form_title', 'Bize mesaj gönderin');
+    $submitText = \App\Models\Setting::get('contact_submit_text', 'E-posta uygulamasını aç');
+    $phoneHref = preg_replace('/[^0-9+]/', '', $sitePhone);
+@endphp
 
-    @section('title', $pageTitle . ' | ' . $companyName)
+<x-layouts.modern :title="$pageTitle.' | '.$companyName" :description="$companyName.' iletişim bilgileri, adres, telefon ve e-posta.'">
+    <main class="flex-1">
+        <section class="bg-blue-950 py-12 text-center text-white sm:py-16">
+            <div class="mx-auto max-w-3xl px-4 sm:px-6">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-orange-400">{{ $companyName }}</p>
+                <h1 class="mt-3 text-3xl font-extrabold sm:text-4xl">{{ $pageTitle }}</h1>
+                <p class="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-300">Gayrimenkul ilanları, üyelik ve danışmanlık talepleriniz için bize dilediğiniz kanaldan ulaşabilirsiniz.</p>
+            </div>
+        </section>
 
-    <div class="page-head">
-        <div class="container">
-            <div class="row">
-                <div class="page-head-content">
-                    <h1 class="page-title">{{ $pageTitle }}</h1>
+        <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <div class="grid gap-5 md:grid-cols-3">
+                <article class="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+                    <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-xl text-orange-500"><i class="fa-solid fa-location-dot"></i></span>
+                    <h2 class="mt-4 text-lg font-extrabold text-blue-950">Adres</h2>
+                    <p class="mt-2 min-h-12 text-sm leading-6 text-slate-600">{{ $siteAddress }}</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($mapQuery) }}" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-2 text-sm font-bold text-orange-600 hover:text-orange-700">Yol tarifi al <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+                </article>
+
+                <article class="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+                    <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-xl text-orange-500"><i class="fa-solid fa-phone"></i></span>
+                    <h2 class="mt-4 text-lg font-extrabold text-blue-950">Telefon</h2>
+                    <p class="mt-2 min-h-12 text-sm leading-6 text-slate-600">{{ $phoneText }}</p>
+                    <a href="tel:{{ $phoneHref }}" class="mt-4 inline-flex items-center gap-2 text-sm font-bold text-orange-600 hover:text-orange-700">{{ $sitePhone }}</a>
+                </article>
+
+                <article class="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+                    <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-xl text-orange-500"><i class="fa-solid fa-envelope"></i></span>
+                    <h2 class="mt-4 text-lg font-extrabold text-blue-950">E-posta</h2>
+                    <p class="mt-2 min-h-12 text-sm leading-6 text-slate-600">{{ $emailText }}</p>
+                    <a href="mailto:{{ $siteEmail }}" class="mt-4 inline-flex items-center gap-2 break-all text-sm font-bold text-orange-600 hover:text-orange-700">{{ $siteEmail }}</a>
+                </article>
+            </div>
+
+            <div class="mt-8 grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-[1.15fr_.85fr]">
+                <div class="min-h-[360px] bg-slate-100">
+                    <iframe title="{{ $companyName }} konum haritası" src="https://www.google.com/maps?q={{ urlencode($mapQuery) }}&output=embed" class="h-full min-h-[360px] w-full border-0" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div class="p-6 sm:p-8">
+                    <p class="text-xs font-bold uppercase tracking-widest text-orange-500">Size nasıl yardımcı olabiliriz?</p>
+                    <h2 class="mt-2 text-2xl font-extrabold text-blue-950">{{ $formTitle }}</h2>
+                    <p class="mt-3 text-sm leading-6 text-slate-600">Formu doldurduğunuzda cihazınızdaki e-posta uygulaması açılır. Mesajınızı göndermeden önce son kez kontrol edebilirsiniz.</p>
+
+                    <form action="mailto:{{ $siteEmail }}" method="post" enctype="text/plain" class="mt-6 space-y-4">
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <label class="block"><span class="text-xs font-bold text-slate-700">Ad Soyad</span><input type="text" name="ad_soyad" required class="mt-1.5 w-full rounded-xl border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500"></label>
+                            <label class="block"><span class="text-xs font-bold text-slate-700">E-posta</span><input type="email" name="email" required class="mt-1.5 w-full rounded-xl border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500"></label>
+                        </div>
+                        <label class="block"><span class="text-xs font-bold text-slate-700">Konu</span><input type="text" name="konu" required class="mt-1.5 w-full rounded-xl border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500"></label>
+                        <label class="block"><span class="text-xs font-bold text-slate-700">Mesaj</span><textarea name="mesaj" rows="5" required class="mt-1.5 w-full rounded-xl border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500"></textarea></label>
+                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white shadow transition hover:bg-orange-600"><i class="fa-solid fa-envelope"></i>{{ $submitText }}</button>
+                    </form>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="content-area recent-property padding-top-40" style="background-color: #FFF;">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div id="contact1">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <h3><i class="fa fa-map-marker"></i> Adres</h3>
-                                <p>
-                                    {{ $siteAddress }}
-                                    <br>
-                                    <strong>{{ $companyName }}</strong>
-                                </p>
-                            </div>
-
-                            <div class="col-sm-4">
-                                <h3><i class="fa fa-phone"></i> Telefon</h3>
-                                <p class="text-muted">{{ $phoneText }}</p>
-                                <p><strong>{{ $sitePhone }}</strong></p>
-                            </div>
-
-                            <div class="col-sm-4">
-                                <h3><i class="fa fa-envelope"></i> E-posta</h3>
-                                <p class="text-muted">{{ $emailText }}</p>
-                                <ul>
-                                    <li><strong><a href="mailto:{{ $siteEmail }}">{{ $siteEmail }}</a></strong></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div id="map">
-                            <iframe
-                                title="{{ $companyName }} konum haritasi"
-                                src="https://www.google.com/maps?q={{ urlencode($mapQuery) }}&output=embed"
-                                width="100%"
-                                height="300"
-                                style="border:0;"
-                                allowfullscreen=""
-                                loading="lazy"
-                                referrerpolicy="no-referrer-when-downgrade"></iframe>
-                        </div>
-
-                        <hr>
-
-                        <h2>{{ $formTitle }}</h2>
-                        <form action="mailto:{{ $siteEmail }}" method="POST" enctype="text/plain">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="firstname">Ad</label>
-                                        <input type="text" class="form-control" id="firstname" name="ad">
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="lastname">Soyad</label>
-                                        <input type="text" class="form-control" id="lastname" name="soyad">
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="email">E-posta</label>
-                                        <input type="email" class="form-control" id="email" name="email">
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="subject">Konu</label>
-                                        <input type="text" class="form-control" id="subject" name="konu">
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label for="message">Mesaj</label>
-                                        <textarea id="message" class="form-control" name="mesaj" rows="6"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-12 text-center">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-envelope-o"></i> {{ $submitText }}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</x-layouts.app>
+        </section>
+    </main>
+</x-layouts.modern>

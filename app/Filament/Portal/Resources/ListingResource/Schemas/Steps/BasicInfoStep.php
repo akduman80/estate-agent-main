@@ -17,6 +17,8 @@ class BasicInfoStep
     public static function make(): Wizard\Step
     {
         return Wizard\Step::make('Temel Bilgiler')
+            ->icon('heroicon-o-pencil-square')
+            ->description('Başlık, kategori ve fiyat')
             ->schema([
                 TextInput::make('title')
                     ->label('İlan Başlığı')

@@ -12,6 +12,8 @@ class MediaStep
     public static function make(): Wizard\Step
     {
         return Wizard\Step::make('Görsel ve Video')
+                          ->icon('heroicon-o-photo')
+                          ->description('Fotoğraflar ve tanıtım videosu')
                           ->schema([
                               FileUpload::make('uploaded_images')
                                         ->label('İlan Fotoğrafları')
@@ -20,6 +22,7 @@ class MediaStep
                                         ->directory('listings')
                                         ->maxFiles(30)
                                         ->maxSize(15360)
+                                        ->helperText('En fazla 30 fotoğraf yükleyebilirsiniz. İlk sıradaki fotoğraf kapak görseli olarak kullanılır.')
                                         ->reorderable()
                                         ->dehydrated(false)
                                         ->loadStateFromRelationshipsUsing(function (FileUpload $component, Listing $record) {

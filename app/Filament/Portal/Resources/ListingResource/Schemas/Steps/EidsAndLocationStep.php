@@ -23,6 +23,8 @@ class EidsAndLocationStep
     public static function make(): Wizard\Step
     {
         return Wizard\Step::make('EİDS & Konum')
+            ->icon('heroicon-o-shield-check')
+            ->description('Yetki ve adres doğrulama')
             ->schema([
                 Hidden::make('eids_status')->dehydrated(false),
 
@@ -30,7 +32,7 @@ class EidsAndLocationStep
                     ->label('Tapu Taşınmaz ID')
                     ->placeholder('Örn: 94536593')
                     ->numeric()
-                    ->helperText('EİDS kullanıcı adı ve şifresi bu forma yazılmaz; .env dosyasındaki EIDS_USERNAME ve EIDS_PASSWORD değerlerinden okunur.')
+                    ->helperText('Tapu Taşınmaz ID bilgisini girin. EİDS doğrulaması ilan kaydedildikten sonra güvenli servis bağlantısı üzerinden yapılır.')
                     ->live(onBlur: true)
                     ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
                     ->required(),

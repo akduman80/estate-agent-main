@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\OtpPurpose;
 use App\Mail\SecurityNoticeMail;
 use App\Services\EmailOtpService;
+use App\Services\OtpFeatureService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -13,12 +14,15 @@ use Illuminate\Validation\Rules\Password;
 
 class AccountSecurityController extends Controller
 {
-    public function show(Request $request)
+    public function show(Request $request, OtpFeatureService $otpFeatures)
     {
-        return view('account.security', ['user' => $request->user()]);
+        return view('account.security', [
+            'user' => $request->user(),
+            'emailOtpEnabled' => $otpFeatures->emailEnabled(),
+        ]);
     }
 
-    public function requestEmailChange(Request $request, EmailOtpService $service)
+    public function requestEmailChange(Request $request, EmailOtpService $service, OtpFeatureService $otpFeatures)
     {
         $data = $request->validate([
             'new_email' => ['required', 'email:rfc', 'max:255', 'unique:users,email'],
@@ -26,6 +30,16 @@ class AccountSecurityController extends Controller
         ]);
 
         $newEmail = mb_strtolower($data['new_email']);
+
+        if (! $otpFeatures->emailEnabled()) {
+            $oldEmail = $request->user()->email;
+            $request->user()->forceFill(['email' => $newEmail, 'email_verified_at' => now()])->save();
+            DB::table('sessions')->where('user_id', $request->user()->id)->where('id', '!=', $request->session()->getId())->delete();
+            Mail::to($oldEmail)->send(new SecurityNoticeMail($request->user(), 'Hesabınızın e-posta adresi '.$newEmail.' olarak değiştirildi.'));
+
+            return back()->with('status', 'OTP pasif. E-posta adresiniz mevcut şifre kontrolüyle değiştirildi.');
+        }
+
         $request->session()->put('pending_new_email', $newEmail);
         $service->issue($request->user(), OtpPurpose::EMAIL_CHANGE, $request->ip(), $newEmail);
 
@@ -37,8 +51,12 @@ class AccountSecurityController extends Controller
         return back()->with('status', 'Yeni e-posta adresine doğrulama kodu gönderildi.');
     }
 
-    public function confirmEmailChange(Request $request, EmailOtpService $service)
+    public function confirmEmailChange(Request $request, EmailOtpService $service, OtpFeatureService $otpFeatures)
     {
+        if (! $otpFeatures->emailEnabled()) {
+            return back()->with('status', 'OTP pasif; bekleyen kod doğrulaması bulunmuyor.');
+        }
+
         $data = $request->validate(['code' => ['required', 'digits:6']]);
         $newEmail = $request->session()->get('pending_new_email');
         abort_unless($newEmail, 409, 'Bekleyen e-posta değişikliği bulunamadı.');
@@ -53,21 +71,34 @@ class AccountSecurityController extends Controller
         return back()->with('status', 'E-posta adresiniz doğrulanarak değiştirildi.');
     }
 
-    public function requestPasswordChange(Request $request, EmailOtpService $service)
+    public function requestPasswordChange(Request $request, EmailOtpService $service, OtpFeatureService $otpFeatures)
     {
         $data = $request->validate([
             'current_password' => ['required', 'current_password'],
             'password' => ['required', 'confirmed', Password::min(10)->letters()->mixedCase()->numbers()],
         ]);
 
-        $request->session()->put('pending_password_hash', Hash::make($data['password']));
+        $passwordHash = Hash::make($data['password']);
+
+        if (! $otpFeatures->emailEnabled()) {
+            $request->user()->forceFill(['password' => $passwordHash])->save();
+            DB::table('sessions')->where('user_id', $request->user()->id)->where('id', '!=', $request->session()->getId())->delete();
+
+            return back()->with('status', 'OTP pasif. Şifreniz mevcut şifre kontrolüyle değiştirildi.');
+        }
+
+        $request->session()->put('pending_password_hash', $passwordHash);
         $service->issue($request->user(), OtpPurpose::SECURITY, $request->ip());
 
         return back()->with('status', 'Şifre değişikliğini tamamlamak için e-posta kodu gönderildi.');
     }
 
-    public function confirmPasswordChange(Request $request, EmailOtpService $service)
+    public function confirmPasswordChange(Request $request, EmailOtpService $service, OtpFeatureService $otpFeatures)
     {
+        if (! $otpFeatures->emailEnabled()) {
+            return back()->with('status', 'OTP pasif; bekleyen kod doğrulaması bulunmuyor.');
+        }
+
         $data = $request->validate(['code' => ['required', 'digits:6']]);
         $passwordHash = $request->session()->get('pending_password_hash');
         abort_unless($passwordHash, 409, 'Bekleyen şifre değişikliği bulunamadı.');

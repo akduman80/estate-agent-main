@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\PhoneOtpSender;
 use App\Http\Responses\LoginResponse;
+use App\Services\DatabaseMailConfigurator;
 use App\Services\LogPhoneOtpSender;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse as LoginResponseContract;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -23,8 +24,10 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(DatabaseMailConfigurator $mailConfigurator): void
     {
+        $mailConfigurator->apply();
+
         ResetPassword::createUrlUsing(fn ($user, string $token): string => route('password.reset', [
             'token' => $token,
             'email' => $user->getEmailForPasswordReset(),

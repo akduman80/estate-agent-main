@@ -8,14 +8,25 @@ use App\Enums\UserRole;
 use App\Mail\ApprovalRequestedMail;
 use App\Mail\OtpCodeMail;
 use App\Models\EmailOtpCode;
+use App\Models\Setting;
 use App\Models\User;
+use App\Services\EmailOtpService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class MembershipSecurityTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Setting::updateOrCreate(['key' => 'email_otp_enabled'], ['value' => true]);
+        Setting::clearCache('email_otp_enabled');
+    }
 
     public function test_individual_registration_stores_identity_securely_and_sends_email_code(): void
     {
@@ -101,6 +112,27 @@ class MembershipSecurityTest extends TestCase
         $otp = EmailOtpCode::firstOrFail();
         $this->assertSame(5, $otp->attempts);
         $this->assertTrue($otp->locked_until->isFuture());
+    }
+
+    public function test_otp_resend_cooldown_message_uses_a_positive_whole_second(): void
+    {
+        Mail::fake();
+        $this->travelTo(now()->startOfSecond());
+
+        $user = User::factory()->create();
+        $service = $this->app->make(EmailOtpService::class);
+        $service->issue($user, OtpPurpose::LOGIN, '127.0.0.1');
+        $this->travel(41)->seconds();
+
+        try {
+            $service->issue($user, OtpPurpose::LOGIN, '127.0.0.1');
+            $this->fail('Yeniden gönderim bekleme süresi uygulanmadı.');
+        } catch (ValidationException $exception) {
+            $this->assertSame(
+                'Yeni kod zaten gönderildi. Tekrar göndermek için 19 saniye bekleyin.',
+                $exception->errors()['code'][0]
+            );
+        }
     }
 
     private function createOtp(User $user, OtpPurpose $purpose, string $code): EmailOtpCode

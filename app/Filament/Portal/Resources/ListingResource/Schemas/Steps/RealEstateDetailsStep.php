@@ -15,6 +15,8 @@ class RealEstateDetailsStep
     public static function make(): Wizard\Step
     {
         return Wizard\Step::make('Gayrimenkul Detayları')
+            ->icon('heroicon-o-home-modern')
+            ->description('Taşınmaz özellikleri')
             ->schema([
                 // --- GENEL ALAN (Tüm Türler İçin Ortak) ---
                 Grid::make(['default' => 1, 'md' => 4])

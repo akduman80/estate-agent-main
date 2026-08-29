@@ -11,18 +11,24 @@ use Illuminate\Validation\ValidationException;
 
 class EmailOtpService
 {
+    public function __construct(private readonly OtpFeatureService $otpFeatures) {}
+
     public function issue(User $user, OtpPurpose $purpose, ?string $ipAddress = null, ?string $targetEmail = null): void
     {
-        $settings = config('security.otp');
+        $settings = $this->otpFeatures->emailPolicy();
         $lastCode = EmailOtpCode::query()
             ->where('user_id', $user->id)
             ->where('purpose', $purpose->value)
             ->latest()
             ->first();
 
-        if ($lastCode && $lastCode->created_at->addSeconds($settings['resend_seconds'])->isFuture()) {
+        $resendAvailableAt = $lastCode?->created_at?->copy()->addSeconds($settings['resend_seconds']);
+
+        if ($resendAvailableAt?->isFuture()) {
+            $secondsUntilResend = max(1, $resendAvailableAt->getTimestamp() - now()->getTimestamp());
+
             throw ValidationException::withMessages([
-                'code' => 'Yeni kod istemeden önce '.$lastCode->created_at->addSeconds($settings['resend_seconds'])->diffInSeconds(now()).' saniye bekleyin.',
+                'code' => "Yeni kod zaten gönderildi. Tekrar göndermek için {$secondsUntilResend} saniye bekleyin.",
             ]);
         }
 
@@ -64,6 +70,7 @@ class EmailOtpService
 
     public function verify(User $user, OtpPurpose $purpose, string $code): bool
     {
+        $settings = $this->otpFeatures->emailPolicy();
         $otp = EmailOtpCode::query()
             ->where('user_id', $user->id)
             ->where('purpose', $purpose->value)
@@ -83,8 +90,8 @@ class EmailOtpService
             $attempts = $otp->attempts + 1;
             $updates = ['attempts' => $attempts];
 
-            if ($attempts >= config('security.otp.max_attempts')) {
-                $updates['locked_until'] = now()->addMinutes(config('security.otp.lock_minutes'));
+            if ($attempts >= $settings['max_attempts']) {
+                $updates['locked_until'] = now()->addMinutes($settings['lock_minutes']);
             }
 
             $otp->update($updates);

@@ -2,20 +2,27 @@
 
 namespace App\Filament\Pages;
 
+use App\Contracts\PhoneOtpSender;
 use App\Enums\UserRole;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\DatabaseMailConfigurator;
+use App\Services\LogPhoneOtpSender;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Pages\Page;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Illuminate\Validation\ValidationException;
 
 class ManageSettings extends Page
 {
-    protected static ?string $navigationIcon  = 'heroicon-o-cog-6-tooth';
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+
     protected static ?string $navigationGroup = 'Sistem';
+
     protected static ?string $navigationLabel = 'Site Ayarları';
-    protected static ?string $title           = 'Site Genel Ayarları';
+
+    protected static ?string $title = 'Site Genel Ayarları';
 
     // View dosyasının yolunu da bağımsız sayfalara uygun güncelledik
     protected static string $view = 'filament.pages.manage-settings';
@@ -40,35 +47,35 @@ class ManageSettings extends Page
     protected function getDefaultOptionSettings(): array
     {
         return [
-            'options_type'              => ['Satılık', 'Kiralık'],
-            'options_category'          => ['Daire', 'Müstakil Ev', 'Arsa', 'Tarla', 'İşyeri'],
-            'options_subcategory'       => ['Standart', 'Lüks', 'Müstakil', 'Ticari', 'Yatırımlık'],
-            'options_room_count'        => ['1+0', '1+1', '2+1', '3+1', '4+1'],
-            'options_heating_type'      => ['Kombi (Doğalgaz)', 'Klima', 'Merkezi Sistem', 'Sobalı'],
-            'options_building_age'      => ['0 (Yeni)', '1-5 Arası', '6-10 Arası', '11-15 Arası', '16-20 Arası', '21 ve üzeri'],
-            'options_furniture_status'  => ['Eşyalı', 'Eşyasız'],
-            'options_usage_status'      => ['Boş', 'Kiracılı', 'Mülk Sahibi', 'Yapım Aşamasında'],
-            'options_facade'            => ['Kuzey', 'Güney', 'Doğu', 'Batı'],
-            'options_zoning_status'     => ['Tarla', 'Konut İmarlı', 'Ticari İmarlı', 'Sanayi İmarlı', 'Bağ & Bahçe', 'Zeytinlik'],
-            'options_deed_status'       => ['Hisseli Tapu', 'Müstakil Parsel', 'Tahsis Tapu', 'Zilliyet'],
+            'options_type' => ['Satılık', 'Kiralık'],
+            'options_category' => ['Daire', 'Müstakil Ev', 'Arsa', 'Tarla', 'İşyeri'],
+            'options_subcategory' => ['Standart', 'Lüks', 'Müstakil', 'Ticari', 'Yatırımlık'],
+            'options_room_count' => ['1+0', '1+1', '2+1', '3+1', '4+1'],
+            'options_heating_type' => ['Kombi (Doğalgaz)', 'Klima', 'Merkezi Sistem', 'Sobalı'],
+            'options_building_age' => ['0 (Yeni)', '1-5 Arası', '6-10 Arası', '11-15 Arası', '16-20 Arası', '21 ve üzeri'],
+            'options_furniture_status' => ['Eşyalı', 'Eşyasız'],
+            'options_usage_status' => ['Boş', 'Kiracılı', 'Mülk Sahibi', 'Yapım Aşamasında'],
+            'options_facade' => ['Kuzey', 'Güney', 'Doğu', 'Batı'],
+            'options_zoning_status' => ['Tarla', 'Konut İmarlı', 'Ticari İmarlı', 'Sanayi İmarlı', 'Bağ & Bahçe', 'Zeytinlik'],
+            'options_deed_status' => ['Hisseli Tapu', 'Müstakil Parsel', 'Tahsis Tapu', 'Zilliyet'],
             'options_owner_nationality' => ['T.C. Vatandaşı', 'Yabancı'],
-            'options_from_who'          => ['Emlak Ofisinden', 'Sahibinden', 'İnşaat Firmasından'],
-            'options_credit_eligibility'=> ['Evet', 'Hayır', 'Bilinmiyor'],
-            'options_swap_option'       => ['Evet', 'Hayır'],
+            'options_from_who' => ['Emlak Ofisinden', 'Sahibinden', 'İnşaat Firmasından'],
+            'options_credit_eligibility' => ['Evet', 'Hayır', 'Bilinmiyor'],
+            'options_swap_option' => ['Evet', 'Hayır'],
         ];
     }
 
     protected function getDefaultContactSettings(): array
     {
         return [
-            'contact_page_title'       => 'İletişim',
-            'contact_company_name'     => 'Zyd Emlak',
-            'site_address'             => 'Istanbul, Turkiye',
-            'contact_map_query'        => 'Istanbul, Turkiye',
-            'contact_phone_text'       => 'İlanlar, randevu ve danışmanlık talepleriniz için bize ulaşabilirsiniz.',
-            'contact_email_text'       => 'Mesajınızı e-posta ile iletebilir veya aşağıdaki iletişim formunu kullanabilirsiniz.',
-            'contact_form_title'       => 'İletişim formu',
-            'contact_submit_text'      => 'Mesaj gönder',
+            'contact_page_title' => 'İletişim',
+            'contact_company_name' => 'Zyd Emlak',
+            'site_address' => 'Istanbul, Turkiye',
+            'contact_map_query' => 'Istanbul, Turkiye',
+            'contact_phone_text' => 'İlanlar, randevu ve danışmanlık talepleriniz için bize ulaşabilirsiniz.',
+            'contact_email_text' => 'Mesajınızı e-posta ile iletebilir veya aşağıdaki iletişim formunu kullanabilirsiniz.',
+            'contact_form_title' => 'İletişim formu',
+            'contact_submit_text' => 'Mesaj gönder',
         ];
     }
 
@@ -79,25 +86,49 @@ class ManageSettings extends Page
         ];
     }
 
+    protected function getDefaultSecuritySettings(): array
+    {
+        return [
+            'smtp_enabled' => false,
+            'smtp_host' => '',
+            'smtp_port' => 587,
+            'smtp_scheme' => 'auto',
+            'smtp_username' => '',
+            'smtp_from_address' => '',
+            'smtp_from_name' => 'ZYDEMLAK',
+            'email_otp_enabled' => false,
+            'email_otp_ttl_minutes' => 5,
+            'email_otp_max_attempts' => 5,
+            'email_otp_lock_minutes' => 15,
+            'email_otp_resend_seconds' => 60,
+            'email_otp_hourly_limit' => 5,
+            'phone_otp_enabled' => false,
+        ];
+    }
+
     public function mount(): void
     {
         // 1. Veritabanındaki tüm ayarları çekiyoruz[cite: 6]
-        $settings = Setting::pluck('value', 'key')->toArray(); //[cite: 6]
+        $settings = Setting::pluck('value', 'key')->toArray(); // [cite: 6]
         $defaults = array_merge(
             $this->getDefaultOptionSettings(),
             $this->getDefaultContactSettings(),
             $this->getDefaultDocumentSettings(),
+            $this->getDefaultSecuritySettings(),
         );
 
         // 2. Veritabanında boş olan/henüz kaydedilmemiş anahtarlara varsayılan dizileri atıyoruz
         foreach ($defaults as $key => $defaultValues) {
-            if (!isset($settings[$key]) || empty($settings[$key])) {
+            if (! isset($settings[$key]) || empty($settings[$key])) {
                 $settings[$key] = $defaultValues;
             }
         }
 
+        // Kayıtlı SMTP parolası hiçbir zaman forma geri yazılmaz.
+        $settings['smtp_password'] = null;
+
         // 3. Formu dolduruyoruz[cite: 6]
-        $this->form->fill($settings); //[cite: 6]
+        $this->form->fill($settings); // [cite: 6]
     }
 
     public function form(Form $form): Form
@@ -109,49 +140,49 @@ class ManageSettings extends Page
                 Forms\Components\Tabs::make('Settings')
                     ->tabs([
                         // --- TAB 1: SLIDER AYARLARI ---[cite: 15]
-                        Forms\Components\Tabs\Tab::make('Ana Sayfa Slider') //[cite: 15]
-                            ->icon('heroicon-o-photo') //[cite: 15]
+                        Forms\Components\Tabs\Tab::make('Ana Sayfa Slider') // [cite: 15]
+                            ->icon('heroicon-o-photo') // [cite: 15]
                             ->schema([
-                                Forms\Components\TextInput::make('home_slider_title') //[cite: 15]
-                                    ->label('Slider Ana Başlığı') //[cite: 15]
-                                    ->default('PROPERTY SEARCHING JUST GOT SO EASY') //[cite: 15]
-                                    ->placeholder('PROPERTY SEARCHING JUST GOT SO EASY') //[cite: 15]
-                                    ->columnSpanFull(), //[cite: 15]
+                                Forms\Components\TextInput::make('home_slider_title') // [cite: 15]
+                                    ->label('Slider Ana Başlığı') // [cite: 15]
+                                    ->default('PROPERTY SEARCHING JUST GOT SO EASY') // [cite: 15]
+                                    ->placeholder('PROPERTY SEARCHING JUST GOT SO EASY') // [cite: 15]
+                                    ->columnSpanFull(), // [cite: 15]
 
-                                Forms\Components\Repeater::make('home_sliders') //[cite: 15]
-                                    ->label('Slider Görselleri') //[cite: 15]
+                                Forms\Components\Repeater::make('home_sliders') // [cite: 15]
+                                    ->label('Slider Görselleri') // [cite: 15]
                                     ->schema([
-                                        Forms\Components\FileUpload::make('image') //[cite: 15]
-                                            ->label('Slider Görseli') //[cite: 15]
-                                            ->image() //[cite: 15]
-                                            ->directory('site-sliders') //[cite: 15]
-                                            ->required() //[cite: 15]
-                                            ->imageEditor() //[cite: 15]
-                                            ->imageCropAspectRatio('1740:1000') //[cite: 15]
-                                            ->imageResizeTargetWidth('1740') //[cite: 15]
-                                            ->imageResizeTargetHeight('1000') //[cite: 15]
-                                            ->imageResizeMode('cover') //[cite: 15]
-                                            ->helperText('İdeal Görsel Boyutu: 1740x1000 px.'), //[cite: 15]
+                                        Forms\Components\FileUpload::make('image') // [cite: 15]
+                                            ->label('Slider Görseli') // [cite: 15]
+                                            ->image() // [cite: 15]
+                                            ->directory('site-sliders') // [cite: 15]
+                                            ->required() // [cite: 15]
+                                            ->imageEditor() // [cite: 15]
+                                            ->imageCropAspectRatio('1740:1000') // [cite: 15]
+                                            ->imageResizeTargetWidth('1740') // [cite: 15]
+                                            ->imageResizeTargetHeight('1000') // [cite: 15]
+                                            ->imageResizeMode('cover') // [cite: 15]
+                                            ->helperText('İdeal Görsel Boyutu: 1740x1000 px.'), // [cite: 15]
 
-                                        Forms\Components\TextInput::make('title')->label('Slider Başlığı'), //[cite: 15]
-                                        Forms\Components\TextInput::make('subtitle')->label('Alt Açıklama Metni'), //[cite: 15]
-                                        Forms\Components\TextInput::make('link')->label('Görsel Linki (Opsiyonel)'), //[cite: 15]
+                                        Forms\Components\TextInput::make('title')->label('Slider Başlığı'), // [cite: 15]
+                                        Forms\Components\TextInput::make('subtitle')->label('Alt Açıklama Metni'), // [cite: 15]
+                                        Forms\Components\TextInput::make('link')->label('Görsel Linki (Opsiyonel)'), // [cite: 15]
                                     ])
-                                    ->collapsible() //[cite: 15]
-                                    ->cloneable() //[cite: 15]
-                                    ->defaultItems(1) //[cite: 15]
-                                    ->addActionLabel('Yeni Slider Ekle') //[cite: 15]
-                                    ->columnSpanFull(), //[cite: 15]
+                                    ->collapsible() // [cite: 15]
+                                    ->cloneable() // [cite: 15]
+                                    ->defaultItems(1) // [cite: 15]
+                                    ->addActionLabel('Yeni Slider Ekle') // [cite: 15]
+                                    ->columnSpanFull(), // [cite: 15]
                             ]),
 
                         // --- TAB 2: GENEL BİLGİLER ---[cite: 15]
-                        Forms\Components\Tabs\Tab::make('Genel Bilgiler') //[cite: 15]
-                            ->icon('heroicon-o-building-office') //[cite: 15]
+                        Forms\Components\Tabs\Tab::make('Genel Bilgiler') // [cite: 15]
+                            ->icon('heroicon-o-building-office') // [cite: 15]
                             ->schema([
-                                Forms\Components\FileUpload::make('site_logo')->label('Site Logosu')->image()->directory('site'), //[cite: 15]
-                                Forms\Components\TextInput::make('site_phone')->label('Telefon Numarası'), //[cite: 15]
-                                Forms\Components\TextInput::make('site_email')->label('E-posta Adresi'), //[cite: 15]
-                                Forms\Components\Textarea::make('eids_text')->label('EİDS / Onaylı Taşınmaz Metni')->rows(2)->columnSpanFull(), //[cite: 15]
+                                Forms\Components\FileUpload::make('site_logo')->label('Site Logosu')->image()->directory('site'), // [cite: 15]
+                                Forms\Components\TextInput::make('site_phone')->label('Telefon Numarası'), // [cite: 15]
+                                Forms\Components\TextInput::make('site_email')->label('E-posta Adresi'), // [cite: 15]
+                                Forms\Components\Textarea::make('eids_text')->label('EİDS / Onaylı Taşınmaz Metni')->rows(2)->columnSpanFull(), // [cite: 15]
                             ]),
 
                         Forms\Components\Tabs\Tab::make('İletişim Sayfası')
@@ -249,9 +280,137 @@ class ManageSettings extends Page
                                     ->columnSpanFull(),
                             ]),
 
+                        Forms\Components\Tabs\Tab::make('OTP ve Güvenlik')
+                            ->icon('heroicon-o-shield-check')
+                            ->schema([
+                                Forms\Components\Placeholder::make('otp_status_info')
+                                    ->label('Canlı servis durumu')
+                                    ->content(function (): string {
+                                        $mailReady = app(DatabaseMailConfigurator::class)->hasStoredConfiguration();
+                                        $smsReady = ! (app(PhoneOtpSender::class) instanceof LogPhoneOtpSender);
+
+                                        return sprintf(
+                                            'SMTP ayarları: %s · SMS servisi: %s',
+                                            $mailReady ? 'Kayıtlı' : 'Eksik',
+                                            $smsReady ? 'Hazır' : 'Hazır değil (log sürücüsü)',
+                                        );
+                                    })
+                                    ->helperText('SMTP parolası şifreli saklanır ve kayıttan sonra tekrar gösterilmez.')
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Toggle::make('smtp_enabled')
+                                    ->label('SMTP e-posta servisini aktif et')
+                                    ->helperText('Aktif ettiğinizde aşağıda SMTP bağlantı alanları açılır.')
+                                    ->default(false)
+                                    ->live()
+                                    ->inline(false)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Section::make('SMTP bağlantı bilgileri')
+                                    ->description('Bilgileri e-posta hizmeti sağlayıcınızdan alabilirsiniz.')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('smtp_host')
+                                            ->label('SMTP sunucusu')
+                                            ->placeholder('smtp.example.com')
+                                            ->required()
+                                            ->maxLength(255),
+
+                                        Forms\Components\TextInput::make('smtp_port')
+                                            ->label('SMTP portu')
+                                            ->numeric()
+                                            ->minValue(1)
+                                            ->maxValue(65535)
+                                            ->default(587)
+                                            ->required(),
+
+                                        Forms\Components\Select::make('smtp_scheme')
+                                            ->label('Bağlantı güvenliği')
+                                            ->options([
+                                                'auto' => 'Otomatik / STARTTLS (genellikle 587)',
+                                                'smtps' => 'SMTPS / SSL (genellikle 465)',
+                                            ])
+                                            ->default('auto')
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('smtp_username')
+                                            ->label('SMTP kullanıcı adı')
+                                            ->autocomplete(false)
+                                            ->required()
+                                            ->maxLength(255),
+
+                                        Forms\Components\TextInput::make('smtp_password')
+                                            ->label('SMTP parolası')
+                                            ->password()
+                                            ->revealable()
+                                            ->autocomplete('new-password')
+                                            ->dehydrated(fn ($state): bool => filled($state))
+                                            ->helperText(Setting::getSecret('smtp_password')
+                                                ? 'Kayıtlı parola korunur. Değiştirmek için yeni parolayı yazın.'
+                                                : 'İlk kurulumda parola zorunludur.'),
+
+                                        Forms\Components\TextInput::make('smtp_from_address')
+                                            ->label('Gönderen e-posta adresi')
+                                            ->email()
+                                            ->placeholder('noreply@zydemlak.com')
+                                            ->required()
+                                            ->maxLength(255),
+
+                                        Forms\Components\TextInput::make('smtp_from_name')
+                                            ->label('Gönderen adı')
+                                            ->default('ZYDEMLAK')
+                                            ->required()
+                                            ->maxLength(255),
+                                    ])
+                                    ->visible(fn ($get): bool => (bool) $get('smtp_enabled'))
+                                    ->columns(2)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Toggle::make('email_otp_enabled')
+                                    ->label('E-posta OTP sistemini aktif et')
+                                    ->helperText('Aktif olduğunda üyelik, giriş ve hassas hesap değişikliklerinde 6 haneli e-posta kodu zorunlu olur.')
+                                    ->default(false)
+                                    ->live()
+                                    ->visible(fn ($get): bool => (bool) $get('smtp_enabled'))
+                                    ->inline(false)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Section::make('E-posta OTP kuralları')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('email_otp_ttl_minutes')
+                                            ->label('Kod geçerlilik süresi (dakika)')
+                                            ->numeric()->minValue(1)->maxValue(30)->required(),
+
+                                        Forms\Components\TextInput::make('email_otp_max_attempts')
+                                            ->label('En fazla hatalı deneme')
+                                            ->numeric()->minValue(3)->maxValue(10)->required(),
+
+                                        Forms\Components\TextInput::make('email_otp_lock_minutes')
+                                            ->label('Hatalı deneme kilidi (dakika)')
+                                            ->numeric()->minValue(1)->maxValue(120)->required(),
+
+                                        Forms\Components\TextInput::make('email_otp_resend_seconds')
+                                            ->label('Yeniden gönderme bekleme süresi (saniye)')
+                                            ->numeric()->minValue(15)->maxValue(600)->required(),
+
+                                        Forms\Components\TextInput::make('email_otp_hourly_limit')
+                                            ->label('Saatlik gönderim sınırı')
+                                            ->numeric()->minValue(1)->maxValue(20)->required(),
+                                    ])
+                                    ->visible(fn ($get): bool => (bool) $get('smtp_enabled') && (bool) $get('email_otp_enabled'))
+                                    ->columns(2)
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Toggle::make('phone_otp_enabled')
+                                    ->label('Telefon OTP sistemini aktif et')
+                                    ->helperText('Gerçek SMS sağlayıcısı bağlanmadan açmayın. Aktif olduğunda EİDS kimlik işleminden önce telefon doğrulaması zorunlu olur.')
+                                    ->default(false)
+                                    ->inline(false),
+                            ])
+                            ->columns(2),
+
                         // --- TAB 3: İLAN SEÇENEKLERİ ---[cite: 15]
-                        Forms\Components\Tabs\Tab::make('İlan Seçenekleri') //[cite: 15]
-                            ->icon('heroicon-o-list-bullet') //[cite: 15]
+                        Forms\Components\Tabs\Tab::make('İlan Seçenekleri') // [cite: 15]
+                            ->icon('heroicon-o-list-bullet') // [cite: 15]
                             ->schema([
                                 Forms\Components\TagsInput::make('options_type')
                                     ->label('İlan Tipi Seçenekleri')
@@ -314,27 +473,54 @@ class ManageSettings extends Page
                                     ->default($defaults['options_swap_option']),
                             ]),
                     ])
-                    ->columnSpanFull(), //[cite: 15]
+                    ->columnSpanFull(), // [cite: 15]
             ])
-            ->statePath('data'); //[cite: 15]
+            ->statePath('data'); // [cite: 15]
     }
 
     public function save(): void
     {
-        $data = $this->form->getState(); //[cite: 15]
+        $data = $this->form->getState(); // [cite: 15]
 
-        foreach ($data as $key => $value) { //[cite: 15]
-            Setting::updateOrCreate( //[cite: 15]
-                ['key' => $key], //[cite: 15]
-                ['value' => $value] //[cite: 15]
-            );
-
-            Setting::clearCache($key); //[cite: 15]
+        // SMTP kapatıldığında gizlenen OTP anahtarı önceki değerinde açık kalmamalıdır.
+        if (! ($data['smtp_enabled'] ?? false)) {
+            $data['email_otp_enabled'] = false;
         }
 
-        Notification::make() //[cite: 15]
-            ->title('Ayarlar başarıyla kaydedildi ve önbellek yenilendi.') //[cite: 15]
-            ->success() //[cite: 15]
-            ->send(); //[cite: 15]
+        if (($data['smtp_enabled'] ?? false) && blank($data['smtp_password'] ?? null) && blank(Setting::getSecret('smtp_password'))) {
+            throw ValidationException::withMessages([
+                'data.smtp_password' => 'SMTP servisini ilk kez aktif ederken parola girmelisiniz.',
+            ]);
+        }
+
+        if (($data['phone_otp_enabled'] ?? false) && app(PhoneOtpSender::class) instanceof LogPhoneOtpSender) {
+            throw ValidationException::withMessages([
+                'data.phone_otp_enabled' => 'Telefon OTP aktif edilemedi. Önce gerçek SMS sağlayıcısını uygulamaya bağlayın.',
+            ]);
+        }
+
+        foreach ($data as $key => $value) { // [cite: 15]
+            if ($key === 'smtp_password') {
+                if (filled($value)) {
+                    Setting::putSecret($key, $value);
+                }
+
+                continue;
+            }
+
+            Setting::updateOrCreate( // [cite: 15]
+                ['key' => $key], // [cite: 15]
+                ['value' => $value] // [cite: 15]
+            );
+
+            Setting::clearCache($key); // [cite: 15]
+        }
+
+        app(DatabaseMailConfigurator::class)->apply();
+
+        Notification::make() // [cite: 15]
+            ->title('Ayarlar başarıyla kaydedildi ve önbellek yenilendi.') // [cite: 15]
+            ->success() // [cite: 15]
+            ->send(); // [cite: 15]
     }
 }
