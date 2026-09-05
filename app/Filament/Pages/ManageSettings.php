@@ -189,7 +189,12 @@ class ManageSettings extends Page
                                     ->disk('public')
                                     ->visibility('public')
                                     ->directory('site')
-                                    ->helperText('Logoyu seçtikten sonra sayfanın altındaki Ayarları Kaydet butonuna basın.'), // [cite: 15]
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120)
+                                    ->imageResizeMode('contain')
+                                    ->imageResizeTargetWidth('1600')
+                                    ->imageResizeTargetHeight('1000')
+                                    ->helperText('PNG, JPG veya WEBP (en fazla 5 MB). Kaydedilen logonun açık renkli arka planı sitede otomatik kaldırılır.'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_phone')->label('Telefon Numarası'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_email')->label('E-posta Adresi'), // [cite: 15]
                                 Forms\Components\Textarea::make('eids_text')->label('EİDS / Onaylı Taşınmaz Metni')->rows(2)->columnSpanFull(), // [cite: 15]

@@ -7,10 +7,9 @@
     <meta name="description" content="{{ $description ?? 'Osmaniye emlak ilanları ve güncel gayrimenkul haberleri.' }}">
 
     @php
-        $siteLogo = \App\Models\Setting::get('site_logo');
         $sitePhone = \App\Models\Setting::get('site_phone', '0530 360 77 69');
         $siteEmail = \App\Models\Setting::get('site_email', 'info@zydemlak.com');
-        $logoUrl = $siteLogo ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteLogo) : asset('fe-assets/assets/img/zydemlak-logo.png');
+        $logoUrl = app(\App\Services\SiteLogoService::class)->url('fe-assets/assets/img/zydemlak-logo-transparent.png');
         $headerDocuments = collect(\App\Models\Setting::get('user_documents', []))
             ->filter(fn ($document) => is_array($document) && ($document['is_active'] ?? true) && filled($document['title'] ?? null) && filled($document['file'] ?? null))
             ->sortBy(fn ($document) => (int) ($document['sort'] ?? 0))
@@ -29,8 +28,8 @@
 <body class="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-800 antialiased">
     <header class="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
         <div class="mx-auto flex h-24 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-            <a href="{{ route('home') }}" class="group flex shrink-0 items-center" aria-label="ZYDEMLAK ana sayfa">
-                <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-16 w-auto max-w-40 object-contain transition duration-300 group-hover:scale-105 sm:h-20 sm:max-w-52">
+            <a href="{{ route('home') }}" class="group flex shrink-0 items-center rounded bg-white" aria-label="ZYDEMLAK ana sayfa">
+                <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-16 w-auto max-w-44 object-contain transition duration-300 group-hover:scale-105 sm:h-20 sm:max-w-56">
             </a>
 
             <nav class="hidden items-center gap-1 text-sm font-medium lg:flex" aria-label="Ana menü">

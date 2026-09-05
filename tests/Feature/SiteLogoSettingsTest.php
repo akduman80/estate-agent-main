@@ -30,9 +30,17 @@ class SiteLogoSettingsTest extends TestCase
 
         Filament::setCurrentPanel(Filament::getPanel('admin'));
 
+        $source = imagecreatetruecolor(800, 436);
+        imagefill($source, 0, 0, imagecolorallocate($source, 248, 248, 248));
+        imagefilledrectangle($source, 250, 100, 550, 336, imagecolorallocate($source, 15, 62, 110));
+        ob_start();
+        imagepng($source);
+        $logoContents = ob_get_clean();
+        imagedestroy($source);
+
         Livewire::actingAs($supervisor)
             ->test(ManageSettings::class)
-            ->set('data.site_logo', [UploadedFile::fake()->image('new-logo.png', 800, 436)])
+            ->set('data.site_logo', [UploadedFile::fake()->createWithContent('new-logo.png', $logoContents)])
             ->call('save')
             ->assertHasNoFormErrors();
 
@@ -43,6 +51,15 @@ class SiteLogoSettingsTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee(Storage::disk('public')->url($logoPath), false);
+            ->assertSee('/storage/site/processed/', false);
+
+        $processedLogo = collect(Storage::disk('public')->allFiles('site/processed'))->first();
+
+        $this->assertNotNull($processedLogo);
+        $image = imagecreatefromstring(Storage::disk('public')->get($processedLogo));
+        $cornerAlpha = (imagecolorat($image, 0, 0) >> 24) & 0x7F;
+
+        $this->assertGreaterThan(0, $cornerAlpha);
+        imagedestroy($image);
     }
 }
