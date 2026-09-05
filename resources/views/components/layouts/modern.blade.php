@@ -10,7 +10,7 @@
         $siteLogo = \App\Models\Setting::get('site_logo');
         $sitePhone = \App\Models\Setting::get('site_phone', '0530 360 77 69');
         $siteEmail = \App\Models\Setting::get('site_email', 'info@zydemlak.com');
-        $logoUrl = $siteLogo ? \Illuminate\Support\Facades\Storage::url($siteLogo) : asset('fe-assets/assets/img/logo.png');
+        $logoUrl = $siteLogo ? \Illuminate\Support\Facades\Storage::url($siteLogo) : asset('fe-assets/assets/img/zydemlak-logo.png');
         $headerDocuments = collect(\App\Models\Setting::get('user_documents', []))
             ->filter(fn ($document) => is_array($document) && ($document['is_active'] ?? true) && filled($document['title'] ?? null) && filled($document['file'] ?? null))
             ->sortBy(fn ($document) => (int) ($document['sort'] ?? 0))
@@ -29,9 +29,8 @@
 <body class="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-800 antialiased">
     <header class="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
         <div class="mx-auto flex h-24 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-            <a href="{{ route('home') }}" class="group flex shrink-0 items-center gap-2 sm:gap-3" aria-label="Ziyade Emlak ana sayfa">
-                <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-14 w-auto max-w-48 object-contain transition duration-300 group-hover:scale-105 sm:h-16 sm:max-w-64">
-                <span class="whitespace-nowrap text-base font-extrabold tracking-tight text-blue-950 sm:text-xl">Ziyade Emlak</span>
+            <a href="{{ route('home') }}" class="group flex shrink-0 items-center" aria-label="ZYDEMLAK ana sayfa">
+                <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-16 w-auto max-w-40 object-contain transition duration-300 group-hover:scale-105 sm:h-20 sm:max-w-52">
             </a>
 
             <nav class="hidden items-center gap-1 text-sm font-medium lg:flex" aria-label="Ana menü">
@@ -112,9 +111,8 @@
         <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
                 <div>
-                    <div class="flex items-center gap-3">
-                        <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-14 w-auto rounded bg-white object-contain p-1">
-                        <span class="text-lg font-extrabold text-white">Ziyade Emlak</span>
+                    <div class="flex items-center">
+                        <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-20 w-auto max-w-52 rounded bg-white object-contain">
                     </div>
                     <p class="mt-4 text-xs leading-6 text-slate-400">Osmaniye'nin emlak ilan ve haber sitesi. Güvenli, şeffaf ve profesyonel gayrimenkul hizmetleri.</p>
                 </div>
