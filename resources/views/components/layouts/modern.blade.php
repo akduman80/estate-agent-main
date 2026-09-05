@@ -10,7 +10,7 @@
         $siteLogo = \App\Models\Setting::get('site_logo');
         $sitePhone = \App\Models\Setting::get('site_phone', '0530 360 77 69');
         $siteEmail = \App\Models\Setting::get('site_email', 'info@zydemlak.com');
-        $logoUrl = $siteLogo ? \Illuminate\Support\Facades\Storage::url($siteLogo) : asset('fe-assets/assets/img/zydemlak-logo.png');
+        $logoUrl = $siteLogo ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteLogo) : asset('fe-assets/assets/img/zydemlak-logo.png');
         $headerDocuments = collect(\App\Models\Setting::get('user_documents', []))
             ->filter(fn ($document) => is_array($document) && ($document['is_active'] ?? true) && filled($document['title'] ?? null) && filled($document['file'] ?? null))
             ->sortBy(fn ($document) => (int) ($document['sort'] ?? 0))

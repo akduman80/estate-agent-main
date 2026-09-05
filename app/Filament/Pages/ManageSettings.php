@@ -183,7 +183,13 @@ class ManageSettings extends Page
                         Forms\Components\Tabs\Tab::make('Genel Bilgiler') // [cite: 15]
                             ->icon('heroicon-o-building-office') // [cite: 15]
                             ->schema([
-                                Forms\Components\FileUpload::make('site_logo')->label('Site Logosu')->image()->directory('site'), // [cite: 15]
+                                Forms\Components\FileUpload::make('site_logo')
+                                    ->label('Site Logosu')
+                                    ->image()
+                                    ->disk('public')
+                                    ->visibility('public')
+                                    ->directory('site')
+                                    ->helperText('Logoyu seçtikten sonra sayfanın altındaki Ayarları Kaydet butonuna basın.'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_phone')->label('Telefon Numarası'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_email')->label('E-posta Adresi'), // [cite: 15]
                                 Forms\Components\Textarea::make('eids_text')->label('EİDS / Onaylı Taşınmaz Metni')->rows(2)->columnSpanFull(), // [cite: 15]
