@@ -18,6 +18,14 @@ class SiteLogoSettingsTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_bundled_transparent_logo_fits_the_reverse_proxy_upload_limit(): void
+    {
+        $this->assertLessThan(
+            1024 * 1024,
+            filesize(public_path('fe-assets/assets/img/zydemlak-logo-transparent.png')),
+        );
+    }
+
     public function test_supervisor_can_upload_a_logo_that_is_used_by_the_public_header(): void
     {
         Storage::fake('public');
@@ -41,7 +49,6 @@ class SiteLogoSettingsTest extends TestCase
         Livewire::actingAs($supervisor)
             ->test(ManageSettings::class)
             ->set('data.site_logo', [UploadedFile::fake()->createWithContent('new-logo.png', $logoContents)])
-            ->call('save')
             ->assertHasNoFormErrors();
 
         $logoPath = Setting::get('site_logo');

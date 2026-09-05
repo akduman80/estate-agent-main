@@ -186,15 +186,18 @@ class ManageSettings extends Page
                                 Forms\Components\FileUpload::make('site_logo')
                                     ->label('Site Logosu')
                                     ->image()
+                                    ->live()
                                     ->disk('public')
                                     ->visibility('public')
                                     ->directory('site')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->maxSize(5120)
                                     ->imageResizeMode('contain')
-                                    ->imageResizeTargetWidth('1600')
-                                    ->imageResizeTargetHeight('1000')
-                                    ->helperText('PNG, JPG veya WEBP (en fazla 5 MB). Kaydedilen logonun açık renkli arka planı sitede otomatik kaldırılır.'), // [cite: 15]
+                                    ->imageResizeTargetWidth('1000')
+                                    ->imageResizeTargetHeight('650')
+                                    ->imageResizeUpscale(false)
+                                    ->afterStateUpdated(fn (Forms\Components\FileUpload $component) => $this->saveLogoImmediately($component))
+                                    ->helperText('PNG, JPG veya WEBP (en fazla 5 MB). Logo yüklenince otomatik kaydedilir ve açık renkli arka planı sitede kaldırılır.'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_phone')->label('Telefon Numarası'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_email')->label('E-posta Adresi'), // [cite: 15]
                                 Forms\Components\Textarea::make('eids_text')->label('EİDS / Onaylı Taşınmaz Metni')->rows(2)->columnSpanFull(), // [cite: 15]
@@ -543,6 +546,29 @@ class ManageSettings extends Page
                     ->columnSpanFull(), // [cite: 15]
             ])
             ->statePath('data'); // [cite: 15]
+    }
+
+    public function saveLogoImmediately(Forms\Components\FileUpload $component): void
+    {
+        $component->saveUploadedFiles();
+
+        $logoPath = collect($component->getState())
+            ->first(fn ($file): bool => is_string($file) && filled($file));
+
+        if (! $logoPath) {
+            return;
+        }
+
+        Setting::updateOrCreate(
+            ['key' => 'site_logo'],
+            ['value' => $logoPath],
+        );
+        Setting::clearCache('site_logo');
+
+        Notification::make()
+            ->title('Logo kaydedildi ve sitede kullanıma alındı.')
+            ->success()
+            ->send();
     }
 
     public function save(): void
