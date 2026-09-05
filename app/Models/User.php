@@ -32,6 +32,7 @@ class User extends Authenticatable implements FilamentUser
         'identity_number_hash',
         'city',
         'district',
+        'neighborhood',
         'listing_limit_override',
         'password',
         'role',

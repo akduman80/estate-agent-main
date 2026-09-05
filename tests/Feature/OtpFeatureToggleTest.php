@@ -32,6 +32,7 @@ class OtpFeatureToggleTest extends TestCase
             'phone' => '905551112233',
             'city' => 'Osmaniye',
             'district' => 'Kadirli',
+            'neighborhood' => '7 Mart Mahallesi',
             'email' => 'ayse@example.com',
             'password' => 'GucluSifre123',
             'password_confirmation' => 'GucluSifre123',

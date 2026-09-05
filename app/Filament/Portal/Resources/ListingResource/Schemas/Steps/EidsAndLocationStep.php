@@ -103,7 +103,10 @@ class EidsAndLocationStep
                             ->options(TurkeyAddressService::getCities())
                             ->searchable()
                             ->live()
-                            ->afterStateUpdated(fn (Set $set) => $set('district_id', null))
+                            ->afterStateUpdated(function (Set $set): void {
+                                $set('district_id', null);
+                                $set('neighborhood_id', null);
+                            })
                             ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
                             ->required(),
 
@@ -111,13 +114,20 @@ class EidsAndLocationStep
                             ->label('İlçe')
                             ->options(fn (Get $get) => TurkeyAddressService::getDistricts($get('city_id')))
                             ->searchable()
+                            ->live()
+                            ->afterStateUpdated(fn (Set $set) => $set('neighborhood_id', null))
                             ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
                             ->required(),
 
-                        TextInput::make('neighborhood_id')
-                            ->label('Mahalle / Yayla')
+                        Select::make('neighborhood_id')
+                            ->label('Mahalle / Köy')
+                            ->options(fn (Get $get) => TurkeyAddressService::getNeighborhoods(
+                                $get('city_id'),
+                                $get('district_id'),
+                            ))
+                            ->searchable()
                             ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
-                            ->placeholder('Gaffarli Kesmesur Yaylası'),
+                            ->placeholder('Mahalle veya köy seçin'),
                     ]),
 
                 Grid::make(['default' => 1, 'md' => 3])

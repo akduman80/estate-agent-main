@@ -1,7 +1,7 @@
 @php
     $isBusiness = $type === 'business';
     $pageTitle = $isBusiness ? 'Emlak İşletmesi Üyeliği' : 'Bireysel Üyelik';
-    $inputClass = 'mt-1.5 w-full rounded-xl border-slate-300 bg-white text-sm shadow-sm focus:border-orange-500 focus:ring-orange-500';
+    $inputClass = 'mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-left text-sm shadow-sm focus:border-orange-500 focus:ring-orange-500';
 @endphp
 
 <x-layouts.modern :title="$pageTitle.' | ZYDEMLAK'" description="ZYDEMLAK üyeliğinizi oluşturun, e-posta adresinizi doğrulayın ve EİDS doğrulamalı ilan sürecine başlayın.">
@@ -57,7 +57,7 @@
                         </div>
                     @endif
 
-                    <form method="post" action="{{ route('register.store') }}" class="mt-7 grid gap-5 sm:grid-cols-2">
+                    <form method="post" action="{{ route('register.store') }}" class="mt-7 grid gap-5 sm:grid-cols-2" data-location-selects>
                         @csrf
                         <input type="hidden" name="account_type" value="{{ $type }}">
 
@@ -79,7 +79,7 @@
                         <div class="sm:col-span-2"><h3 class="border-b border-slate-200 pb-2 text-sm font-extrabold text-blue-950">Konum bilgileri</h3></div>
                         <label class="block">
                             <span class="text-xs font-bold text-slate-700">İl <b class="text-red-500">*</b></span>
-                            <select class="{{ $inputClass }}" name="city" data-city-select data-districts-url="{{ route('locations.districts') }}" required>
+                            <select class="{{ $inputClass }}" name="city" data-city-select data-districts-url="{{ route('locations.districts') }}" data-neighborhoods-url="{{ route('locations.neighborhoods') }}" required>
                                 <option value="">İl seçin</option>
                                 @foreach($cities as $cityValue => $cityLabel)
                                     <option value="{{ $cityValue }}" @selected(old('city') === $cityValue)>{{ $cityLabel }}</option>
@@ -90,6 +90,12 @@
                             <span class="text-xs font-bold text-slate-700">İlçe <b class="text-red-500">*</b></span>
                             <select class="{{ $inputClass }}" name="district" data-district-select data-selected="{{ old('district') }}" required disabled>
                                 <option value="">Önce il seçin</option>
+                            </select>
+                        </label>
+                        <label class="block sm:col-span-2">
+                            <span class="text-xs font-bold text-slate-700">Mahalle / Köy <b class="text-red-500">*</b></span>
+                            <select class="{{ $inputClass }}" name="neighborhood" data-neighborhood-select data-selected="{{ old('neighborhood') }}" required disabled>
+                                <option value="">Önce ilçe seçin</option>
                             </select>
                         </label>
 
@@ -119,52 +125,4 @@
         </div>
     </main>
 
-    @push('scripts')
-        <script>
-            document.querySelectorAll('[data-city-select]').forEach((citySelect) => {
-                const form = citySelect.closest('form');
-                const districtSelect = form?.querySelector('[data-district-select]');
-
-                if (!districtSelect) return;
-
-                const loadDistricts = async () => {
-                    const city = citySelect.value;
-                    const selectedDistrict = districtSelect.dataset.selected || '';
-
-                    districtSelect.disabled = true;
-                    districtSelect.innerHTML = `<option value="">${city ? 'İlçeler yükleniyor...' : 'Önce il seçin'}</option>`;
-
-                    if (!city) return;
-
-                    try {
-                        const url = new URL(citySelect.dataset.districtsUrl, window.location.origin);
-                        url.searchParams.set('city', city);
-                        const response = await fetch(url, { headers: { Accept: 'application/json' } });
-
-                        if (!response.ok) throw new Error('İlçeler alınamadı.');
-
-                        const payload = await response.json();
-                        districtSelect.innerHTML = '<option value="">İlçe seçin</option>';
-
-                        Object.entries(payload.data).forEach(([value, label]) => {
-                            const option = new Option(label, value, false, value === selectedDistrict);
-                            districtSelect.add(option);
-                        });
-
-                        districtSelect.disabled = false;
-                        districtSelect.dataset.selected = '';
-                    } catch (error) {
-                        districtSelect.innerHTML = '<option value="">İlçeler yüklenemedi</option>';
-                    }
-                };
-
-                citySelect.addEventListener('change', () => {
-                    districtSelect.dataset.selected = '';
-                    loadDistricts();
-                });
-
-                loadDistricts();
-            });
-        </script>
-    @endpush
 </x-layouts.modern>

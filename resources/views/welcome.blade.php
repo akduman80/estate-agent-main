@@ -6,8 +6,8 @@
 
     <section class="border-b border-slate-800 bg-blue-950 px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
-            <form method="GET" action="{{ route('listings.index') }}" class="grid grid-cols-1 items-end gap-4 rounded-2xl bg-white p-4 shadow-2xl sm:grid-cols-2 sm:p-6 lg:grid-cols-5">
-                <div>
+            <form method="GET" action="{{ route('listings.index') }}" class="grid grid-cols-1 items-end gap-4 rounded-2xl bg-white p-4 shadow-2xl sm:grid-cols-2 sm:p-6 lg:grid-cols-4 xl:grid-cols-8" data-location-selects>
+                <div class="xl:col-span-2">
                     <label for="home-q" class="mb-1 block text-xs font-semibold text-slate-500">Kelime / İlan No</label>
                     <div class="relative">
                         <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -34,11 +34,23 @@
                 </div>
                 <div>
                     <label for="home-city" class="mb-1 block text-xs font-semibold text-slate-500">Konum</label>
-                    <select id="home-city" name="city" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200">
+                    <select id="home-city" name="city" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-left text-sm text-slate-700 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200" data-city-select data-districts-url="{{ route('locations.districts') }}" data-neighborhoods-url="{{ route('locations.neighborhoods') }}">
                         <option value="">Tüm Konumlar</option>
                         @foreach($cities as $key => $city)
                             <option value="{{ $key }}">{{ $city }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="home-district" class="mb-1 block text-xs font-semibold text-slate-500">İlçe</label>
+                    <select id="home-district" name="district" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-left text-sm text-slate-700 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200" data-district-select disabled>
+                        <option value="">Önce il seçin</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="home-neighborhood" class="mb-1 block text-xs font-semibold text-slate-500">Mahalle / Köy</label>
+                    <select id="home-neighborhood" name="neighborhood" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-left text-sm text-slate-700 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200" data-neighborhood-select disabled>
+                        <option value="">Önce ilçe seçin</option>
                     </select>
                 </div>
                 <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 font-bold text-white shadow-md transition hover:bg-orange-600">

@@ -119,6 +119,8 @@ Route::get('/iletisim', function () {
 
 Route::get('/konum/ilceler', [LocationController::class, 'districts'])
     ->name('locations.districts');
+Route::get('/konum/mahalleler', [LocationController::class, 'neighborhoods'])
+    ->name('locations.neighborhoods');
 
 Route::get('/eids/start', [EidsCallbackController::class, 'start'])->name('eids.start');
 Route::get('/eids/callback', [EidsCallbackController::class, 'callback'])->name('eids.callback');
@@ -152,6 +154,8 @@ Route::get('/ilanlar', function (Request $request) {
         ->published()
         ->when($request->filled('q'), fn ($query) => $query->where('title', 'like', '%'.(string) $request->string('q').'%'))
         ->when($request->filled('city'), fn ($query) => $query->where('city_id', (string) $request->string('city')))
+        ->when($request->filled('district'), fn ($query) => $query->where('district_id', (string) $request->string('district')))
+        ->when($request->filled('neighborhood'), fn ($query) => $query->where('neighborhood_id', (string) $request->string('neighborhood')))
         ->when($request->filled('type'), fn ($query) => $query->where('type', (string) $request->string('type')))
         ->when($request->filled('category'), fn ($query) => $query->where('category', (string) $request->string('category')))
         ->when($request->filled('min_price'), fn ($query) => $query->where('price', '>=', $request->input('min_price')))

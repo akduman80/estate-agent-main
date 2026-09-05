@@ -36,6 +36,7 @@ class BusinessProfileResource extends Resource
             TextInput::make('tax_office')->label('Vergi Dairesi')->disabled(),
             TextInput::make('city')->label('İl')->disabled(),
             TextInput::make('district')->label('İlçe')->disabled(),
+            TextInput::make('neighborhood')->label('Mahalle / Köy')->disabled(),
             Textarea::make('address')->label('Adres')->disabled()->columnSpanFull(),
             Textarea::make('review_note')->label('İnceleme Notu')->columnSpanFull(),
         ]);

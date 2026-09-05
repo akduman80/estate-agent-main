@@ -176,16 +176,27 @@ class ListingFormSchema
                                             ->options(TurkeyAddressService::getCities())
                                             ->searchable()
                                             ->live() // İl değiştiğinde formu reaktif olarak günceller
-                                            ->afterStateUpdated(fn (Set $set) => $set('district_id', null)) // İl değiştiğinde eski seçili ilçeyi temizler
+                                            ->afterStateUpdated(function (Set $set): void {
+                                                $set('district_id', null);
+                                                $set('neighborhood_id', null);
+                                            })
                                             ->required(),
 
                                       Select::make('district_id')
                                             ->label('İlçe')
                                             ->options(fn (Get $get) => TurkeyAddressService::getDistricts($get('city_id')))
                                             ->searchable()
+                                            ->live()
+                                            ->afterStateUpdated(fn (Set $set) => $set('neighborhood_id', null))
                                             ->required(),
 
-                                      TextInput::make('neighborhood_id')->label('Mahalle / Yayla')->placeholder('Gaffarli Kesmesur Yaylası'),
+                                      Select::make('neighborhood_id')
+                                            ->label('Mahalle / Köy')
+                                            ->options(fn (Get $get) => TurkeyAddressService::getNeighborhoods(
+                                                $get('city_id'),
+                                                $get('district_id'),
+                                            ))
+                                            ->searchable(),
                                   ]),
                           ]);
     }

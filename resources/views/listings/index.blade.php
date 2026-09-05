@@ -1,7 +1,9 @@
 @php
     $activeFilters = collect([
         'q' => request('q') ? 'Arama: '.request('q') : null,
-        'city' => request('city') ? 'Konum: '.request('city') : null,
+        'city' => request('city') ? 'İl: '.request('city') : null,
+        'district' => request('district') ? 'İlçe: '.request('district') : null,
+        'neighborhood' => request('neighborhood') ? 'Mahalle: '.request('neighborhood') : null,
         'category' => request('category') ? 'Tür: '.request('category') : null,
         'type' => request('type') ? 'Durum: '.request('type') : null,
         'min_price' => request('min_price') ? 'Min. fiyat: '.number_format((float) request('min_price'), 0, ',', '.').' TL' : null,
@@ -10,7 +12,7 @@
         'max_area' => request('max_area') ? 'Maks. alan: '.request('max_area').' m²' : null,
     ])->filter();
 
-    $inputClass = 'mt-1.5 w-full rounded-xl border-slate-300 bg-white text-sm shadow-sm focus:border-orange-500 focus:ring-orange-500';
+    $inputClass = 'mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-left text-sm shadow-sm focus:border-orange-500 focus:ring-orange-500';
 @endphp
 
 <x-layouts.modern title="Tüm İlanlar | ZYDEMLAK" description="EİDS doğrulamalı satılık ve kiralık gayrimenkul ilanlarını konum, fiyat ve özelliklerine göre inceleyin.">
@@ -47,13 +49,15 @@
                             <span><i class="fa-solid fa-sliders mr-2 text-orange-400"></i>İlanları Filtrele</span>
                             <i class="fa-solid fa-chevron-down text-xs transition group-open:rotate-180"></i>
                         </summary>
-                        <form action="{{ route('listings.index') }}" method="get" class="space-y-5 p-5">
+                        <form action="{{ route('listings.index') }}" method="get" class="space-y-5 p-5" data-location-selects>
                             <label class="block">
                                 <span class="text-xs font-bold text-slate-700">Kelime veya ilan başlığı</span>
                                 <span class="relative block"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 mt-0.5 -translate-y-1/2 text-xs text-slate-400"></i><input type="search" name="q" value="{{ request('q') }}" placeholder="Örn: 3+1 daire, villa..." class="{{ $inputClass }} pl-9"></span>
                             </label>
 
-                            <label class="block"><span class="text-xs font-bold text-slate-700">Konum</span><select name="city" class="{{ $inputClass }}"><option value="">Tüm iller</option>@foreach($cities as $city)<option value="{{ $city }}" @selected(request('city') === $city)>{{ $city }}</option>@endforeach</select></label>
+                            <label class="block"><span class="text-xs font-bold text-slate-700">İl</span><select name="city" class="{{ $inputClass }}" data-city-select data-districts-url="{{ route('locations.districts') }}" data-neighborhoods-url="{{ route('locations.neighborhoods') }}"><option value="">Tüm iller</option>@foreach($cities as $city)<option value="{{ $city }}" @selected(request('city') === $city)>{{ $city }}</option>@endforeach</select></label>
+                            <label class="block"><span class="text-xs font-bold text-slate-700">İlçe</span><select name="district" class="{{ $inputClass }}" data-district-select data-selected="{{ request('district') }}" disabled><option value="">Önce il seçin</option></select></label>
+                            <label class="block"><span class="text-xs font-bold text-slate-700">Mahalle / Köy</span><select name="neighborhood" class="{{ $inputClass }}" data-neighborhood-select data-selected="{{ request('neighborhood') }}" disabled><option value="">Önce ilçe seçin</option></select></label>
 
                             <div class="grid grid-cols-2 gap-3">
                                 <label class="block"><span class="text-xs font-bold text-slate-700">Gayrimenkul</span><select name="category" class="{{ $inputClass }}"><option value="">Tümü</option>@foreach($categoryOptions as $category)<option value="{{ $category }}" @selected(request('category') === $category)>{{ $category }}</option>@endforeach</select></label>

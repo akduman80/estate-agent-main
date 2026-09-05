@@ -17,6 +17,10 @@ class PropertySearch extends Component
 
     public $city_id = '';
 
+    public $district_id = '';
+
+    public $neighborhood_id = '';
+
     public $type = '';
 
     public $zoning_status = ''; // İmar Durumu filtresi eklemek isterseniz
@@ -39,6 +43,16 @@ class PropertySearch extends Component
         $this->resetPage();
     }
 
+    public function updatedCityId(): void
+    {
+        $this->reset('district_id', 'neighborhood_id');
+    }
+
+    public function updatedDistrictId(): void
+    {
+        $this->reset('neighborhood_id');
+    }
+
     public function render()
     {
         $listings = Listing::query()
@@ -46,6 +60,8 @@ class PropertySearch extends Component
             ->published()
             ->when($this->search, fn ($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->city_id, fn ($q) => $q->where('city_id', $this->city_id))
+            ->when($this->district_id, fn ($q) => $q->where('district_id', $this->district_id))
+            ->when($this->neighborhood_id, fn ($q) => $q->where('neighborhood_id', $this->neighborhood_id))
             ->when($this->type, fn ($q) => $q->where('type', $this->type))
             ->when($this->zoning_status, fn ($q) => $q->where('zoning_status', $this->zoning_status))
             ->when($this->min_price !== '' && $this->min_price !== null, fn ($q) => $q->where('price', '>=', $this->min_price))
@@ -57,6 +73,8 @@ class PropertySearch extends Component
 
         // Tüm Türkiye şehirleri
         $cities = TurkeyAddressService::getCities();
+        $districts = TurkeyAddressService::getDistricts($this->city_id);
+        $neighborhoods = TurkeyAddressService::getNeighborhoods($this->city_id, $this->district_id);
 
         // Manage Settings'te dinamik tanımladığınız ilan tipleri (Satılık, Kiralık vs.)
         $typeOptions = Setting::get('options_type', ['Satılık', 'Kiralık']);
@@ -64,6 +82,8 @@ class PropertySearch extends Component
         return view('livewire.property-search', [
             'listings' => $listings,
             'cities' => $cities,
+            'districts' => $districts,
+            'neighborhoods' => $neighborhoods,
             'typeOptions' => $typeOptions,
         ]);
     }

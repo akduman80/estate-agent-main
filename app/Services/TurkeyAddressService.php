@@ -2,8 +2,16 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Str;
+
 class TurkeyAddressService
 {
+    protected static ?array $neighborhoodData = null;
+
+    protected static ?array $neighborhoodCityIndex = null;
+
+    protected static array $neighborhoodDistrictIndexes = [];
+
     protected static array $data = [
         "Adana" => ["Aladağ", "Ceyhan", "Çukurova", "Feke", "İmamoğlu", "Karaisalı", "Karataş", "Kozan", "Pozantı", "Saimbeyli", "Sarıçam", "Seyhan", "Tufanbeyli", "Yumurtalık", "Yüreğir"],
         "Adıyaman" => ["Besni", "Çelikhan", "Gerger", "Gölbaşı", "Kahta", "Merkez", "Samsat", "Sincik", "Tut"],
@@ -98,13 +106,70 @@ class TurkeyAddressService
 
     public static function getDistricts(?string $city): array
     {
-        if (!$city || !isset(static::$data[$city])) {
+        if (!$city) {
             return [];
         }
 
-        $districts = static::$data[$city];
+        $cityKey = static::getNeighborhoodCityIndex()[Str::slug($city)] ?? null;
+
+        if ($cityKey === null) {
+            return [];
+        }
+
+        $districts = array_keys(static::getNeighborhoodData()[$cityKey]);
         sort($districts, SORT_LOCALE_STRING);
 
         return array_combine($districts, $districts);
+    }
+
+    public static function getNeighborhoods(?string $city, ?string $district): array
+    {
+        if (!$city || !$district) {
+            return [];
+        }
+
+        $data = static::getNeighborhoodData();
+        $cityKey = static::getNeighborhoodCityIndex()[$citySlug = Str::slug($city)] ?? null;
+
+        if ($cityKey === null) {
+            return [];
+        }
+
+        $districtIndex = static::$neighborhoodDistrictIndexes[$cityKey] ??= collect(array_keys($data[$cityKey]))
+            ->mapWithKeys(fn (string $name): array => [Str::slug($name) => $name])
+            ->all();
+
+        $districtKey = $districtIndex[Str::slug($district)] ?? null;
+
+        // Bazı veri kaynaklarında merkez ilçeler il adıyla tutulabildiği için geriye dönük destek.
+        if ($districtKey === null && Str::slug($district) === 'merkez') {
+            $districtKey = $districtIndex[$citySlug] ?? null;
+        }
+
+        if ($districtKey === null) {
+            return [];
+        }
+
+        $neighborhoods = array_values(array_unique($data[$cityKey][$districtKey]));
+        sort($neighborhoods, SORT_LOCALE_STRING);
+
+        return array_combine($neighborhoods, $neighborhoods);
+    }
+
+    protected static function getNeighborhoodData(): array
+    {
+        return static::$neighborhoodData ??= json_decode(
+            file_get_contents(resource_path('data/turkey-neighborhoods.json')),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        );
+    }
+
+    protected static function getNeighborhoodCityIndex(): array
+    {
+        return static::$neighborhoodCityIndex ??= collect(array_keys(static::getNeighborhoodData()))
+            ->mapWithKeys(fn (string $name): array => [Str::slug($name) => $name])
+            ->all();
     }
 }

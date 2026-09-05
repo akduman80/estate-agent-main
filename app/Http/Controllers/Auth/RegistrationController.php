@@ -55,6 +55,14 @@ class RegistrationController extends Controller
                 'string',
                 Rule::in(array_keys(TurkeyAddressService::getDistricts($request->string('city')->toString()))),
             ],
+            'neighborhood' => [
+                'required',
+                'string',
+                Rule::in(array_keys(TurkeyAddressService::getNeighborhoods(
+                    $request->string('city')->toString(),
+                    $request->string('district')->toString(),
+                ))),
+            ],
             'consents' => ['array'],
         ];
 
@@ -105,6 +113,7 @@ class RegistrationController extends Controller
                 'identity_number_hash' => $identity ? hash('sha256', $identity) : null,
                 'city' => $data['city'],
                 'district' => $data['district'],
+                'neighborhood' => $data['neighborhood'],
                 'password' => Hash::make($data['password']),
                 'role' => $type === 'individual' ? UserRole::INDIVIDUAL : UserRole::AGENT,
                 'account_status' => $emailOtpEnabled
@@ -127,6 +136,7 @@ class RegistrationController extends Controller
                     'business_phone' => $data['business_phone'] ?? null,
                     'city' => $data['city'],
                     'district' => $data['district'],
+                    'neighborhood' => $data['neighborhood'],
                     'address' => $data['address'],
                 ]);
             }

@@ -6,14 +6,30 @@
                 <div class="search-form wow pulse">
                     <form wire:submit.prevent="$refresh" class="form-inline">
                         <div class="col-md-12 clear">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <input type="text" wire:model.live.debounce.300ms="search" class="form-control" placeholder="Arama kelimesi (İlan, Mahalle vb.)">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <select wire:model.live="city_id" class="form-control">
                                     <option value="">Tüm İller</option>
                                     @foreach($cities as $key => $cityName)
                                         <option value="{{ $key }}">{{ $cityName }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select wire:model.live="district_id" class="form-control" @disabled(! $city_id)>
+                                    <option value="">Tüm İlçeler</option>
+                                    @foreach($districts as $district)
+                                        <option value="{{ $district }}">{{ $district }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select wire:model.live="neighborhood_id" class="form-control" @disabled(! $district_id)>
+                                    <option value="">Tüm Mahalleler</option>
+                                    @foreach($neighborhoods as $neighborhood)
+                                        <option value="{{ $neighborhood }}">{{ $neighborhood }}</option>
                                     @endforeach
                                 </select>
                             </div>

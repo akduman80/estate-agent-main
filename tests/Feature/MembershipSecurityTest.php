@@ -41,6 +41,7 @@ class MembershipSecurityTest extends TestCase
             'phone' => '905551112233',
             'city' => 'Osmaniye',
             'district' => 'Kadirli',
+            'neighborhood' => '7 Mart Mahallesi',
             'email' => 'ayse@example.com',
             'password' => 'GucluSifre123',
             'password_confirmation' => 'GucluSifre123',
@@ -54,6 +55,7 @@ class MembershipSecurityTest extends TestCase
         $this->assertSame(hash('sha256', '10000000146'), $user->identity_number_hash);
         $this->assertSame('Osmaniye', $user->city);
         $this->assertSame('Kadirli', $user->district);
+        $this->assertSame('7 Mart Mahallesi', $user->neighborhood);
         $this->assertDatabaseHas('email_otp_codes', ['user_id' => $user->id, 'purpose' => OtpPurpose::EMAIL_VERIFICATION->value]);
         Mail::assertSent(OtpCodeMail::class, fn (OtpCodeMail $mail): bool => $mail->hasTo('ayse@example.com'));
     }
@@ -68,6 +70,7 @@ class MembershipSecurityTest extends TestCase
             'phone' => '905551112233',
             'city' => 'Osmaniye',
             'district' => 'Kadıköy',
+            'neighborhood' => 'Fenerbahçe Mahallesi',
             'email' => 'ayse@example.com',
             'password' => 'GucluSifre123',
             'password_confirmation' => 'GucluSifre123',
@@ -83,6 +86,42 @@ class MembershipSecurityTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.Kadirli', 'Kadirli')
             ->assertJsonMissing(['Kadıköy']);
+    }
+
+    public function test_neighborhood_endpoint_returns_only_the_selected_districts_neighborhoods(): void
+    {
+        $this->getJson(route('locations.neighborhoods', [
+            'city' => 'Osmaniye',
+            'district' => 'Merkez',
+        ]))
+            ->assertOk()
+            ->assertJsonFragment(['Alibeyli Mahallesi' => 'Alibeyli Mahallesi'])
+            ->assertJsonMissing(['Fenerbahçe Mahallesi']);
+    }
+
+    public function test_neighborhood_endpoint_rejects_a_district_from_another_city(): void
+    {
+        $this->getJson(route('locations.neighborhoods', [
+            'city' => 'Osmaniye',
+            'district' => 'Kadıköy',
+        ]))->assertUnprocessable();
+    }
+
+    public function test_registration_validation_messages_are_translated_to_turkish(): void
+    {
+        $this->app->setLocale('tr');
+        User::factory()->create(['email' => 'ayse@example.com']);
+
+        $response = $this->post('/kayit', [
+            'account_type' => 'individual',
+            'email' => 'ayse@example.com',
+            'password' => 'sadeceharf',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'email' => 'Bu e-posta adresi daha önce kullanılmış.',
+            'password' => 'şifre en az bir büyük ve bir küçük harf içermelidir.',
+        ]);
     }
 
     public function test_business_becomes_pending_approval_after_email_verification(): void

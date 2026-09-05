@@ -19,4 +19,17 @@ class LocationController extends Controller
             'data' => TurkeyAddressService::getDistricts($data['city']),
         ]);
     }
+
+    public function neighborhoods(Request $request): JsonResponse
+    {
+        $city = (string) $request->input('city');
+        $data = $request->validate([
+            'city' => ['required', 'string', Rule::in(array_keys(TurkeyAddressService::getCities()))],
+            'district' => ['required', 'string', Rule::in(array_keys(TurkeyAddressService::getDistricts($city)))],
+        ]);
+
+        return response()->json([
+            'data' => TurkeyAddressService::getNeighborhoods($data['city'], $data['district']),
+        ]);
+    }
 }
