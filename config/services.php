@@ -57,4 +57,10 @@ return [
         'driver' => env('PHONE_OTP_DRIVER', 'log'),
     ],
 
+    'github_deploy' => [
+        'secret' => env('GITHUB_DEPLOY_SECRET'),
+        'branch' => env('GITHUB_DEPLOY_BRANCH', 'main'),
+        'service' => env('GITHUB_DEPLOY_SERVICE', 'estate-agent-deploy.service'),
+    ],
+
 ];
