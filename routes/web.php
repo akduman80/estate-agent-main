@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 Route::get('/', function () {
     $recentListings = Listing::query()
@@ -145,7 +146,11 @@ Route::get('/dokumanlar/{index}/indir', function (int $index) {
 
     abort_unless(Storage::disk('public')->exists($path), 404);
 
-    return Storage::disk('public')->download($path);
+    $extension = pathinfo($path, PATHINFO_EXTENSION);
+    $downloadName = Str::slug((string) $document['title'])
+        .($extension !== '' ? '.'.strtolower($extension) : '');
+
+    return Storage::disk('public')->download($path, $downloadName);
 })->whereNumber('index')->name('documents.download');
 
 Route::get('/ilanlar', function (Request $request) {

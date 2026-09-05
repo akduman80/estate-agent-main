@@ -11,6 +11,10 @@
         $sitePhone = \App\Models\Setting::get('site_phone', '0530 360 77 69');
         $siteEmail = \App\Models\Setting::get('site_email', 'info@zydemlak.com');
         $logoUrl = $siteLogo ? \Illuminate\Support\Facades\Storage::url($siteLogo) : asset('fe-assets/assets/img/logo.png');
+        $headerDocuments = collect(\App\Models\Setting::get('user_documents', []))
+            ->filter(fn ($document) => is_array($document) && ($document['is_active'] ?? true) && filled($document['title'] ?? null) && filled($document['file'] ?? null))
+            ->sortBy(fn ($document) => (int) ($document['sort'] ?? 0))
+            ->values();
     @endphp
 
     <link rel="icon" href="{{ $logoUrl }}">
@@ -38,6 +42,26 @@
             </nav>
 
             <div class="flex items-center gap-2">
+                @if($headerDocuments->isNotEmpty())
+                    <details class="group relative hidden lg:block">
+                        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 [&::-webkit-details-marker]:hidden">
+                            <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
+                            <span>Dokümanlar</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] transition group-open:rotate-180" aria-hidden="true"></i>
+                        </summary>
+                        <div class="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-2xl">
+                            <p class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">İndirmeye hazır dokümanlar</p>
+                            @foreach($headerDocuments as $index => $document)
+                                <a href="{{ route('documents.download', ['index' => $index]) }}" download class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700">
+                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                                        <i class="fa-solid fa-download" aria-hidden="true"></i>
+                                    </span>
+                                    <span class="min-w-0 flex-1 font-semibold">{{ $document['title'] }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </details>
+                @endif
                 @auth
                     <a href="{{ auth()->user()->role->getRedirectPath() }}" class="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:flex">
                         <i class="fa-solid fa-gauge-high"></i><span>Panelim</span>
@@ -61,6 +85,22 @@
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Anasayfa</a>
                 <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Emlak Haberleri</a>
+                @if($headerDocuments->isNotEmpty())
+                    <details class="group rounded-lg border border-orange-200 bg-orange-50">
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-orange-700 [&::-webkit-details-marker]:hidden">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Dokümanlar</span>
+                            <i class="fa-solid fa-chevron-down text-xs transition group-open:rotate-180" aria-hidden="true"></i>
+                        </summary>
+                        <div class="space-y-1 border-t border-orange-100 bg-white p-2">
+                            @foreach($headerDocuments as $index => $document)
+                                <a href="{{ route('documents.download', ['index' => $index]) }}" download class="flex items-center gap-2 rounded-md px-3 py-2 text-slate-700 hover:bg-orange-50 hover:text-orange-700">
+                                    <i class="fa-solid fa-download text-orange-500" aria-hidden="true"></i>
+                                    <span>{{ $document['title'] }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </details>
+                @endif
                 <a href="{{ route('contact') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">İletişim</a>
             </div>
         </nav>
