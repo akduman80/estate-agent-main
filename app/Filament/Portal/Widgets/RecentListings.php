@@ -80,6 +80,7 @@ class RecentListings extends BaseWidget
                     ->label('Yeni İlan Ver')
                     ->icon('heroicon-o-plus')
                     ->color('primary')
+                    ->visible(fn (): bool => ListingResource::canCreate())
                     ->url(ListingResource::getUrl('create')),
             ])
             ->emptyStateHeading('Henüz ilanınız yok')

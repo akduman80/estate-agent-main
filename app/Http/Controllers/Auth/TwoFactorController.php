@@ -2,36 +2,39 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Enums\OtpPurpose;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\EmailOtpService;
-use App\Services\OtpFeatureService;
+use App\Services\PhoneOtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TwoFactorController extends Controller
 {
-    public function show(Request $request, OtpFeatureService $otpFeatures)
+    public function show(Request $request)
     {
         abort_unless($request->session()->has('pending_login_user_id'), 403);
+        $user = User::findOrFail($request->session()->get('pending_login_user_id'));
 
-        if (! $otpFeatures->emailEnabled()) {
+        if (! $user->two_factor_enabled) {
             return $this->completeWithoutOtp($request);
         }
 
-        return view('auth.two-factor');
+        return view('auth.two-factor', [
+            'maskedPhone' => $this->maskPhone($user->phone),
+        ]);
     }
 
-    public function verify(Request $request, EmailOtpService $otpService, OtpFeatureService $otpFeatures)
+    public function verify(Request $request, PhoneOtpService $otpService)
     {
-        if (! $otpFeatures->emailEnabled()) {
+        abort_unless($request->session()->has('pending_login_user_id'), 403);
+        $data = $request->validate(['code' => ['required', 'digits:6']]);
+        $user = User::findOrFail($request->session()->get('pending_login_user_id'));
+
+        if (! $user->two_factor_enabled) {
             return $this->completeWithoutOtp($request);
         }
 
-        $data = $request->validate(['code' => ['required', 'digits:6']]);
-        $user = User::findOrFail($request->session()->get('pending_login_user_id'));
-        $otpService->verify($user, OtpPurpose::LOGIN, $data['code']);
+        $otpService->verify($user, $data['code']);
 
         Auth::login($user, (bool) $request->session()->pull('pending_login_remember', false));
         $request->session()->regenerate();
@@ -41,16 +44,18 @@ class TwoFactorController extends Controller
         return redirect()->intended($user->role->getRedirectPath());
     }
 
-    public function resend(Request $request, EmailOtpService $otpService, OtpFeatureService $otpFeatures)
+    public function resend(Request $request, PhoneOtpService $otpService)
     {
-        if (! $otpFeatures->emailEnabled()) {
+        abort_unless($request->session()->has('pending_login_user_id'), 403);
+        $user = User::findOrFail($request->session()->get('pending_login_user_id'));
+
+        if (! $user->two_factor_enabled) {
             return $this->completeWithoutOtp($request);
         }
 
-        $user = User::findOrFail($request->session()->get('pending_login_user_id'));
-        $otpService->issue($user, OtpPurpose::LOGIN, $request->ip());
+        $otpService->issue($user, $request->ip());
 
-        return back()->with('status', 'Yeni giriş kodu gönderildi.');
+        return back()->with('status', 'Yeni giriş kodu telefonunuza gönderildi.');
     }
 
     private function completeWithoutOtp(Request $request)
@@ -63,6 +68,15 @@ class TwoFactorController extends Controller
         $request->session()->forget('pending_login_user_id');
 
         return redirect()->intended($user->role->getRedirectPath())
-            ->with('status', 'OTP pasif olduğu için giriş kodu istenmedi.');
+            ->with('status', 'İki aşamalı doğrulama kapalı olduğu için giriş kodu istenmedi.');
+    }
+
+    private function maskPhone(?string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $phone) ?? '';
+
+        return strlen($digits) >= 4
+            ? str_repeat('*', max(0, strlen($digits) - 4)).substr($digits, -4)
+            : 'kayıtlı telefonunuz';
     }
 }

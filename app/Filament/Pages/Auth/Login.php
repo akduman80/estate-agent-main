@@ -3,11 +3,10 @@
 namespace App\Filament\Pages\Auth;
 
 use App\Enums\AccountStatus;
-use App\Enums\OtpPurpose;
 use App\Enums\UserRole;
 use App\Models\User;
-use App\Services\EmailOtpService;
 use App\Services\OtpFeatureService;
+use App\Services\PhoneOtpService;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
@@ -66,14 +65,24 @@ class Login extends \Filament\Pages\Auth\Login
             }]);
         }
 
-        if (! $emailOtpEnabled) {
+        $requiresSmsTwoFactor = in_array($user->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true)
+            && $user->two_factor_enabled;
+
+        if (! $requiresSmsTwoFactor) {
             Auth::login($user, (bool) ($data['remember'] ?? false));
             session()->regenerate();
 
             return app(LoginResponse::class);
         }
 
-        app(EmailOtpService::class)->issue($user, OtpPurpose::LOGIN, request()->ip());
+        try {
+            app(PhoneOtpService::class)->issue($user, request()->ip());
+        } catch (ValidationException $exception) {
+            throw ValidationException::withMessages([
+                'data.email' => $exception->errors()['code'][0] ?? 'Telefon doğrulama kodu gönderilemedi.',
+            ]);
+        }
+
         session()->put([
             'pending_login_user_id' => $user->id,
             'pending_login_remember' => (bool) ($data['remember'] ?? false),

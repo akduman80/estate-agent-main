@@ -13,6 +13,8 @@ use Illuminate\Validation\ValidationException;
 
 class ListingPublicationService
 {
+    public function __construct(private readonly ListingQuotaService $quotaService) {}
+
     public function submit(Listing $listing, User $user, bool $termsAccepted): void
     {
         abort_unless($listing->user_id === $user->id || $user->role === UserRole::SUPERVISOR, 403);
@@ -63,6 +65,8 @@ class ListingPublicationService
         if ($listing->eidsVerification?->expires_at?->isPast()) {
             throw ValidationException::withMessages(['listing' => 'EİDS yetki süresi dolmuş.']);
         }
+
+        $this->quotaService->assertAvailable($listing->user);
 
         $listing->forceFill([
             'publication_status' => 'approved',

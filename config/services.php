@@ -52,8 +52,8 @@ return [
     ],
 
     'phone_otp' => [
-        // Yerelde "log" kullanılır. Canlı sağlayıcı adaptörü ve erişim bilgileri
-        // temin edildiğinde bu sürücü değiştirilmelidir.
+        // Gerçek sağlayıcı bilgileri supervisor panelinde şifreli saklanır.
+        // Ayarlar eksikken yerel geliştirmede güvenli log sürücüsü kullanılır.
         'driver' => env('PHONE_OTP_DRIVER', 'log'),
     ],
 

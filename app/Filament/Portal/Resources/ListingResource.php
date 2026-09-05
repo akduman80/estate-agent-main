@@ -8,6 +8,7 @@ use App\Filament\Portal\Resources\ListingResource\Schemas\ListingFormSchema;
 use App\Models\Listing;
 use App\Models\User;
 use App\Services\ListingPublicationService;
+use App\Services\ListingQuotaService;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -96,6 +97,19 @@ class ListingResource extends Resource
             'create' => Pages\CreateListing::route('/create'),
             'edit' => Pages\EditListing::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        /** @var User|null $user */
+        $user = auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->role === UserRole::SUPERVISOR
+            || ! app(ListingQuotaService::class)->hasReachedLimit($user);
     }
 
     public static function getEloquentQuery(): Builder

@@ -73,10 +73,25 @@
                             <label class="block"><span class="text-xs font-bold text-slate-700">Vergi Dairesi <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="tax_office" value="{{ old('tax_office') }}" required></label>
                             <label class="block"><span class="text-xs font-bold text-slate-700">Vergi Numarası <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="tax_number" inputmode="numeric" maxlength="10" value="{{ old('tax_number') }}" required></label>
                             <label class="block"><span class="text-xs font-bold text-slate-700">İşletme Telefonu</span><input class="{{ $inputClass }}" type="tel" name="business_phone" value="{{ old('business_phone') }}"></label>
-                            <label class="block"><span class="text-xs font-bold text-slate-700">İl <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="city" value="{{ old('city') }}" required></label>
-                            <label class="block"><span class="text-xs font-bold text-slate-700">İlçe <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="district" value="{{ old('district') }}" required></label>
                             <label class="block sm:col-span-2"><span class="text-xs font-bold text-slate-700">İşletme Adresi <b class="text-red-500">*</b></span><textarea class="{{ $inputClass }}" name="address" rows="3" required>{{ old('address') }}</textarea></label>
                         @endif
+
+                        <div class="sm:col-span-2"><h3 class="border-b border-slate-200 pb-2 text-sm font-extrabold text-blue-950">Konum bilgileri</h3></div>
+                        <label class="block">
+                            <span class="text-xs font-bold text-slate-700">İl <b class="text-red-500">*</b></span>
+                            <select class="{{ $inputClass }}" name="city" data-city-select data-districts-url="{{ route('locations.districts') }}" required>
+                                <option value="">İl seçin</option>
+                                @foreach($cities as $cityValue => $cityLabel)
+                                    <option value="{{ $cityValue }}" @selected(old('city') === $cityValue)>{{ $cityLabel }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label class="block">
+                            <span class="text-xs font-bold text-slate-700">İlçe <b class="text-red-500">*</b></span>
+                            <select class="{{ $inputClass }}" name="district" data-district-select data-selected="{{ old('district') }}" required disabled>
+                                <option value="">Önce il seçin</option>
+                            </select>
+                        </label>
 
                         <div class="sm:col-span-2"><h3 class="border-b border-slate-200 pb-2 text-sm font-extrabold text-blue-950">İletişim ve giriş bilgileri</h3></div>
                         <label class="block"><span class="text-xs font-bold text-slate-700">Cep Telefonu <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" type="tel" name="phone" autocomplete="tel" value="{{ old('phone') }}" required></label>
@@ -103,4 +118,53 @@
             </div>
         </div>
     </main>
+
+    @push('scripts')
+        <script>
+            document.querySelectorAll('[data-city-select]').forEach((citySelect) => {
+                const form = citySelect.closest('form');
+                const districtSelect = form?.querySelector('[data-district-select]');
+
+                if (!districtSelect) return;
+
+                const loadDistricts = async () => {
+                    const city = citySelect.value;
+                    const selectedDistrict = districtSelect.dataset.selected || '';
+
+                    districtSelect.disabled = true;
+                    districtSelect.innerHTML = `<option value="">${city ? 'İlçeler yükleniyor...' : 'Önce il seçin'}</option>`;
+
+                    if (!city) return;
+
+                    try {
+                        const url = new URL(citySelect.dataset.districtsUrl, window.location.origin);
+                        url.searchParams.set('city', city);
+                        const response = await fetch(url, { headers: { Accept: 'application/json' } });
+
+                        if (!response.ok) throw new Error('İlçeler alınamadı.');
+
+                        const payload = await response.json();
+                        districtSelect.innerHTML = '<option value="">İlçe seçin</option>';
+
+                        Object.entries(payload.data).forEach(([value, label]) => {
+                            const option = new Option(label, value, false, value === selectedDistrict);
+                            districtSelect.add(option);
+                        });
+
+                        districtSelect.disabled = false;
+                        districtSelect.dataset.selected = '';
+                    } catch (error) {
+                        districtSelect.innerHTML = '<option value="">İlçeler yüklenemedi</option>';
+                    }
+                };
+
+                citySelect.addEventListener('change', () => {
+                    districtSelect.dataset.selected = '';
+                    loadDistricts();
+                });
+
+                loadDistricts();
+            });
+        </script>
+    @endpush
 </x-layouts.modern>

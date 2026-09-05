@@ -27,8 +27,12 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'phone',
         'phone_verified_at',
+        'two_factor_enabled',
         'identity_number',
         'identity_number_hash',
+        'city',
+        'district',
+        'listing_limit_override',
         'password',
         'role',
         'account_status',
@@ -47,6 +51,7 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
+            'two_factor_enabled' => 'boolean',
             'password' => 'hashed',
             'role' => UserRole::class,
             'account_status' => AccountStatus::class,
@@ -54,12 +59,18 @@ class User extends Authenticatable implements FilamentUser
             'eids_user_code' => 'encrypted',
             'eids_identity_verified_at' => 'datetime',
             'last_two_factor_at' => 'datetime',
+            'listing_limit_override' => 'integer',
         ];
     }
 
     public function businessProfile()
     {
         return $this->hasOne(BusinessProfile::class);
+    }
+
+    public function listings()
+    {
+        return $this->hasMany(Listing::class);
     }
 
     public function consents()

@@ -2,8 +2,11 @@
 
 namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 
+use App\Enums\AccountStatus;
+use App\Enums\UserRole;
 use App\Models\Listing;
 use App\Models\Setting;
+use App\Models\User;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
@@ -20,6 +23,22 @@ class BasicInfoStep
             ->icon('heroicon-o-pencil-square')
             ->description('Başlık, kategori ve fiyat')
             ->schema([
+                Select::make('user_id')
+                    ->label('İlan Sahibi')
+                    ->options(fn (): array => User::query()
+                        ->whereIn('role', [UserRole::INDIVIDUAL, UserRole::AGENT])
+                        ->where('account_status', AccountStatus::ACTIVE)
+                        ->orderBy('name')
+                        ->pluck('name', 'id')
+                        ->all())
+                    ->searchable()
+                    ->preload()
+                    ->default(fn () => request()->integer('owner') ?: null)
+                    ->visible(fn (): bool => auth()->user()?->role === UserRole::SUPERVISOR)
+                    ->disabled(fn (?Listing $record): bool => (bool) $record?->exists)
+                    ->required(fn (): bool => auth()->user()?->role === UserRole::SUPERVISOR)
+                    ->columnSpanFull(),
+
                 TextInput::make('title')
                     ->label('İlan Başlığı')
                     ->placeholder('Örn: ZİYADE EMLAKTAN KİRALIK 3+1 LÜKS DEREBAHÇE DAİRESİ')

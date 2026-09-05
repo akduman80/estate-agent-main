@@ -57,6 +57,9 @@ class SettingsSeeder extends Seeder
             'email_otp_resend_seconds' => 60,
             'email_otp_hourly_limit' => 5,
             'phone_otp_enabled' => false,
+            'sms_sender' => 'ILHAN AKDMN',
+            'sms_iys_enabled' => null,
+            'sms_iys_list' => 'BIREYSEL',
         ];
 
         foreach ($securitySettings as $key => $value) {

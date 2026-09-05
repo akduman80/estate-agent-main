@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Contracts\PhoneOtpSender;
 use App\Http\Responses\LoginResponse;
 use App\Services\DatabaseMailConfigurator;
+use App\Services\IletiMerkeziPhoneOtpSender;
 use App\Services\LogPhoneOtpSender;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse as LoginResponseContract;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -18,7 +19,11 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
-        $this->app->bind(PhoneOtpSender::class, LogPhoneOtpSender::class);
+        $this->app->bind(PhoneOtpSender::class, function ($app): PhoneOtpSender {
+            return IletiMerkeziPhoneOtpSender::isConfigured()
+                ? $app->make(IletiMerkeziPhoneOtpSender::class)
+                : $app->make(LogPhoneOtpSender::class);
+        });
     }
 
     /**

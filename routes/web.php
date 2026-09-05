@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\EidsCallbackController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PollVoteController;
 use App\Livewire\BlogList;
 use App\Models\LegalDocument;
@@ -115,6 +116,9 @@ Route::get('/haberler/{post:slug}', function (Post $post) {
 Route::get('/iletisim', function () {
     return view('contact');
 })->name('contact');
+
+Route::get('/konum/ilceler', [LocationController::class, 'districts'])
+    ->name('locations.districts');
 
 Route::get('/eids/start', [EidsCallbackController::class, 'start'])->name('eids.start');
 Route::get('/eids/callback', [EidsCallbackController::class, 'callback'])->name('eids.callback');
@@ -232,6 +236,7 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/telefon-dogrula/gonder', [PhoneVerificationController::class, 'send'])->name('phone.verification.send');
     Route::post('/telefon-dogrula', [PhoneVerificationController::class, 'verify'])->name('phone.verification.verify');
     Route::get('/hesap/guvenlik', [AccountSecurityController::class, 'show'])->name('account.security');
+    Route::post('/hesap/iki-asamali-dogrulama', [AccountSecurityController::class, 'updateTwoFactor'])->name('account.two-factor.update');
     Route::post('/hesap/e-posta-degistir', [AccountSecurityController::class, 'requestEmailChange'])->name('account.email.request');
     Route::post('/hesap/e-posta-degistir/onayla', [AccountSecurityController::class, 'confirmEmailChange'])->name('account.email.confirm');
     Route::post('/hesap/sifre-degistir', [AccountSecurityController::class, 'requestPasswordChange'])->name('account.password.request');

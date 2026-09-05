@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use App\Mail\ApprovalRequestedMail;
 use App\Mail\OtpCodeMail;
 use App\Models\EmailOtpCode;
+use App\Models\PhoneOtpCode;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\EmailOtpService;
@@ -38,6 +39,8 @@ class MembershipSecurityTest extends TestCase
             'last_name' => 'Yılmaz',
             'identity_number' => '10000000146',
             'phone' => '905551112233',
+            'city' => 'Osmaniye',
+            'district' => 'Kadirli',
             'email' => 'ayse@example.com',
             'password' => 'GucluSifre123',
             'password_confirmation' => 'GucluSifre123',
@@ -49,8 +52,37 @@ class MembershipSecurityTest extends TestCase
         $this->assertSame(AccountStatus::PENDING_EMAIL, $user->account_status);
         $this->assertSame('10000000146', $user->identity_number);
         $this->assertSame(hash('sha256', '10000000146'), $user->identity_number_hash);
+        $this->assertSame('Osmaniye', $user->city);
+        $this->assertSame('Kadirli', $user->district);
         $this->assertDatabaseHas('email_otp_codes', ['user_id' => $user->id, 'purpose' => OtpPurpose::EMAIL_VERIFICATION->value]);
         Mail::assertSent(OtpCodeMail::class, fn (OtpCodeMail $mail): bool => $mail->hasTo('ayse@example.com'));
+    }
+
+    public function test_registration_rejects_a_district_that_does_not_belong_to_the_city(): void
+    {
+        $response = $this->post('/kayit', [
+            'account_type' => 'individual',
+            'first_name' => 'Ayşe',
+            'last_name' => 'Yılmaz',
+            'identity_number' => '10000000146',
+            'phone' => '905551112233',
+            'city' => 'Osmaniye',
+            'district' => 'Kadıköy',
+            'email' => 'ayse@example.com',
+            'password' => 'GucluSifre123',
+            'password_confirmation' => 'GucluSifre123',
+        ]);
+
+        $response->assertSessionHasErrors('district');
+        $this->assertDatabaseMissing('users', ['email' => 'ayse@example.com']);
+    }
+
+    public function test_district_endpoint_uses_the_shared_location_source(): void
+    {
+        $this->getJson(route('locations.districts', ['city' => 'Osmaniye']))
+            ->assertOk()
+            ->assertJsonPath('data.Kadirli', 'Kadirli')
+            ->assertJsonMissing(['Kadıköy']);
     }
 
     public function test_business_becomes_pending_approval_after_email_verification(): void
@@ -83,15 +115,16 @@ class MembershipSecurityTest extends TestCase
             'role' => UserRole::INDIVIDUAL,
             'account_status' => AccountStatus::ACTIVE,
             'email_verified_at' => now(),
+            'two_factor_enabled' => true,
         ]);
-        $this->createOtp($user, OtpPurpose::LOGIN, '654321');
+        $this->createPhoneOtp($user, '654321');
 
         $response = $this->withSession(['pending_login_user_id' => $user->id, 'pending_login_remember' => false])
             ->post('/iki-asamali-dogrulama', ['code' => '654321']);
 
         $response->assertRedirect('/portal');
         $this->assertAuthenticatedAs($user);
-        $this->assertNotNull(EmailOtpCode::first()->consumed_at);
+        $this->assertNotNull(PhoneOtpCode::first()->consumed_at);
 
         auth()->logout();
         $response = $this->withSession(['pending_login_user_id' => $user->id])
@@ -101,15 +134,15 @@ class MembershipSecurityTest extends TestCase
 
     public function test_otp_locks_after_five_wrong_attempts(): void
     {
-        $user = User::factory()->create();
-        $this->createOtp($user, OtpPurpose::LOGIN, '123456');
+        $user = User::factory()->create(['two_factor_enabled' => true]);
+        $this->createPhoneOtp($user, '123456');
 
         foreach (range(1, 5) as $attempt) {
             $this->withSession(['pending_login_user_id' => $user->id])
                 ->post('/iki-asamali-dogrulama', ['code' => '000000']);
         }
 
-        $otp = EmailOtpCode::firstOrFail();
+        $otp = PhoneOtpCode::firstOrFail();
         $this->assertSame(5, $otp->attempts);
         $this->assertTrue($otp->locked_until->isFuture());
     }
@@ -140,6 +173,15 @@ class MembershipSecurityTest extends TestCase
         return EmailOtpCode::create([
             'user_id' => $user->id,
             'purpose' => $purpose,
+            'code_hash' => hash_hmac('sha256', $code, config('app.key')),
+            'expires_at' => now()->addMinutes(5),
+        ]);
+    }
+
+    private function createPhoneOtp(User $user, string $code): PhoneOtpCode
+    {
+        return PhoneOtpCode::create([
+            'user_id' => $user->id,
             'code_hash' => hash_hmac('sha256', $code, config('app.key')),
             'expires_at' => now()->addMinutes(5),
         ]);

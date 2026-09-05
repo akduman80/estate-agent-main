@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OtpPurpose;
+use App\Enums\UserRole;
 use App\Mail\SecurityNoticeMail;
 use App\Services\EmailOtpService;
+use App\Services\IletiMerkeziPhoneOtpSender;
 use App\Services\OtpFeatureService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class AccountSecurityController extends Controller
 {
@@ -19,7 +22,38 @@ class AccountSecurityController extends Controller
         return view('account.security', [
             'user' => $request->user(),
             'emailOtpEnabled' => $otpFeatures->emailEnabled(),
+            'canManageTwoFactor' => in_array($request->user()->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true),
         ]);
+    }
+
+    public function updateTwoFactor(Request $request)
+    {
+        $user = $request->user();
+
+        abort_unless(in_array($user->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true), 403);
+
+        $data = $request->validate([
+            'enabled' => ['required', 'boolean'],
+            'current_password' => ['required', 'current_password'],
+        ]);
+
+        if ((bool) $data['enabled'] && blank($user->phone)) {
+            throw ValidationException::withMessages([
+                'phone' => 'İki aşamalı doğrulama için hesabınızda telefon numarası bulunmalıdır.',
+            ]);
+        }
+
+        if ((bool) $data['enabled'] && ! IletiMerkeziPhoneOtpSender::isConfigured()) {
+            throw ValidationException::withMessages([
+                'enabled' => 'SMS servisi hazır olmadığı için iki aşamalı doğrulama açılamadı. Supervisor ile iletişime geçin.',
+            ]);
+        }
+
+        $user->forceFill(['two_factor_enabled' => (bool) $data['enabled']])->save();
+
+        return back()->with('status', (bool) $data['enabled']
+            ? 'İki aşamalı doğrulama açıldı. Sonraki girişinizde telefonunuza SMS kodu gönderilecek.'
+            : 'İki aşamalı doğrulama kapatıldı. Sonraki girişinizde yalnızca şifreniz istenecek.');
     }
 
     public function requestEmailChange(Request $request, EmailOtpService $service, OtpFeatureService $otpFeatures)

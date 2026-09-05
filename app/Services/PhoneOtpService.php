@@ -36,7 +36,17 @@ class PhoneOtpService
             'expires_at' => now()->addMinutes($settings['ttl_minutes']),
             'request_ip' => $ipAddress,
         ]);
-        $this->sender->send($user->phone, $code);
+        try {
+            $this->sender->send($user->phone, $code);
+        } catch (\Throwable $exception) {
+            PhoneOtpCode::query()->where('user_id', $user->id)->whereNull('consumed_at')->update(['consumed_at' => now()]);
+
+            report($exception);
+
+            throw ValidationException::withMessages([
+                'code' => 'Telefon doğrulama kodu gönderilemedi. Lütfen daha sonra tekrar deneyin.',
+            ]);
+        }
     }
 
     public function verify(User $user, string $code): void

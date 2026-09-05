@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Rules\TurkishIdentityNumber;
 use App\Services\EmailOtpService;
 use App\Services\OtpFeatureService;
+use App\Services\TurkeyAddressService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +33,7 @@ class RegistrationController extends Controller
             'type' => $type,
             'documents' => LegalDocument::query()->where('is_active', true)->latest('published_at')->get()->unique('slug'),
             'emailOtpEnabled' => $otpFeatures->emailEnabled(),
+            'cities' => TurkeyAddressService::getCities(),
         ]);
     }
 
@@ -47,6 +49,12 @@ class RegistrationController extends Controller
             'phone' => ['required', 'string', 'max:24'],
             'email' => ['required', 'email:rfc', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(10)->letters()->mixedCase()->numbers()],
+            'city' => ['required', 'string', Rule::in(array_keys(TurkeyAddressService::getCities()))],
+            'district' => [
+                'required',
+                'string',
+                Rule::in(array_keys(TurkeyAddressService::getDistricts($request->string('city')->toString()))),
+            ],
             'consents' => ['array'],
         ];
 
@@ -59,8 +67,6 @@ class RegistrationController extends Controller
                 'tax_office' => ['required', 'string', 'max:150'],
                 'tax_number' => ['required', 'digits:10'],
                 'business_phone' => ['nullable', 'string', 'max:24'],
-                'city' => ['required', 'string', 'max:100'],
-                'district' => ['required', 'string', 'max:100'],
                 'address' => ['required', 'string', 'max:1000'],
             ];
         }
@@ -97,6 +103,8 @@ class RegistrationController extends Controller
                 'phone' => $data['phone'],
                 'identity_number' => $identity,
                 'identity_number_hash' => $identity ? hash('sha256', $identity) : null,
+                'city' => $data['city'],
+                'district' => $data['district'],
                 'password' => Hash::make($data['password']),
                 'role' => $type === 'individual' ? UserRole::INDIVIDUAL : UserRole::AGENT,
                 'account_status' => $emailOtpEnabled

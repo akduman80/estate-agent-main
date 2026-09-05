@@ -29,7 +29,10 @@ class DatabaseMailSettingsTest extends TestCase
         $this->actingAs($supervisor)
             ->get('/admin/manage-settings')
             ->assertOk()
-            ->assertSee('SMTP e-posta servisini aktif et');
+            ->assertSee('SMTP e-posta servisini aktif et')
+            ->assertSee('İleti Merkezi SMS bağlantısı')
+            ->assertSee('API Key')
+            ->assertSee('API Hash');
 
         Filament::setCurrentPanel(Filament::getPanel('admin'));
 
@@ -69,6 +72,20 @@ class DatabaseMailSettingsTest extends TestCase
         $this->assertSame(587, config('mail.mailers.smtp.port'));
         $this->assertSame('cok-gizli-parola', config('mail.mailers.smtp.password'));
         $this->assertSame('noreply@example.com', config('mail.from.address'));
+    }
+
+    public function test_sms_api_credentials_are_encrypted(): void
+    {
+        Setting::putSecret('sms_api_key', 'gizli-api-key');
+        Setting::putSecret('sms_api_hash', 'gizli-api-hash');
+
+        $rawKey = (string) Setting::query()->where('key', 'sms_api_key')->value('value');
+        $rawHash = (string) Setting::query()->where('key', 'sms_api_hash')->value('value');
+
+        $this->assertStringNotContainsString('gizli-api-key', $rawKey);
+        $this->assertStringNotContainsString('gizli-api-hash', $rawHash);
+        $this->assertSame('gizli-api-key', Setting::getSecret('sms_api_key'));
+        $this->assertSame('gizli-api-hash', Setting::getSecret('sms_api_hash'));
     }
 
     public function test_email_otp_policy_uses_saved_values_and_enforces_safe_bounds(): void

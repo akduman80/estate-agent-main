@@ -2,12 +2,11 @@
 
 namespace App\Filament\Pages;
 
-use App\Contracts\PhoneOtpSender;
 use App\Enums\UserRole;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\DatabaseMailConfigurator;
-use App\Services\LogPhoneOtpSender;
+use App\Services\IletiMerkeziPhoneOtpSender;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -103,6 +102,9 @@ class ManageSettings extends Page
             'email_otp_resend_seconds' => 60,
             'email_otp_hourly_limit' => 5,
             'phone_otp_enabled' => false,
+            'sms_sender' => 'ILHAN AKDMN',
+            'sms_iys_enabled' => null,
+            'sms_iys_list' => 'BIREYSEL',
         ];
     }
 
@@ -124,8 +126,10 @@ class ManageSettings extends Page
             }
         }
 
-        // Kayıtlı SMTP parolası hiçbir zaman forma geri yazılmaz.
+        // Kayıtlı gizli değerler hiçbir zaman forma geri yazılmaz.
         $settings['smtp_password'] = null;
+        $settings['sms_api_key'] = null;
+        $settings['sms_api_hash'] = null;
 
         // 3. Formu dolduruyoruz[cite: 6]
         $this->form->fill($settings); // [cite: 6]
@@ -287,7 +291,7 @@ class ManageSettings extends Page
                                     ->label('Canlı servis durumu')
                                     ->content(function (): string {
                                         $mailReady = app(DatabaseMailConfigurator::class)->hasStoredConfiguration();
-                                        $smsReady = ! (app(PhoneOtpSender::class) instanceof LogPhoneOtpSender);
+                                        $smsReady = IletiMerkeziPhoneOtpSender::isConfigured();
 
                                         return sprintf(
                                             'SMTP ayarları: %s · SMS servisi: %s',
@@ -295,7 +299,7 @@ class ManageSettings extends Page
                                             $smsReady ? 'Hazır' : 'Hazır değil (log sürücüsü)',
                                         );
                                     })
-                                    ->helperText('SMTP parolası şifreli saklanır ve kayıttan sonra tekrar gösterilmez.')
+                                    ->helperText('SMTP parolası ile SMS API Key/Hash değerleri şifreli saklanır ve kayıttan sonra tekrar gösterilmez.')
                                     ->columnSpanFull(),
 
                                 Forms\Components\Toggle::make('smtp_enabled')
@@ -402,9 +406,61 @@ class ManageSettings extends Page
 
                                 Forms\Components\Toggle::make('phone_otp_enabled')
                                     ->label('Telefon OTP sistemini aktif et')
-                                    ->helperText('Gerçek SMS sağlayıcısı bağlanmadan açmayın. Aktif olduğunda EİDS kimlik işleminden önce telefon doğrulaması zorunlu olur.')
+                                    ->helperText('Aktif olduğunda EİDS kimlik işleminden önce telefon doğrulaması zorunlu olur.')
                                     ->default(false)
+                                    ->live()
                                     ->inline(false),
+
+                                Forms\Components\Section::make('İleti Merkezi SMS bağlantısı')
+                                    ->description('API Key ve Hash şifrelenerek saklanır. Kayıtlı değerler ekranda tekrar gösterilmez.')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('sms_api_key')
+                                            ->label('API Key')
+                                            ->password()
+                                            ->revealable()
+                                            ->autocomplete('new-password')
+                                            ->dehydrated(fn ($state): bool => filled($state))
+                                            ->helperText(Setting::getSecret('sms_api_key')
+                                                ? 'Kayıtlı API Key korunur. Değiştirmek için yeni değeri yazın.'
+                                                : 'İlk aktivasyonda zorunludur.'),
+
+                                        Forms\Components\TextInput::make('sms_api_hash')
+                                            ->label('API Hash')
+                                            ->password()
+                                            ->revealable()
+                                            ->autocomplete('new-password')
+                                            ->dehydrated(fn ($state): bool => filled($state))
+                                            ->helperText(Setting::getSecret('sms_api_hash')
+                                                ? 'Kayıtlı API Hash korunur. Değiştirmek için yeni değeri yazın.'
+                                                : 'İlk aktivasyonda zorunludur.'),
+
+                                        Forms\Components\TextInput::make('sms_sender')
+                                            ->label('Onaylı SMS başlığı')
+                                            ->placeholder('ILHAN AKDMN')
+                                            ->maxLength(11)
+                                            ->helperText('İleti Merkezi panelindeki onaylı başlığı büyük/küçük harf ve boşluklarıyla birebir yazın.'),
+
+                                        Forms\Components\Select::make('sms_iys_enabled')
+                                            ->label('OTP mesajında İYS sorgusu')
+                                            ->placeholder('Seçiniz')
+                                            ->options([
+                                                '0' => 'Hayır (İYS sorgusu yapılmasın)',
+                                                '1' => 'Evet (İYS sorgusu yapılsın)',
+                                            ])
+                                            ->live()
+                                            ->helperText('Ticari iletilerde İYS sorgusu yasal olarak zorunludur. OTP kullanımınıza uygun seçimi siz yapmalısınız.'),
+
+                                        Forms\Components\Select::make('sms_iys_list')
+                                            ->label('İYS alıcı listesi')
+                                            ->options([
+                                                'BIREYSEL' => 'Bireysel',
+                                                'TACIR' => 'Tacir',
+                                            ])
+                                            ->default('BIREYSEL')
+                                            ->visible(fn ($get): bool => (string) $get('sms_iys_enabled') === '1'),
+                                    ])
+                                    ->columns(2)
+                                    ->columnSpanFull(),
                             ])
                             ->columns(2),
 
@@ -493,14 +549,35 @@ class ManageSettings extends Page
             ]);
         }
 
-        if (($data['phone_otp_enabled'] ?? false) && app(PhoneOtpSender::class) instanceof LogPhoneOtpSender) {
-            throw ValidationException::withMessages([
-                'data.phone_otp_enabled' => 'Telefon OTP aktif edilemedi. Önce gerçek SMS sağlayıcısını uygulamaya bağlayın.',
-            ]);
+        if ($data['phone_otp_enabled'] ?? false) {
+            $requiredSmsFields = [
+                'sms_api_key' => 'API Key',
+                'sms_api_hash' => 'API Hash',
+                'sms_sender' => 'Onaylı SMS başlığı',
+                'sms_iys_enabled' => 'İYS tercihi',
+            ];
+
+            foreach ($requiredSmsFields as $key => $label) {
+                $hasValue = in_array($key, ['sms_api_key', 'sms_api_hash'], true)
+                    ? filled($data[$key] ?? null) || filled(Setting::getSecret($key))
+                    : filled($data[$key] ?? null) || (string) ($data[$key] ?? '') === '0';
+
+                if (! $hasValue) {
+                    throw ValidationException::withMessages([
+                        "data.{$key}" => "Telefon OTP için {$label} alanı zorunludur.",
+                    ]);
+                }
+            }
+
+            if ((string) ($data['sms_iys_enabled'] ?? '') === '1' && blank($data['sms_iys_list'] ?? null)) {
+                throw ValidationException::withMessages([
+                    'data.sms_iys_list' => 'İYS sorgusu açıkken alıcı listesi zorunludur.',
+                ]);
+            }
         }
 
         foreach ($data as $key => $value) { // [cite: 15]
-            if ($key === 'smtp_password') {
+            if (in_array($key, ['smtp_password', 'sms_api_key', 'sms_api_hash'], true)) {
                 if (filled($value)) {
                     Setting::putSecret($key, $value);
                 }

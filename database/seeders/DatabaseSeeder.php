@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SettingsSeeder::class,
             LocationSeeder::class,
             ListingSeeder::class,
+            ListingLimitSeeder::class,
             PostSeeder::class,
         ]);
     }
