@@ -254,7 +254,6 @@ Route::middleware('auth')->group(function (): void {
 Route::get('/sozlesmeler/{document:slug}', function (LegalDocument $document) {
     abort_unless($document->is_active, 404);
 
-
     return view('legal.show', compact('document'));
 })->name('legal.show');
 Route::post('/github-deploy-webhook', GitHubDeployController::class);
