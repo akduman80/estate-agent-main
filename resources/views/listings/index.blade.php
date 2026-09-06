@@ -51,8 +51,8 @@
                         </summary>
                         <form action="{{ route('listings.index') }}" method="get" class="space-y-5 p-5" data-location-selects>
                             <label class="block">
-                                <span class="text-xs font-bold text-slate-700">Kelime veya ilan başlığı</span>
-                                <span class="relative block"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 mt-0.5 -translate-y-1/2 text-xs text-slate-400"></i><input type="search" name="q" value="{{ request('q') }}" placeholder="Örn: 3+1 daire, villa..." class="{{ $inputClass }} pl-9"></span>
+                                <span class="text-xs font-bold text-slate-700">Kelime, konum veya ilan no</span>
+                                <span class="relative block"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 mt-0.5 -translate-y-1/2 text-xs text-slate-400"></i><input type="search" name="q" value="{{ request('q') }}" placeholder="Örn: 3+1, Kadirli, 123..." class="{{ $inputClass }} pl-9"></span>
                             </label>
 
                             <label class="block"><span class="text-xs font-bold text-slate-700">İl</span><select name="city" class="{{ $inputClass }}" data-city-select data-districts-url="{{ route('locations.districts') }}" data-neighborhoods-url="{{ route('locations.neighborhoods') }}"><option value="">Tüm iller</option>@foreach($cities as $city)<option value="{{ $city }}" @selected(request('city') === $city)>{{ $city }}</option>@endforeach</select></label>

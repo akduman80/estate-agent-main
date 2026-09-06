@@ -8,7 +8,7 @@
         <div class="mx-auto max-w-7xl">
             <form method="GET" action="{{ route('listings.index') }}" class="grid grid-cols-1 items-end gap-4 rounded-2xl bg-white p-4 shadow-2xl sm:grid-cols-2 sm:p-6 lg:grid-cols-4 xl:grid-cols-8" data-location-selects>
                 <div class="xl:col-span-2">
-                    <label for="home-q" class="mb-1 block text-xs font-semibold text-slate-500">Kelime / İlan No</label>
+                    <label for="home-q" class="mb-1 block text-xs font-semibold text-slate-500">Kelime / Konum / İlan No</label>
                     <div class="relative">
                         <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         <input id="home-q" name="q" type="search" placeholder="Örn: 3+1 Daire, Arsa..." class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm outline-none transition focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200">
