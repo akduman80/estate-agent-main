@@ -200,7 +200,6 @@
     .site-footer > div > div:first-child > div:first-child { grid-column: 1 / -1; }
     .site-footer > div > div:first-child > div:first-child img { height: 3.5rem; }
     .site-footer > div > div:first-child > div:first-child p { margin-top: .5rem; }
-    .site-footer > div > div:first-child > div:nth-child(3) { display: none; }
     .site-footer > div > div:last-child { margin-top: 1.2rem; padding-top: 1rem; }
 
     .has-phone-bottom-nav { padding-bottom: calc(4.6rem + env(safe-area-inset-bottom)); }
@@ -211,7 +210,7 @@
         bottom: 0;
         left: 0;
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         align-items: end;
         min-height: 4.35rem;
         border-top: 1px solid #dbeafe;

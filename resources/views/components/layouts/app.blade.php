@@ -124,7 +124,6 @@
                 <li class="{{ request()->is('/') ? 'active' : '' }}"><a href="{{ url('/') }}">Ana Sayfa</a></li>
                 <li class="{{ request()->is('ilanlar*') ? 'active' : '' }}"><a href="{{ route('listings.index') }}">İlanlar</a></li>
                 <li class="{{ request()->is('haberler*') ? 'active' : '' }}"><a href="{{ url('/haberler') }}">Haberler / Blog</a></li>
-                <li class="{{ request()->is('iletisim') ? 'active' : '' }}"><a href="{{ route('contact') }}">İletişim</a></li>
             </ul>
         </div>
     </div>
@@ -153,6 +152,7 @@
                         <h4>Hızlı Bağlantılar</h4>
                         <div class="footer-title-line"></div>
                         <ul class="footer-menu">
+                            <li><a href="{{ route('contact') }}">İletişim</a></li>
                             <li><a href="{{ route('listings.index') }}">İlanlar</a></li>
                             <li><a href="{{ url('/haberler') }}">Haberler</a></li>
                         </ul>

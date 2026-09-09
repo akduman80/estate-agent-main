@@ -39,7 +39,6 @@
                 <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 transition {{ request()->routeIs('blogs.*') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Emlak Haberleri</a>
                 <a href="{{ route('projects.index') }}" class="rounded-lg px-3 py-2 transition {{ request()->routeIs('projects.*') ? 'bg-blue-950 font-bold text-white' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Projeler</a>
-                <a href="{{ route('contact') }}" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">İletişim</a>
             </nav>
 
             <div class="header-actions flex items-center gap-2">
@@ -114,7 +113,6 @@
                         </div>
                     </details>
                 @endif
-                <a href="{{ route('contact') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">İletişim</a>
             </div>
         </nav>
     </header>
@@ -169,7 +167,6 @@
             <a href="{{ route('listings.index') }}" class="{{ request()->routeIs('listings.*') ? 'is-active' : '' }}"><i class="fa-solid fa-list"></i><span>İlanlar</span></a>
             <a href="{{ url('/portal/listings/create') }}" class="phone-bottom-create"><i class="fa-solid fa-plus"></i><span>İlan Ver</span></a>
             <a href="{{ route('projects.index') }}" class="{{ request()->routeIs('projects.*') ? 'is-active' : '' }}"><i class="fa-regular fa-building"></i><span>Projeler</span></a>
-            <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'is-active' : '' }}"><i class="fa-solid fa-message"></i><span>İletişim</span></a>
         </nav>
     @endauth
 
