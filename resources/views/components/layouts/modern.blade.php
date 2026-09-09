@@ -25,6 +25,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @stack('head')
+    @include('partials.pwa', ['pwaAdmin' => false])
 </head>
 <body class="flex min-h-screen flex-col overflow-x-hidden bg-slate-50 font-sans text-slate-800 antialiased {{ auth()->check() ? 'has-phone-bottom-nav' : '' }}">
     <header class="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">

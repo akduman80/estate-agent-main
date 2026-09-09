@@ -40,6 +40,7 @@
     <link rel="stylesheet" href="{{ asset('fe-assets/assets/css/responsive.css') }}">
 
     @livewireStyles
+    @include('partials.pwa', ['pwaAdmin' => false])
 </head>
 <body>
 

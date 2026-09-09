@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? 'ZYDEMLAK' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.pwa', ['pwaAdmin' => false])
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-900">
     <main class="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-4 py-12">

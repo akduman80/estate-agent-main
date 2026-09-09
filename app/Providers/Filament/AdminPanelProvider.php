@@ -28,6 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn () => view('partials.pwa', ['pwaAdmin' => true]),
+            )
+            ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
                 fn () => view('filament.admin.typography'),
             )
