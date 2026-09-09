@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\Listing;
 use App\Models\ListingEidsRequestLog;
 use Carbon\Carbon;
@@ -119,7 +120,7 @@ class EidsService
     private function requestPayload(Listing $listing): array
     {
         $listing->loadMissing(['user.businessProfile', 'businessProfile']);
-        $userCode = $listing->user?->eids_user_code;
+        $userCode = $this->userCodeForListing($listing);
         $taxNumber = match ($listing->source_type) {
             'owner' => null,
             'real_estate_office' => $listing->businessProfile?->tax_number ?: $listing->user?->businessProfile?->tax_number,
@@ -133,6 +134,15 @@ class EidsService
             'TasinmazId' => is_numeric($listing->eids_document_no) ? (float) $listing->eids_document_no : $listing->eids_document_no,
             'IlanNo' => (string) $listing->id,
         ];
+    }
+
+    private function userCodeForListing(Listing $listing): ?string
+    {
+        if ($listing->source_type === 'zydemlak' && $listing->user?->role === UserRole::SUPERVISOR) {
+            return config('services.eids.user_code');
+        }
+
+        return $listing->user?->eids_user_code;
     }
 
     private function logRequest(
@@ -172,8 +182,8 @@ class EidsService
         $listing->eidsVerification()->updateOrCreate([], [
             'user_id' => $listing->user_id,
             'business_profile_id' => $listing->business_profile_id,
-            'eids_user_code_hash' => filled($listing->user?->eids_user_code)
-                ? hash('sha256', $listing->user->eids_user_code)
+            'eids_user_code_hash' => filled($this->userCodeForListing($listing))
+                ? hash('sha256', $this->userCodeForListing($listing))
                 : null,
             'error_message' => null,
             'response' => $payload,

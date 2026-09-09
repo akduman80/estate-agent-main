@@ -227,4 +227,35 @@ class EidsServiceTest extends TestCase
         $this->assertSame('Taşınmaza ait yetkilendirme bilgisi bulunmadı. ERR-004', $listing->fresh()->eidsVerification->error_message);
         $this->assertSame(400, ListingEidsRequestLog::firstOrFail()->response_status);
     }
+
+    public function test_platform_listing_uses_configured_code_even_when_supervisor_has_personal_code(): void
+    {
+        config()->set('services.eids.company_code', 'platform-guid');
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.user_code', 'platform-user-guid');
+        config()->set('services.eids.tax_no', '0230192423');
+        config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
+        config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
+        Http::fake(['ws.gtb.gov.tr:8443/EidsTasinmazAPI' => Http::response([
+            'data' => ['Il' => 'Osmaniye', 'Ilce' => 'Merkez', 'Mahalle' => 'Alibeyli', 'Ada' => '1', 'Parsel' => '2', 'IlanSuresi' => now()->addMonth()->toIso8601String()],
+            'statusCode' => 200, 'errors' => null,
+        ])]);
+
+        $user = User::factory()->create([
+            'role' => UserRole::SUPERVISOR,
+            'account_status' => AccountStatus::ACTIVE,
+            'eids_user_code' => 'individual-user-guid',
+        ]);
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $user->id, 'title' => 'Bireysel EİDS', 'slug' => 'bireysel-eids',
+            'price' => 1000, 'type' => 'Satılık', 'category' => 'Arsa', 'source_type' => 'zydemlak',
+            'eids_document_no' => '123', 'city_id' => '80', 'district_id' => 'Merkez',
+        ]));
+
+        $this->assertTrue(app(EidsService::class)->verifyListing($listing));
+        Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === 'platform-user-guid' && $request['VergiNo'] === '0230192423');
+        $this->assertSame($user->id, $listing->fresh()->eidsVerification->user_id);
+        $this->assertSame(hash('sha256', 'platform-user-guid'), $listing->fresh()->eidsVerification->eids_user_code_hash);
+    }
 }

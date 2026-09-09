@@ -25,7 +25,9 @@ class BasicInfoStep
             ->schema([
                 Select::make('user_id')
                     ->label('İlan Sahibi')
-                    ->options(fn (): array => User::query()
+                    ->options(fn (): array => (auth()->user()?->role === UserRole::SUPERVISOR
+                        ? [auth()->id() => 'Ziyade Emlak (Kendi adıma)']
+                        : []) + User::query()
                         ->whereIn('role', [UserRole::INDIVIDUAL, UserRole::AGENT])
                         ->where('account_status', AccountStatus::ACTIVE)
                         ->orderBy('name')

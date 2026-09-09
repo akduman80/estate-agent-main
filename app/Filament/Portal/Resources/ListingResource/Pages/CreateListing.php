@@ -8,8 +8,8 @@ use App\Models\User;
 use App\Services\ListingQuotaService;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class CreateListing extends CreateRecord
 {
@@ -40,7 +40,10 @@ class CreateListing extends CreateRecord
             ? User::query()->find($data['user_id'] ?? null)
             : $authenticatedUser;
 
-        if (! $owner || ! in_array($owner->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true)) {
+        $isPlatformOwner = $authenticatedUser->role === UserRole::SUPERVISOR
+            && $owner?->id === $authenticatedUser->id;
+
+        if (! $owner || (! $isPlatformOwner && ! in_array($owner->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true))) {
             throw ValidationException::withMessages(['user_id' => 'Geçerli bir bireysel üye veya emlakçı seçmelisiniz.']);
         }
 
