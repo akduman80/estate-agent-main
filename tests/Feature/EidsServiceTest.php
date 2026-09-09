@@ -41,7 +41,7 @@ class EidsServiceTest extends TestCase
             ], 200),
         ]);
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['eids_user_code' => '22222222-2222-2222-2222-222222222222']);
         $listing = Listing::withoutEvents(fn () => Listing::create([
             'user_id' => $user->id,
             'title' => 'EİDS test ilanı',
@@ -96,7 +96,7 @@ class EidsServiceTest extends TestCase
         config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');
         config()->set('services.eids.username', 'eids-user');
         config()->set('services.eids.password', 'eids-pass');
-        config()->set('services.eids.user_code', null);
+        config()->set('services.eids.user_code', 'another-agent-code');
         config()->set('services.eids.tax_no', '0230192423');
         config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
         config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
@@ -124,7 +124,7 @@ class EidsServiceTest extends TestCase
 
         $this->assertSame('rejected', $listing->eids_status);
         $this->assertFalse($listing->is_active);
-        $this->assertSame('Taşınmaz ID ve EIDS_USER_CODE ayarı zorunludur.', $listing->eidsVerification->error_message);
+        $this->assertSame('Taşınmaz ID zorunludur. İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.', $listing->eidsVerification->error_message);
         Http::assertNothingSent();
     }
 
@@ -157,5 +157,74 @@ class EidsServiceTest extends TestCase
         Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === 'individual-user-guid' && $request['VergiNo'] === null);
         $this->assertSame($user->id, $listing->fresh()->eidsVerification->user_id);
         $this->assertNull($listing->fresh()->eidsVerification->business_profile_id);
+    }
+
+    public function test_it_keeps_two_agents_codes_and_tax_numbers_separate(): void
+    {
+        config()->set('services.eids.company_code', 'platform-guid');
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.user_code', 'platform-user-guid');
+        config()->set('services.eids.tax_no', '0230192423');
+        config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
+        config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
+        Http::fake(['ws.gtb.gov.tr:8443/EidsTasinmazAPI' => Http::response([
+            'data' => ['Il' => 'Osmaniye', 'Ilce' => 'Merkez', 'Mahalle' => 'Alibeyli', 'Ada' => '1', 'Parsel' => '2', 'IlanSuresi' => now()->addMonth()->toIso8601String()],
+            'statusCode' => 200, 'errors' => null,
+        ])]);
+
+        foreach (['agent-one', 'agent-two'] as $code) {
+            $user = User::factory()->create([
+                'role' => UserRole::AGENT,
+                'account_status' => AccountStatus::ACTIVE,
+                'eids_user_code' => $code,
+            ]);
+            $profile = $user->businessProfile()->create([
+                'office_name' => $code, 'license_number' => $code, 'tax_office' => 'Merkez',
+                'tax_number' => $code.'-tax', 'tax_number_hash' => hash('sha256', $code),
+                'city' => 'Osmaniye', 'district' => 'Merkez', 'address' => 'Test adresi',
+            ]);
+            $listing = Listing::withoutEvents(fn () => Listing::create([
+                'user_id' => $user->id, 'title' => 'Bireysel EİDS', 'slug' => $code,
+                'price' => 1000, 'type' => 'Satılık', 'category' => 'Arsa', 'source_type' => 'real_estate_office',
+                'eids_document_no' => '123', 'city_id' => '80', 'district_id' => 'Merkez',
+            ]));
+
+            $this->assertTrue(app(EidsService::class)->verifyListing($listing));
+            Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === $code && $request['VergiNo'] === $code.'-tax');
+            $this->assertSame($user->id, $listing->fresh()->eidsVerification->user_id);
+        }
+        Http::assertSentCount(2);
+    }
+
+    public function test_it_records_authorization_rejection_instead_of_connection_failure(): void
+    {
+        config()->set('services.eids.company_code', 'platform-guid');
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.user_code', 'platform-user-guid');
+        config()->set('services.eids.tax_no', '0230192423');
+        config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
+        config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
+        Http::fake(['*' => Http::response([
+            'data' => null, 'statusCode' => 400,
+            'errors' => ['Taşınmaza ait yetkilendirme bilgisi bulunmadı.', 'ERR-004'],
+        ], 400)]);
+
+        $user = User::factory()->create([
+            'role' => UserRole::INDIVIDUAL,
+            'account_status' => AccountStatus::ACTIVE,
+            'eids_user_code' => 'individual-user-guid',
+        ]);
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $user->id, 'title' => 'Bireysel EİDS', 'slug' => 'bireysel-eids',
+            'price' => 1000, 'type' => 'Satılık', 'category' => 'Arsa', 'source_type' => 'owner',
+            'eids_document_no' => '123', 'city_id' => '80', 'district_id' => 'Merkez',
+        ]));
+
+        $this->assertFalse(app(EidsService::class)->verifyListing($listing));
+        $this->assertSame('rejected', $listing->fresh()->eids_status);
+        $this->assertSame('Taşınmaza ait yetkilendirme bilgisi bulunmadı. ERR-004', $listing->fresh()->eidsVerification->error_message);
+        $this->assertSame(400, ListingEidsRequestLog::firstOrFail()->response_status);
     }
 }

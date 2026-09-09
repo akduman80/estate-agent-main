@@ -33,8 +33,8 @@ class EidsService
         }
 
         if (blank($listing->eids_document_no) || blank(data_get($requestPayload, 'KullaniciKodu'))) {
-            $this->markAsRejected($listing, ['Taşınmaz ID ve EIDS_USER_CODE ayarı zorunludur.']);
-            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', 'Taşınmaz ID ve EIDS_USER_CODE ayarı zorunludur.', null, $startedAt, $attemptedAt);
+            $this->markAsRejected($listing, ['Taşınmaz ID zorunludur. İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.']);
+            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', 'Taşınmaz ID zorunludur. İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.', null, $startedAt, $attemptedAt);
 
             return false;
         }
@@ -46,7 +46,24 @@ class EidsService
                 ->timeout(config('services.eids.timeout', 20))
                 ->post($endpoint, $requestPayload)
                 ->throw();
-        } catch (ConnectionException|RequestException $exception) {
+        } catch (RequestException $exception) {
+            $response = $exception->response;
+            if ($response->status() === 400) {
+                $payload = $response->json() ?? [];
+                $errors = data_get($payload, 'errors') ?: ['EİDS yetkilendirmesi doğrulanamadı.'];
+                $errors = is_array($errors) ? $errors : [$errors];
+                $this->markAsRejected($listing, $errors, $payload);
+                $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', implode(' ', $errors), $response, $startedAt, $attemptedAt);
+
+                return false;
+            }
+
+            $message = 'EİDS sorgusu başarısız oldu (HTTP '.$response->status().'). Lütfen daha sonra tekrar deneyin.';
+            $this->markAsPending($listing, $message);
+            $this->logRequest($listing, $endpoint, $requestPayload, 'pending', $message, $response, $startedAt, $attemptedAt);
+
+            return false;
+        } catch (ConnectionException $exception) {
             Log::warning('EİDS doğrulama isteği başarısız.', [
                 'listing_id' => $listing->id,
                 'message' => $exception->getMessage(),
@@ -102,7 +119,7 @@ class EidsService
     private function requestPayload(Listing $listing): array
     {
         $listing->loadMissing(['user.businessProfile', 'businessProfile']);
-        $userCode = $listing->user?->eids_user_code ?: config('services.eids.user_code');
+        $userCode = $listing->user?->eids_user_code;
         $taxNumber = match ($listing->source_type) {
             'owner' => null,
             'real_estate_office' => $listing->businessProfile?->tax_number ?: $listing->user?->businessProfile?->tax_number,
@@ -157,7 +174,7 @@ class EidsService
             'business_profile_id' => $listing->business_profile_id,
             'eids_user_code_hash' => filled($listing->user?->eids_user_code)
                 ? hash('sha256', $listing->user->eids_user_code)
-                : (filled(config('services.eids.user_code')) ? hash('sha256', config('services.eids.user_code')) : null),
+                : null,
             'error_message' => null,
             'response' => $payload,
             'verified_at' => now(),

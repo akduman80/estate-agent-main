@@ -28,6 +28,13 @@ class EidsCallbackController extends Controller
             'EİDS işleminden önce telefon numaranızı OTP ile doğrulayın.'
         );
 
+        abort_unless(filled($request->user()->phone), 409, 'Önce hesabınıza telefon numaranızı ekleyin.');
+        abort_if(
+            $request->user()->role === UserRole::AGENT && blank($request->user()->businessProfile?->tax_number),
+            409,
+            'Önce emlak ofisinizin vergi numarasını tamamlayın.'
+        );
+
         $request->session()->put('eids_identity_user_id', $request->user()->id);
 
         return redirect()->away($eidsIdentityService->ssoUrl());
@@ -50,7 +57,10 @@ class EidsCallbackController extends Controller
         $accountUser = $request->session()->has('eids_identity_user_id')
             ? User::query()->with('businessProfile')->find($request->session()->get('eids_identity_user_id'))
             : null;
-        $gsmNumber = $accountUser?->phone ?: config('services.eids.gsm_no');
+        if ($accountUser) {
+            abort_unless($request->user()?->id === $accountUser->id, 403, 'EİDS işlemini başlattığınız hesapla giriş yapın.');
+        }
+        $gsmNumber = $accountUser ? $accountUser->phone : config('services.eids.gsm_no');
         $taxNumber = $accountUser?->role === UserRole::AGENT
             ? $accountUser->businessProfile?->tax_number
             : ($accountUser ? null : config('services.eids.tax_no'));
