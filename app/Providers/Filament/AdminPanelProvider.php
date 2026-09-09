@@ -11,6 +11,7 @@ use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -26,6 +27,10 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->renderHook(
+                PanelsRenderHook::STYLES_AFTER,
+                fn () => view('filament.admin.typography'),
+            )
             ->brandName('ZYDEMLAK')
             ->brandLogo(asset('fe-assets/assets/img/logo.png'))
             ->brandLogoHeight('3rem')
