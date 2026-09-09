@@ -6,10 +6,10 @@
     $totalVotes = $poll->options->sum('votes_count');
 @endphp
 
-<section class="border-y border-slate-200 bg-white py-10 sm:py-12">
+<section class="poll-section border-y border-slate-200 bg-white py-10 sm:py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="overflow-hidden rounded-2xl bg-blue-950 text-white shadow-xl lg:grid lg:grid-cols-[.72fr_1.28fr]">
-            <div class="relative overflow-hidden p-7 sm:p-9">
+        <div class="poll-card overflow-hidden rounded-2xl bg-blue-950 text-white shadow-xl lg:grid lg:grid-cols-[.72fr_1.28fr]">
+            <div class="poll-intro relative overflow-hidden p-7 sm:p-9">
                 <div class="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-orange-500/15"></div>
                 <div class="relative">
                     <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500 text-xl"><i class="fa-solid fa-square-poll-vertical"></i></span>
@@ -20,7 +20,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-7 text-slate-800 sm:p-9">
+            <div class="poll-options bg-white p-7 text-slate-800 sm:p-9">
                 <h3 class="text-lg font-extrabold leading-7 text-blue-950">{{ $poll->question }}</h3>
 
                 @if(session('poll_status'))

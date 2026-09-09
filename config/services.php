@@ -63,4 +63,10 @@ return [
         'service' => env('GITHUB_DEPLOY_SERVICE', 'estate-agent-deploy.service'),
     ],
 
+    'market_data' => [
+        'enabled' => (bool) env('MARKET_DATA_ENABLED', true),
+        'tcmb_url' => env('TCMB_RATES_URL', 'https://www.tcmb.gov.tr/kurlar/today.xml'),
+        'gold_url' => env('GOLD_API_URL', 'https://api.gold-api.com'),
+    ],
+
 ];

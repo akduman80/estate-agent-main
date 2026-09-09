@@ -34,6 +34,7 @@ class User extends Authenticatable implements FilamentUser
         'district',
         'neighborhood',
         'listing_limit_override',
+        'featured_listing_count',
         'password',
         'role',
         'account_status',
@@ -61,6 +62,7 @@ class User extends Authenticatable implements FilamentUser
             'eids_identity_verified_at' => 'datetime',
             'last_two_factor_at' => 'datetime',
             'listing_limit_override' => 'integer',
+            'featured_listing_count' => 'integer',
         ];
     }
 

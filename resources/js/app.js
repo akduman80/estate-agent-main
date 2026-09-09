@@ -88,4 +88,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
         loadDistricts();
     });
+
+    document.querySelectorAll('[data-featured-listings]').forEach((container) => {
+        const authenticated = container.dataset.authenticated === '1';
+        const accountCount = Number(container.dataset.defaultCount) === 6 ? 6 : 3;
+        const storedCount = Number(window.localStorage.getItem('featured_listing_count'));
+        let currentCount = authenticated ? accountCount : (storedCount === 6 ? 6 : 3);
+        const buttons = document.querySelectorAll('[data-listing-count]');
+
+        const render = (count) => {
+            currentCount = count;
+            container.querySelectorAll('[data-listing-index]').forEach((item) => {
+                item.classList.toggle('hidden', Number(item.dataset.listingIndex) >= count);
+            });
+            buttons.forEach((button) => {
+                const active = Number(button.dataset.listingCount) === count;
+                button.classList.toggle('border-orange-500', active);
+                button.classList.toggle('bg-orange-50', active);
+                button.classList.toggle('text-orange-700', active);
+            });
+        };
+
+        buttons.forEach((button) => button.addEventListener('click', async () => {
+            const count = Number(button.dataset.listingCount) === 6 ? 6 : 3;
+            render(count);
+
+            if (! authenticated) {
+                window.localStorage.setItem('featured_listing_count', String(count));
+                return;
+            }
+
+            try {
+                await window.axios.patch(container.dataset.saveUrl, { featured_listing_count: count });
+            } catch (error) {
+                render(accountCount);
+            }
+        }));
+
+        render(currentCount);
+    });
 });

@@ -66,6 +66,15 @@ class SettingsSeeder extends Seeder
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
             Setting::clearCache($key);
         }
+
+        foreach ([
+            'rent_increase_rate' => 31.79,
+            'rent_increase_period' => 'Eylül 2026',
+            'rent_increase_updated_at' => now()->toDateString(),
+        ] as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            Setting::clearCache($key);
+        }
     }
 
     private function makeSamplePdf(string $title): string

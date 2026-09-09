@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'ZYDEMLAK' }}</title>
     <meta name="description" content="{{ $description ?? 'Osmaniye emlak ilanları ve güncel gayrimenkul haberleri.' }}">
 
@@ -25,9 +26,9 @@
     @livewireStyles
     @stack('head')
 </head>
-<body class="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-800 antialiased">
+<body class="flex min-h-screen flex-col overflow-x-hidden bg-slate-50 font-sans text-slate-800 antialiased {{ auth()->check() ? 'has-phone-bottom-nav' : '' }}">
     <header class="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
-        <div class="mx-auto flex h-24 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:h-24 sm:px-6 lg:px-8">
             <a href="{{ route('home') }}" class="group flex shrink-0 items-center rounded bg-white" aria-label="ZYDEMLAK ana sayfa">
                 <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-16 w-auto max-w-44 object-contain transition duration-300 group-hover:scale-105 sm:h-20 sm:max-w-56">
             </a>
@@ -36,10 +37,11 @@
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 transition {{ request()->routeIs('home') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Anasayfa</a>
                 <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 transition {{ request()->routeIs('blogs.*') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Emlak Haberleri</a>
+                <a href="{{ route('projects.index') }}" class="rounded-lg px-3 py-2 transition {{ request()->routeIs('projects.*') ? 'bg-blue-950 font-bold text-white' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Projeler</a>
                 <a href="{{ route('contact') }}" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">İletişim</a>
             </nav>
 
-            <div class="flex items-center gap-2">
+            <div class="header-actions flex items-center gap-2">
                 @if($headerDocuments->isNotEmpty())
                     <details class="group relative hidden lg:block">
                         <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 [&::-webkit-details-marker]:hidden">
@@ -61,20 +63,31 @@
                     </details>
                 @endif
                 @auth
-                    <a href="{{ auth()->user()->role->getRedirectPath() }}" class="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:flex">
+                    <a href="{{ auth()->user()->role?->getRedirectPath() ?? '/portal' }}" class="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:flex">
                         <i class="fa-solid fa-gauge-high"></i><span>Panelim</span>
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:flex">
+                    <a href="{{ route('register') }}" class="hidden items-center gap-2 rounded-lg bg-blue-950 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-900 xl:flex">
+                        <i class="fa-solid fa-user-plus"></i><span>Ücretsiz Üye Ol</span>
+                    </a>
+                    <a href="{{ route('login') }}" class="hidden items-center gap-2 rounded-lg border-2 border-blue-950 bg-amber-300 px-3 py-2 text-sm font-bold text-blue-950 transition hover:bg-amber-400 sm:flex">
                         <i class="fa-solid fa-right-to-bracket"></i><span>Giriş Yap</span>
                     </a>
                 @endauth
                 <a href="{{ url('/portal/listings/create') }}" class="flex items-center gap-2 rounded-lg bg-orange-500 px-3 py-2 text-sm font-bold text-white shadow transition hover:bg-orange-600 sm:px-4">
-                    <i class="fa-solid fa-circle-plus"></i><span class="hidden sm:inline">İlan Ver</span>
+                    <i class="fa-solid fa-circle-plus"></i><span class="hidden sm:inline">Ücretsiz İlan Ver</span>
                 </a>
                 <button type="button" data-mobile-menu-button class="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 lg:hidden" aria-label="Menüyü aç" aria-expanded="false">
                     <i class="fa-solid fa-bars"></i>
                 </button>
+            </div>
+        </div>
+
+        <div class="phone-actions px-3 pb-3">
+            <a href="{{ url('/portal/listings/create') }}" class="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-500 font-extrabold text-white shadow-sm"><i class="fa-solid fa-circle-plus"></i>Ücretsiz İlan Ver</a>
+            <div class="mt-2 grid {{ auth()->check() ? 'grid-cols-1' : 'grid-cols-2' }} gap-2">
+                @guest<a href="{{ route('register') }}" class="flex h-11 items-center justify-center gap-2 rounded-xl border border-blue-300 bg-blue-950 font-bold text-white"><i class="fa-solid fa-user-plus"></i>Ücretsiz Üye Ol</a>@endguest
+                <a href="{{ auth()->check() ? (auth()->user()->role?->getRedirectPath() ?? '/portal') : route('login') }}" class="flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-blue-950 bg-amber-300 font-bold text-blue-950"><i class="fa-solid fa-user"></i>Hesabım</a>
             </div>
         </div>
 
@@ -83,6 +96,7 @@
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Anasayfa</a>
                 <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Emlak Haberleri</a>
+                <a href="{{ route('projects.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Projeler</a>
                 @if($headerDocuments->isNotEmpty())
                     <details class="group rounded-lg border border-orange-200 bg-orange-50">
                         <summary class="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-orange-700 [&::-webkit-details-marker]:hidden">
@@ -106,7 +120,7 @@
 
     {{ $slot }}
 
-    <footer class="mt-auto border-t border-slate-800 bg-blue-950 text-slate-300">
+    <footer class="site-footer mt-auto border-t border-slate-800 bg-blue-950 text-blue-100">
         <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
                 <div>
@@ -121,6 +135,7 @@
                         <a href="{{ route('home') }}" class="block hover:text-orange-400">Anasayfa</a>
                         <a href="{{ route('listings.index') }}" class="block hover:text-orange-400">Tüm İlanlar</a>
                         <a href="{{ route('blogs.index') }}" class="block hover:text-orange-400">Emlak Haberleri</a>
+                        <a href="{{ route('projects.index') }}" class="block hover:text-orange-400">Projeler</a>
                     </div>
                 </div>
                 <div>
@@ -146,6 +161,16 @@
             </div>
         </div>
     </footer>
+
+    @auth
+        <nav class="phone-bottom-nav" aria-label="Mobil hızlı menü">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'is-active' : '' }}"><i class="fa-solid fa-house"></i><span>Anasayfa</span></a>
+            <a href="{{ route('listings.index') }}" class="{{ request()->routeIs('listings.*') ? 'is-active' : '' }}"><i class="fa-solid fa-list"></i><span>İlanlar</span></a>
+            <a href="{{ url('/portal/listings/create') }}" class="phone-bottom-create"><i class="fa-solid fa-plus"></i><span>İlan Ver</span></a>
+            <a href="{{ route('projects.index') }}" class="{{ request()->routeIs('projects.*') ? 'is-active' : '' }}"><i class="fa-regular fa-building"></i><span>Projeler</span></a>
+            <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'is-active' : '' }}"><i class="fa-solid fa-message"></i><span>İletişim</span></a>
+        </nav>
+    @endauth
 
     @livewireScripts
     @stack('scripts')

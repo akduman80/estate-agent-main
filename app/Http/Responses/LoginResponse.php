@@ -23,6 +23,6 @@ class LoginResponse implements LoginResponseContract
         $user = auth()->user();
 
         // Rolün getRedirectPath() metodunu kullanarak yönlendir
-        return redirect()->to($user->role->getRedirectPath());
+        return redirect()->intended($user->role->getRedirectPath());
     }
 }

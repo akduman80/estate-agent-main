@@ -11,6 +11,7 @@ class Post extends Model
 
     protected $casts = [
         'published_at' => 'datetime',
+        'is_featured' => 'boolean',
     ];
 
     public function author(): BelongsTo

@@ -108,6 +108,15 @@ class ManageSettings extends Page
         ];
     }
 
+    protected function getDefaultMarketSettings(): array
+    {
+        return [
+            'rent_increase_rate' => 31.79,
+            'rent_increase_period' => 'Eylül 2026',
+            'rent_increase_updated_at' => now()->toDateString(),
+        ];
+    }
+
     public function mount(): void
     {
         // 1. Veritabanındaki tüm ayarları çekiyoruz[cite: 6]
@@ -117,6 +126,7 @@ class ManageSettings extends Page
             $this->getDefaultContactSettings(),
             $this->getDefaultDocumentSettings(),
             $this->getDefaultSecuritySettings(),
+            $this->getDefaultMarketSettings(),
         );
 
         // 2. Veritabanında boş olan/henüz kaydedilmemiş anahtarlara varsayılan dizileri atıyoruz
@@ -297,6 +307,30 @@ class ManageSettings extends Page
                                     ->addActionLabel('Yeni Doküman Ekle')
                                     ->columnSpanFull(),
                             ]),
+
+                        Forms\Components\Tabs\Tab::make('Kira ve Piyasa')
+                            ->icon('heroicon-o-chart-bar')
+                            ->schema([
+                                Forms\Components\TextInput::make('rent_increase_rate')
+                                    ->label('Kira artış oranı (%)')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(999)
+                                    ->step(0.01)
+                                    ->placeholder('31,79')
+                                    ->helperText('Boş bırakılırsa kira artış kartı ana sayfada gösterilmez.'),
+                                Forms\Components\TextInput::make('rent_increase_period')
+                                    ->label('Dönem')
+                                    ->placeholder('Eylül 2026')
+                                    ->maxLength(80),
+                                Forms\Components\DatePicker::make('rent_increase_updated_at')
+                                    ->label('Son güncelleme tarihi'),
+                                Forms\Components\Placeholder::make('market_source_info')
+                                    ->label('Canlı piyasa kaynakları')
+                                    ->content('Dolar ve Euro TCMB günlük gösterge kurlarından; gram altın Gold API XAU/USD fiyatı ve TCMB dolar satış kuru üzerinden hesaplanır. Servis verisi alınamazsa ilgili değer gösterilmez.')
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(3),
 
                         Forms\Components\Tabs\Tab::make('OTP ve Güvenlik')
                             ->icon('heroicon-o-shield-check')

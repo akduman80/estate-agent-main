@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DisplayPreferenceController;
 use App\Http\Controllers\DocumentDownloadController;
 use App\Http\Controllers\EidsCallbackController;
 use App\Http\Controllers\GitHubDeployController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\LegalDocumentController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PollVoteController;
+use App\Http\Controllers\ProjectController;
 use App\Livewire\BlogList;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +30,9 @@ Route::post('/anketler/{poll}/oy', PollVoteController::class)
 
 Route::get('/haberler', BlogList::class)->name('blogs.index');
 Route::get('/haberler/{post:slug}', [BlogController::class, 'show'])->name('blogs.show');
+
+Route::get('/projeler', [ProjectController::class, 'index'])->name('projects.index');
+Route::get('/projeler/{project:slug}', [ProjectController::class, 'show'])->name('projects.show');
 
 Route::get('/iletisim', ContactController::class)->name('contact');
 
@@ -68,6 +73,7 @@ Route::get('/telefon-dogrula', [PhoneVerificationController::class, 'show'])->mi
 Route::post('/telefon-dogrula/gonder', [PhoneVerificationController::class, 'send'])->middleware('auth')->name('phone.verification.send');
 Route::post('/telefon-dogrula', [PhoneVerificationController::class, 'verify'])->middleware('auth')->name('phone.verification.verify');
 Route::get('/hesap/guvenlik', [AccountSecurityController::class, 'show'])->middleware('auth')->name('account.security');
+Route::patch('/hesap/gorunum-tercihi', DisplayPreferenceController::class)->middleware('auth')->name('account.display-preference');
 Route::post('/hesap/iki-asamali-dogrulama', [AccountSecurityController::class, 'updateTwoFactor'])->middleware('auth')->name('account.two-factor.update');
 Route::post('/hesap/e-posta-degistir', [AccountSecurityController::class, 'requestEmailChange'])->middleware('auth')->name('account.email.request');
 Route::post('/hesap/e-posta-degistir/onayla', [AccountSecurityController::class, 'confirmEmailChange'])->middleware('auth')->name('account.email.confirm');

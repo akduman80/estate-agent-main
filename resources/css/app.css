@@ -71,3 +71,157 @@
     background: #fff7ed;
     padding: 1.25rem;
 }
+
+.phone-actions,
+.phone-bottom-nav,
+.phone-rent-title {
+    display: none;
+}
+
+.home-dashboard {
+    background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
+}
+
+@media (max-width: 480px) {
+    .phone-actions {
+        display: block;
+    }
+
+    .phone-rent-title { display: block; }
+    .desktop-rent-title { display: none; }
+
+    body {
+        background: #061d57;
+    }
+
+    body > header {
+        border-color: rgb(30 64 175 / .55);
+        background: linear-gradient(135deg, #073ca0 0%, #061b52 100%);
+    }
+
+    body > header > div:first-child {
+        height: 4.25rem;
+        padding-left: .75rem;
+        padding-right: .75rem;
+    }
+
+    body > header > div:first-child a:first-child {
+        background: transparent;
+    }
+
+    body > header > div:first-child img {
+        height: 3.4rem;
+        max-width: 8.5rem;
+    }
+
+    .header-actions > a,
+    .header-actions > details {
+        display: none;
+    }
+
+    .header-actions > button {
+        border-color: #1e3a8a;
+        background: #061b52;
+        color: white;
+        box-shadow: 0 5px 12px rgb(0 0 0 / .22);
+    }
+
+    .home-dashboard {
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(145deg, #0648b7 0%, #052d80 50%, #061b52 100%);
+    }
+
+    .home-market-section { order: 1; padding: .75rem; }
+    .home-search-section { order: 2; padding: 0 .75rem .75rem; border: 0; background: transparent; }
+    .home-dashboard > main { order: 3; padding: .25rem .75rem .8rem; }
+
+    .home-search-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .55rem;
+        border: 2px solid #123576;
+        border-radius: .9rem;
+        background: #061b52;
+        padding: .6rem;
+        box-shadow: 0 12px 25px rgb(0 0 0 / .18);
+    }
+
+    .home-search-form label { display: none; }
+    .home-search-keyword,
+    .home-search-neighborhood,
+    .home-search-button { grid-column: 1 / -1; }
+    .home-search-form input,
+    .home-search-form select { min-width: 0; font-size: 16px; padding-top: .65rem; padding-bottom: .65rem; }
+    .home-search-button { min-height: 2.8rem; }
+
+    .home-market-section > div { gap: .55rem; }
+    .home-market-section article { min-width: 0; min-height: 8.9rem; border-radius: .75rem; padding: .75rem; }
+    .home-market-section article h2 { font-size: .76rem; line-height: 1.15rem; }
+    .home-market-section article p { font-size: 1.65rem; }
+    .home-market-section article strong,
+    .home-market-section article span { font-size: .68rem; }
+
+    #ilanlar > div > section > div:first-child { margin-bottom: .65rem; border-color: rgb(255 255 255 / .25); }
+    #ilanlar h1 { color: white; font-size: 1.05rem; }
+    [data-display-settings] summary { max-width: 10.4rem; padding: .45rem .6rem; font-size: .68rem; }
+    .featured-listing-grid { gap: .5rem; }
+
+    .listing-card { border-radius: .72rem; }
+    .listing-card > a span { left: .4rem; padding: .2rem .35rem; font-size: .56rem; }
+    .listing-card > a span:first-of-type { top: .4rem; }
+    .listing-card > a span:last-of-type { bottom: .4rem; max-width: calc(100% - .8rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .listing-card > div { padding: .55rem; }
+    .listing-card > div > div:first-child { font-size: .84rem; }
+    .listing-card h2 { min-height: 2rem; font-size: .68rem; line-height: 1rem; }
+    .listing-card > div > div:last-child { gap: .25rem; padding-top: .45rem; font-size: .58rem; }
+
+    .home-editorial-grid { margin-top: .7rem; gap: .5rem; }
+    .home-editorial-grid > section { border-radius: .75rem; padding: .6rem; }
+    .home-editorial-grid h2 { font-size: .76rem; }
+    .home-editorial-grid h3 { font-size: .7rem; line-height: 1rem; }
+    .home-editorial-grid a:last-child { margin-top: .55rem; font-size: .62rem; }
+
+    .poll-section { border: 0; background: #061b52; padding: 0 .75rem 1rem; }
+    .poll-section > div { padding: 0; }
+    .poll-card { border: 1px solid #1d4ed8; border-radius: .8rem; box-shadow: none; }
+    .poll-intro { padding: .8rem; }
+    .poll-intro span:first-child { display: none; }
+    .poll-intro p { margin-top: .2rem; font-size: .6rem; line-height: 1rem; color: #bfdbfe; }
+    .poll-intro h2 { margin-top: .2rem; font-size: .95rem; }
+    .poll-intro p:last-child { display: none; }
+    .poll-options { margin: 0 .55rem .55rem; border-radius: .6rem; padding: .65rem; }
+    .poll-options h3 { font-size: .72rem; line-height: 1rem; }
+    .poll-options form { margin-top: .5rem; }
+    .poll-options form label { padding: .45rem .6rem; font-size: .68rem; }
+    .poll-options form button { padding: .65rem; }
+
+    .site-footer > div { padding: 1.5rem .8rem; }
+    .site-footer > div > div:first-child { grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .site-footer > div > div:first-child > div:first-child { grid-column: 1 / -1; }
+    .site-footer > div > div:first-child > div:first-child img { height: 3.5rem; }
+    .site-footer > div > div:first-child > div:first-child p { margin-top: .5rem; }
+    .site-footer > div > div:first-child > div:nth-child(3) { display: none; }
+    .site-footer > div > div:last-child { margin-top: 1.2rem; padding-top: 1rem; }
+
+    .has-phone-bottom-nav { padding-bottom: calc(4.6rem + env(safe-area-inset-bottom)); }
+    .phone-bottom-nav {
+        position: fixed;
+        z-index: 60;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        align-items: end;
+        min-height: 4.35rem;
+        border-top: 1px solid #dbeafe;
+        background: rgb(255 255 255 / .98);
+        padding: .45rem .25rem max(.4rem, env(safe-area-inset-bottom));
+        box-shadow: 0 -8px 24px rgb(15 23 42 / .12);
+    }
+    .phone-bottom-nav > a { display: flex; flex-direction: column; align-items: center; gap: .25rem; color: #172554; font-size: .58rem; font-weight: 700; }
+    .phone-bottom-nav > a > i { font-size: 1rem; }
+    .phone-bottom-nav > a.is-active { color: #f4511e; }
+    .phone-bottom-nav > .phone-bottom-create { transform: translateY(-.55rem); color: #172554; }
+    .phone-bottom-nav > .phone-bottom-create > i { display: flex; height: 2.75rem; width: 2.75rem; align-items: center; justify-content: center; border: 3px solid white; border-radius: 999px; background: #f4511e; color: white; font-size: 1.15rem; box-shadow: 0 4px 12px rgb(244 81 30 / .38); }
+}
