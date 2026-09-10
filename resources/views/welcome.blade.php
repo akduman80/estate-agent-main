@@ -20,24 +20,23 @@
             </div>
         </section>
 
-        @if($rentRateNumber !== null || !empty($marketData))
-            <section id="piyasalar" class="home-market-section px-4 py-4 sm:px-6 lg:px-8">
-                <div class="mx-auto grid max-w-7xl grid-cols-2 gap-3 lg:grid-cols-[1fr_1.7fr]">
-                    @if($rentRateNumber !== null)
-                        <article @class(['flex min-h-36 flex-col rounded-2xl border border-blue-100 bg-white p-4 shadow-sm lg:min-h-0 lg:flex-row lg:items-center lg:gap-7', 'col-span-2 lg:col-span-1' => empty($marketData)])>
-                            <div class="min-w-0 flex-1"><h2 class="text-sm font-extrabold text-blue-950"><span class="phone-rent-title">Kira Artış Oranı</span><span class="desktop-rent-title">{{ $rentPeriod }} Kira Artış Oranı</span></h2><p class="mt-2 text-3xl font-black text-orange-600">%{{ number_format($rentRateNumber, 2, ',', '.') }}</p><p class="phone-rent-title mt-1 text-xs font-semibold text-blue-950">{{ $rentPeriod }}</p></div>
-                            <div class="mt-auto pt-3 text-right text-[11px] text-slate-500 lg:mt-0 lg:pt-0">@if($rentUpdatedAt)<span class="block">Güncelleme: {{ \Illuminate\Support\Carbon::parse($rentUpdatedAt)->format('d.m.Y') }}</span>@endif<a href="{{ route('blogs.index', ['ara' => 'kira']) }}" class="mt-1 inline-flex items-center gap-1 font-bold text-orange-600">Detaylar <i class="fa-solid fa-arrow-right"></i></a></div>
-                        </article>
-                    @endif
-                    @if(!empty($marketData))
-                        <article @class(['rounded-2xl border border-blue-100 bg-white p-4 shadow-sm', 'col-span-2 lg:col-span-1' => $rentRateNumber === null])>
-                            <div class="flex items-center justify-between"><h2 class="text-sm font-extrabold text-blue-950">Piyasalar</h2><span class="text-[10px] font-semibold text-slate-400">Güncel</span></div>
-                            <div class="mt-2 divide-y divide-slate-100">@foreach($marketData as $item)<div class="flex items-center justify-between gap-2 py-1.5 text-xs"><span class="min-w-0 font-semibold text-blue-950"><i class="{{ $item['icon'] }} mr-1.5 text-orange-500"></i>{{ $item['label'] }}</span><strong class="whitespace-nowrap text-blue-950">{{ number_format($item['value'], 2, ',', '.') }} TL</strong></div>@endforeach</div>
-                        </article>
-                    @endif
-                </div>
-            </section>
-        @endif
+        <section id="piyasalar" class="home-market-section px-4 py-4 sm:px-6 lg:px-8">
+            <div class="home-overview mx-auto max-w-7xl">
+                @if($rentRateNumber !== null)
+                    <article class="home-overview-card home-rent">
+                        <div class="min-w-0 flex-1"><h2 class="text-sm font-extrabold text-blue-950"><span class="phone-rent-title">Kira Artış Oranı</span><span class="desktop-rent-title">{{ $rentPeriod }} Kira Artış Oranı</span></h2><p class="mt-2 text-3xl font-black text-orange-600">%{{ number_format($rentRateNumber, 2, ',', '.') }}</p><p class="phone-rent-title mt-1 text-xs font-semibold text-blue-950">{{ $rentPeriod }}</p></div>
+                        <div class="mt-auto pt-3 text-[11px] text-slate-500">@if($rentUpdatedAt)<span class="block">Güncelleme: {{ \Illuminate\Support\Carbon::parse($rentUpdatedAt)->format('d.m.Y') }}</span>@endif<a href="{{ route('blogs.index', ['ara' => 'kira']) }}" class="mt-1 inline-flex items-center gap-1 font-bold text-orange-600">Detaylar <i class="fa-solid fa-arrow-right"></i></a></div>
+                    </article>
+                @endif
+                <x-eids-info />
+                @if(!empty($marketData))
+                    <article class="home-overview-card home-rates">
+                        <div class="flex items-center justify-between"><h2 class="text-sm font-extrabold text-blue-950">Piyasalar</h2><span class="text-[10px] font-semibold text-slate-400">TL</span></div>
+                        <div class="mt-2 divide-y divide-slate-100">@foreach($marketData as $item)<div class="flex items-center justify-between gap-2 py-1.5 text-xs"><span class="min-w-0 font-semibold text-blue-950"><i class="{{ $item['icon'] }} mr-1.5 text-orange-500"></i>{{ $item['label'] }}</span><strong class="whitespace-nowrap text-blue-950">{{ number_format($item['value'], 2, ',', '.') }} TL</strong></div>@endforeach</div>
+                    </article>
+                @endif
+            </div>
+        </section>
 
         <main id="ilanlar" class="mx-auto w-full max-w-7xl flex-grow px-4 py-7 sm:px-6 lg:px-8">
             <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">

@@ -156,7 +156,11 @@
             </div>
             <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-800 pt-6 text-xs text-slate-500 sm:flex-row">
                 <p>&copy; {{ now()->year }} ZYDEMLAK. Tüm hakları saklıdır.</p>
-                <p>EİDS doğrulamalı güvenilir emlak platformu</p>
+                @if(request()->routeIs('home'))
+                    <x-eids-info footer />
+                @else
+                    <p>EİDS doğrulamalı güvenilir emlak platformu</p>
+                @endif
             </div>
         </div>
     </footer>
