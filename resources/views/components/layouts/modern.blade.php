@@ -39,7 +39,7 @@
                 <a href="{{ route('listings.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 transition {{ request()->routeIs('blogs.*') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Emlak Haberleri</a>
                 <a href="{{ route('projects.index') }}" class="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2 font-extrabold shadow-[0_10px_22px_rgb(15_23_42_/_0.14),0_2px_5px_rgb(15_23_42_/_0.10)] transition {{ request()->routeIs('projects.*') ? 'bg-blue-950 text-white ring-2 ring-orange-300 ring-offset-2' : 'bg-blue-950 text-white hover:-translate-y-0.5 hover:bg-blue-900 hover:shadow-[0_14px_26px_rgb(15_23_42_/_0.18),0_3px_7px_rgb(15_23_42_/_0.12)]' }}">
-                    <x-project-nav-icon class="h-7 w-7 text-orange-300" />
+                    <x-project-nav-icon class="h-5 w-5 shrink-0 text-orange-300" />
                     <span>Projeler</span>
                     <span class="rounded bg-orange-400 px-1.5 py-0.5 text-[10px] font-black uppercase leading-none text-blue-950">Yeni</span>
                 </a>
