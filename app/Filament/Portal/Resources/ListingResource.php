@@ -40,12 +40,32 @@ class ListingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->label('İlan Başlığı')->searchable()->limit(40),
-                Tables\Columns\TextColumn::make('price')->label('Fiyat')->money('TRY')->sortable(),
-                Tables\Columns\TextColumn::make('eids_document_no')->label('Taşınmaz No'),
-                Tables\Columns\TextColumn::make('source_label')->label('Kaynak')->badge(),
+                Tables\Columns\TextColumn::make('title')
+                    ->label('İlan Başlığı')
+                    ->searchable()
+                    ->limit(34)
+                    ->wrap()
+                    ->width('320px')
+                    ->extraCellAttributes(['style' => 'max-width: 320px; overflow-wrap: anywhere;']),
+                Tables\Columns\TextColumn::make('price')
+                    ->label('Fiyat')
+                    ->money('TRY')
+                    ->sortable()
+                    ->width('130px')
+                    ->grow(false),
+                Tables\Columns\TextColumn::make('eids_document_no')
+                    ->label('Taşınmaz No')
+                    ->width('110px')
+                    ->grow(false),
+                Tables\Columns\TextColumn::make('source_label')
+                    ->label('Kaynak')
+                    ->badge()
+                    ->width('120px')
+                    ->grow(false),
                 Tables\Columns\TextColumn::make('publication_status')
                     ->label('Yayın Durumu')->badge()
+                    ->width('140px')
+                    ->grow(false)
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'approved' => 'Yayında',
                         'pending_approval' => 'Yönetici Onayında',
@@ -55,6 +75,8 @@ class ListingResource extends Resource
                 Tables\Columns\TextColumn::make('eids_status')
                     ->label('EİDS')
                     ->badge()
+                    ->width('120px')
+                    ->grow(false)
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'verified' => 'Doğrulandı',
                         'rejected' => 'Reddedildi',
@@ -65,27 +87,37 @@ class ListingResource extends Resource
                         'rejected' => 'danger',
                         default => 'warning',
                     }),
-                Tables\Columns\TextColumn::make('created_at')->label('Tarih')->dateTime('d.m.Y H:i'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tarih')
+                    ->dateTime('d.m.Y H:i')
+                    ->width('155px')
+                    ->grow(false),
             ])
             ->filters([])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('approve')
-                    ->label('Onayla')->icon('heroicon-o-check-circle')->color('success')
-                    ->requiresConfirmation()
-                    ->visible(fn (Listing $record): bool => auth()->user()?->role === UserRole::SUPERVISOR && $record->publication_status === 'pending_approval')
-                    ->action(function (Listing $record): void {
-                        app(ListingPublicationService::class)->approve($record, auth()->user());
-                        Notification::make()->success()->title('İlan yayınlandı')->send();
-                    }),
-                Tables\Actions\Action::make('reject')
-                    ->label('Reddet')->icon('heroicon-o-x-circle')->color('danger')
-                    ->requiresConfirmation()
-                    ->visible(fn (Listing $record): bool => auth()->user()?->role === UserRole::SUPERVISOR && $record->publication_status === 'pending_approval')
-                    ->action(function (Listing $record): void {
-                        app(ListingPublicationService::class)->reject($record, auth()->user());
-                        Notification::make()->warning()->title('İlan reddedildi')->send();
-                    }),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('approve')
+                        ->label('Onayla')->icon('heroicon-o-check-circle')->color('success')
+                        ->requiresConfirmation()
+                        ->visible(fn (Listing $record): bool => auth()->user()?->role === UserRole::SUPERVISOR && $record->publication_status === 'pending_approval')
+                        ->action(function (Listing $record): void {
+                            app(ListingPublicationService::class)->approve($record, auth()->user());
+                            Notification::make()->success()->title('İlan yayınlandı')->send();
+                        }),
+                    Tables\Actions\Action::make('reject')
+                        ->label('Reddet')->icon('heroicon-o-x-circle')->color('danger')
+                        ->requiresConfirmation()
+                        ->visible(fn (Listing $record): bool => auth()->user()?->role === UserRole::SUPERVISOR && $record->publication_status === 'pending_approval')
+                        ->action(function (Listing $record): void {
+                            app(ListingPublicationService::class)->reject($record, auth()->user());
+                            Notification::make()->warning()->title('İlan reddedildi')->send();
+                        }),
+                ])
+                    ->label('İşlemler')
+                    ->icon('heroicon-m-ellipsis-horizontal')
+                    ->iconButton()
+                    ->dropdownWidth('xs'),
             ])
             ->bulkActions([]);
     }

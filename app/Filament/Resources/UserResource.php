@@ -200,15 +200,42 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\TextColumn::make('name')->label('Ad Soyad')->searchable(),
-            Tables\Columns\TextColumn::make('email')->label('E-posta')->searchable(),
-            Tables\Columns\TextColumn::make('phone')->label('Telefon'),
-            Tables\Columns\TextColumn::make('role')->label('Üyelik Türü')->badge(),
+            Tables\Columns\TextColumn::make('name')
+                ->label('Ad Soyad')
+                ->searchable()
+                ->limit(24)
+                ->wrap()
+                ->width('170px'),
+            Tables\Columns\TextColumn::make('email')
+                ->label('E-posta')
+                ->searchable()
+                ->limit(28)
+                ->wrap()
+                ->width('220px')
+                ->extraCellAttributes(['style' => 'max-width: 220px; overflow-wrap: anywhere;']),
+            Tables\Columns\TextColumn::make('phone')
+                ->label('Telefon')
+                ->width('120px')
+                ->grow(false),
+            Tables\Columns\TextColumn::make('role')
+                ->label('Üyelik Türü')
+                ->badge()
+                ->width('120px')
+                ->grow(false),
             Tables\Columns\IconColumn::make('email_verified_at')->label('E-posta')
-                ->getStateUsing(fn (User $record): bool => filled($record->email_verified_at))->boolean(),
-            Tables\Columns\TextColumn::make('account_status')->label('Hesap Durumu')->badge(),
+                ->getStateUsing(fn (User $record): bool => filled($record->email_verified_at))
+                ->boolean()
+                ->width('80px')
+                ->grow(false),
+            Tables\Columns\TextColumn::make('account_status')
+                ->label('Hesap Durumu')
+                ->badge()
+                ->width('130px')
+                ->grow(false),
             Tables\Columns\TextColumn::make('listing_limit')
                 ->label('Aktif İlan Limiti')
+                ->width('120px')
+                ->grow(false)
                 ->getStateUsing(function (User $record): string {
                     $quota = app(ListingQuotaService::class);
                     $limit = $quota->effectiveLimit($record);
@@ -225,38 +252,44 @@ class UserResource extends Resource
                 'rejected' => 'Reddedildi', 'suspended' => 'Askıda',
             ]),
         ])->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\Action::make('setListingLimit')
-                ->label('İlan Limitini Ayarla')
-                ->icon('heroicon-o-adjustments-horizontal')
-                ->visible(fn (User $record): bool => in_array($record->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true))
-                ->fillForm(fn (User $record): array => ['listing_limit_override' => $record->listing_limit_override])
-                ->form([
-                    TextInput::make('listing_limit_override')
-                        ->label('Özel aktif ilan limiti')
-                        ->numeric()
-                        ->minValue(0)
-                        ->maxValue(10000)
-                        ->nullable()
-                        ->helperText('Boş bırakılırsa bireysel üyede 10, emlakçıda 100 kullanılır.'),
-                ])
-                ->action(fn (User $record, array $data) => $record->update([
-                    'listing_limit_override' => filled($data['listing_limit_override'])
-                        ? (int) $data['listing_limit_override']
-                        : null,
-                ])),
-            Tables\Actions\Action::make('createListingForUser')
-                ->label('Kullanıcı Adına İlan Oluştur')
-                ->icon('heroicon-o-plus-circle')
-                ->visible(fn (User $record): bool => $record->account_status === AccountStatus::ACTIVE
-                    && in_array($record->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true))
-                ->url(fn (User $record): string => ListingResource::getUrl('create', ['owner' => $record->id], panel: 'admin')),
-            Tables\Actions\Action::make('suspend')->label('Askıya Al')->color('danger')->requiresConfirmation()
-                ->visible(fn (User $record): bool => $record->role !== UserRole::SUPERVISOR && $record->account_status !== AccountStatus::SUSPENDED)
-                ->action(fn (User $record) => $record->update(['account_status' => AccountStatus::SUSPENDED])),
-            Tables\Actions\Action::make('activate')->label('Aktifleştir')->color('success')->requiresConfirmation()
-                ->visible(fn (User $record): bool => $record->account_status === AccountStatus::SUSPENDED)
-                ->action(fn (User $record) => $record->update(['account_status' => AccountStatus::ACTIVE])),
+            Tables\Actions\ActionGroup::make([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('setListingLimit')
+                    ->label('İlan Limitini Ayarla')
+                    ->icon('heroicon-o-adjustments-horizontal')
+                    ->visible(fn (User $record): bool => in_array($record->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true))
+                    ->fillForm(fn (User $record): array => ['listing_limit_override' => $record->listing_limit_override])
+                    ->form([
+                        TextInput::make('listing_limit_override')
+                            ->label('Özel aktif ilan limiti')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(10000)
+                            ->nullable()
+                            ->helperText('Boş bırakılırsa bireysel üyede 10, emlakçıda 100 kullanılır.'),
+                    ])
+                    ->action(fn (User $record, array $data) => $record->update([
+                        'listing_limit_override' => filled($data['listing_limit_override'])
+                            ? (int) $data['listing_limit_override']
+                            : null,
+                    ])),
+                Tables\Actions\Action::make('createListingForUser')
+                    ->label('Kullanıcı Adına İlan Oluştur')
+                    ->icon('heroicon-o-plus-circle')
+                    ->visible(fn (User $record): bool => $record->account_status === AccountStatus::ACTIVE
+                        && in_array($record->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true))
+                    ->url(fn (User $record): string => ListingResource::getUrl('create', ['owner' => $record->id], panel: 'admin')),
+                Tables\Actions\Action::make('suspend')->label('Askıya Al')->color('danger')->requiresConfirmation()
+                    ->visible(fn (User $record): bool => $record->role !== UserRole::SUPERVISOR && $record->account_status !== AccountStatus::SUSPENDED)
+                    ->action(fn (User $record) => $record->update(['account_status' => AccountStatus::SUSPENDED])),
+                Tables\Actions\Action::make('activate')->label('Aktifleştir')->color('success')->requiresConfirmation()
+                    ->visible(fn (User $record): bool => $record->account_status === AccountStatus::SUSPENDED)
+                    ->action(fn (User $record) => $record->update(['account_status' => AccountStatus::ACTIVE])),
+            ])
+                ->label('İşlemler')
+                ->icon('heroicon-m-ellipsis-horizontal')
+                ->iconButton()
+                ->dropdownWidth('xs'),
         ]);
     }
 
