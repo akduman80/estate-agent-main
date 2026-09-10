@@ -35,6 +35,10 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::STYLES_AFTER,
                 fn () => view('filament.admin.typography'),
             )
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn () => view('filament.listing-rich-editor-formatting'),
+            )
             ->brandName('ZYDEMLAK')
             ->brandLogo(asset('fe-assets/assets/img/logo.png'))
             ->brandLogoHeight('3rem')

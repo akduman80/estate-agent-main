@@ -50,6 +50,7 @@ class BasicInfoStep
 
                 RichEditor::make('description')
                     ->label('Açıklama')
+                    ->extraInputAttributes(['data-listing-description-editor' => 'true'])
                     ->columnSpanFull(),
 
                 Grid::make(['default' => 1, 'md' => 3])

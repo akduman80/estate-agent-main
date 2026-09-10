@@ -135,7 +135,7 @@
 
                     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
                         <h2 class="mb-5 text-xl font-extrabold text-blue-950">İlan açıklaması</h2>
-                        <div class="whitespace-pre-line text-sm leading-7 text-slate-600">{{ strip_tags($listing->description ?: 'Bu ilan için henüz açıklama eklenmemiş.') }}</div>
+                        <div class="listing-description prose max-w-none text-sm leading-7 text-slate-600">{!! \App\Support\ListingDescriptionHtml::render($listing->description) !!}</div>
                     </section>
 
                     @if($youtubeId || $listing->video_url)

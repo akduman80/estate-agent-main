@@ -12,6 +12,7 @@ use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -30,6 +31,10 @@ class PortalPanelProvider extends PanelProvider
             ->brandLogo(asset('fe-assets/assets/img/logo.png'))
             ->brandLogoHeight('3rem')
             ->login(Login::class)
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn () => view('filament.listing-rich-editor-formatting'),
+            )
             ->userMenuItems([
                 'website' => MenuItem::make()->label('Siteye Dön')->url(fn (): string => route('home'))->icon('heroicon-o-globe-alt'),
                 'security' => MenuItem::make()->label('Hesap Güvenliği')->url(fn (): string => route('account.security'))->icon('heroicon-o-shield-check'),
