@@ -224,6 +224,9 @@
     .phone-bottom-nav > a.is-active { color: #f4511e; }
     .phone-bottom-nav > .phone-bottom-create { transform: translateY(-.55rem); color: #172554; }
     .phone-bottom-nav > .phone-bottom-create > i { display: flex; height: 2.75rem; width: 2.75rem; align-items: center; justify-content: center; border: 3px solid white; border-radius: 999px; background: #f4511e; color: white; font-size: 1.15rem; box-shadow: 0 4px 12px rgb(244 81 30 / .38); }
+    .phone-bottom-nav > .phone-bottom-project { color: #172554; font-weight: 800; }
+    .phone-bottom-nav > .phone-bottom-project > i { display: flex; height: 1.85rem; width: 1.85rem; align-items: center; justify-content: center; border-radius: .55rem; background: #172554; color: #fdba74; box-shadow: 0 3px 8px rgb(15 23 42 / .18); }
+    .phone-bottom-nav > .phone-bottom-project.is-active > i { background: #f4511e; color: white; }
 }
 
 /* Compact home overview: rent, EIDS and markets. */
