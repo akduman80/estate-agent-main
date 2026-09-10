@@ -91,7 +91,9 @@
             <a href="{{ url('/portal/listings/create') }}" class="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-500 font-extrabold text-white shadow-sm"><i class="fa-solid fa-circle-plus"></i>Ücretsiz İlan Ver</a>
             <div class="mt-2 grid {{ auth()->check() ? 'grid-cols-1' : 'grid-cols-2' }} gap-2">
                 @guest<a href="{{ route('register') }}" class="flex h-11 items-center justify-center gap-2 rounded-xl border border-blue-300 bg-blue-950 font-bold text-white"><i class="fa-solid fa-user-plus"></i>Ücretsiz Üye Ol</a>@endguest
-                <a href="{{ auth()->check() ? (auth()->user()->role?->getRedirectPath() ?? '/portal') : route('login') }}" class="flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-blue-950 bg-amber-300 font-bold text-blue-950"><i class="fa-solid fa-user"></i>Hesabım</a>
+                <a href="{{ auth()->check() ? (auth()->user()->role?->getRedirectPath() ?? '/portal') : route('login') }}" class="flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-blue-950 bg-amber-300 font-bold text-blue-950">
+                    <i class="fa-solid {{ auth()->check() ? 'fa-user' : 'fa-right-to-bracket' }}"></i>{{ auth()->check() ? 'Hesabım' : 'Giriş Yap' }}
+                </a>
             </div>
         </div>
 
