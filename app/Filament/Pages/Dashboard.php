@@ -14,6 +14,6 @@ class Dashboard extends BaseDashboard
 
     public function getSubheading(): ?string
     {
-        return 'Yayın, üyelik ve içerik onaylarında bekleyen işlemleri buradan takip edebilirsiniz.';
+        return 'Yayın, üyelik, içerik onayları ve site trafiğini buradan takip edebilirsiniz.';
     }
 }
