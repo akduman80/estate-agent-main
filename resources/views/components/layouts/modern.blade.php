@@ -39,7 +39,7 @@
                 <a href="{{ route('listings.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 transition {{ request()->routeIs('blogs.*') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Emlak Haberleri</a>
                 <a href="{{ route('projects.index') }}" class="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2 font-extrabold shadow-[0_10px_22px_rgb(15_23_42_/_0.14),0_2px_5px_rgb(15_23_42_/_0.10)] transition {{ request()->routeIs('projects.*') ? 'bg-blue-950 text-white ring-2 ring-orange-300 ring-offset-2' : 'bg-blue-950 text-white hover:-translate-y-0.5 hover:bg-blue-900 hover:shadow-[0_14px_26px_rgb(15_23_42_/_0.18),0_3px_7px_rgb(15_23_42_/_0.12)]' }}">
-                    <i class="fa-regular fa-building text-orange-300" aria-hidden="true"></i>
+                    <x-project-nav-icon class="h-7 w-7 text-orange-300" />
                     <span>Projeler</span>
                     <span class="rounded bg-orange-400 px-1.5 py-0.5 text-[10px] font-black uppercase leading-none text-blue-950">Yeni</span>
                 </a>
@@ -101,7 +101,7 @@
                 <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Emlak Haberleri</a>
                 <a href="{{ route('projects.index') }}" class="flex items-center justify-between rounded-lg bg-blue-950 px-3 py-3 font-extrabold text-white shadow-sm hover:bg-blue-900">
-                    <span class="flex items-center gap-2"><i class="fa-regular fa-building text-orange-300" aria-hidden="true"></i> Projeler</span>
+                    <span class="flex items-center gap-2"><x-project-nav-icon class="h-6 w-6 text-orange-300" /> Projeler</span>
                     <span class="rounded bg-orange-400 px-1.5 py-0.5 text-[10px] font-black uppercase leading-none text-blue-950">Yeni</span>
                 </a>
                 @if($headerDocuments->isNotEmpty())
@@ -177,7 +177,7 @@
             <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'is-active' : '' }}"><i class="fa-solid fa-house"></i><span>Anasayfa</span></a>
             <a href="{{ route('listings.index') }}" class="{{ request()->routeIs('listings.*') ? 'is-active' : '' }}"><i class="fa-solid fa-list"></i><span>İlanlar</span></a>
             <a href="{{ url('/portal/listings/create') }}" class="phone-bottom-create"><i class="fa-solid fa-plus"></i><span>İlan Ver</span></a>
-            <a href="{{ route('projects.index') }}" class="phone-bottom-project {{ request()->routeIs('projects.*') ? 'is-active' : '' }}"><i class="fa-regular fa-building"></i><span>Projeler</span></a>
+            <a href="{{ route('projects.index') }}" class="phone-bottom-project {{ request()->routeIs('projects.*') ? 'is-active' : '' }}"><span class="project-bottom-icon"><x-project-nav-icon class="h-5 w-5" /></span><span>Projeler</span></a>
         </nav>
     @endauth
 
