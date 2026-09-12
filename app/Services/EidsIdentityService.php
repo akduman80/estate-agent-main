@@ -7,13 +7,15 @@ use Illuminate\Support\Facades\Http;
 
 class EidsIdentityService
 {
+    public function __construct(private readonly EidsSettingsService $settings) {}
+
     public function ssoUrl(): string
     {
-        $url = config('services.eids.sso_url');
+        $url = $this->settings->ssoUrl();
         $separator = str_contains($url, '?') ? '&' : '?';
 
         return $url.$separator.http_build_query([
-            'firmaKodu' => config('services.eids.company_code'),
+            'firmaKodu' => $this->settings->companyCode(),
         ]);
     }
 
@@ -23,14 +25,14 @@ class EidsIdentityService
         ?string $taxNumber = null,
         bool $usePlatformTaxNumber = true,
     ): array {
-        $response = Http::withBasicAuth(config('services.eids.username'), config('services.eids.password'))
+        $response = Http::withBasicAuth($this->settings->username(), $this->settings->password())
             ->acceptJson()
             ->asJson()
-            ->timeout(config('services.eids.timeout', 20))
+            ->timeout($this->settings->timeout())
             ->post($this->userCodeUrl(), [
                 'yetkiKodu' => $authorizationCode,
-                'vergiNo' => $usePlatformTaxNumber ? ($taxNumber ?? config('services.eids.tax_no')) : $taxNumber,
-                'gsmNo' => $gsmNo ?: config('services.eids.gsm_no'),
+                'vergiNo' => $usePlatformTaxNumber ? ($taxNumber ?? $this->settings->platformTaxNumber()) : $taxNumber,
+                'gsmNo' => $gsmNo ?: $this->settings->platformGsmNumber(),
             ])
             ->throw();
 
@@ -39,19 +41,19 @@ class EidsIdentityService
 
     public function isConfiguredForSso(): bool
     {
-        return filled(config('services.eids.company_code'));
+        return filled($this->settings->companyCode());
     }
 
     public function isConfiguredForUserCode(?string $gsmNo = null): bool
     {
-        return filled(config('services.eids.username'))
-            && filled(config('services.eids.password'))
-            && filled($gsmNo ?: config('services.eids.gsm_no'));
+        return filled($this->settings->username())
+            && filled($this->settings->password())
+            && filled($gsmNo ?: $this->settings->platformGsmNumber());
     }
 
     private function userCodeUrl(): string
     {
-        return rtrim(config('services.eids.base_url'), '/').'/'.ltrim(config('services.eids.user_code_path'), '/');
+        return $this->settings->userCodeUrl();
     }
 
     private function normalizeUserCodeResponse(Response $response): array

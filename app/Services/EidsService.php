@@ -16,6 +16,8 @@ use Throwable;
 
 class EidsService
 {
+    public function __construct(private readonly EidsSettingsService $settings) {}
+
     /**
      * İlanı EİDS taşınmaz yetki servisine gönderip doğrular.
      */
@@ -41,10 +43,10 @@ class EidsService
         }
 
         try {
-            $response = Http::withBasicAuth(config('services.eids.username'), config('services.eids.password'))
+            $response = Http::withBasicAuth($this->settings->username(), $this->settings->password())
                 ->acceptJson()
                 ->asJson()
-                ->timeout(config('services.eids.timeout', 20))
+                ->timeout($this->settings->timeout())
                 ->post($endpoint, $requestPayload)
                 ->throw();
         } catch (RequestException $exception) {
@@ -107,14 +109,14 @@ class EidsService
 
     private function isConfigured(): bool
     {
-        return filled(config('services.eids.company_code'))
-            && filled(config('services.eids.username'))
-            && filled(config('services.eids.password'));
+        return filled($this->settings->companyCode())
+            && filled($this->settings->username())
+            && filled($this->settings->password());
     }
 
     private function verifyUrl(): string
     {
-        return rtrim(config('services.eids.base_url'), '/').'/'.ltrim(config('services.eids.verify_path'), '/');
+        return $this->settings->verifyUrl();
     }
 
     private function requestPayload(Listing $listing): array
@@ -124,11 +126,11 @@ class EidsService
         $taxNumber = match ($listing->source_type) {
             'owner' => null,
             'real_estate_office' => $listing->businessProfile?->tax_number ?: $listing->user?->businessProfile?->tax_number,
-            default => config('services.eids.tax_no'),
+            default => $this->settings->platformTaxNumber(),
         };
 
         return [
-            'FirmaKod' => config('services.eids.company_code'),
+            'FirmaKod' => $this->settings->companyCode(),
             'KullaniciKodu' => $userCode,
             'VergiNo' => $taxNumber,
             'TasinmazId' => is_numeric($listing->eids_document_no) ? (float) $listing->eids_document_no : $listing->eids_document_no,
@@ -139,7 +141,7 @@ class EidsService
     private function userCodeForListing(Listing $listing): ?string
     {
         if ($listing->source_type === 'zydemlak' && $listing->user?->role === UserRole::SUPERVISOR) {
-            return config('services.eids.user_code');
+            return $this->settings->platformUserCode();
         }
 
         return $listing->user?->eids_user_code;

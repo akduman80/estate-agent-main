@@ -2,11 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\Setting;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class EidsCallbackTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_it_redirects_to_the_eids_sso_url(): void
     {
         config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');
@@ -39,7 +43,8 @@ class EidsCallbackTest extends TestCase
         $response = $this->get('/eids/callback?yetkiKodu=AUTH-CODE-123&durum=Basarili');
 
         $response->assertOk();
-        $response->assertSee('EIDS_USER_CODE=22222222-2222-2222-2222-222222222222');
+        $response->assertSee('ZYDEMLAK EİDS kullanıcı kodu güvenli biçimde veritabanına kaydedildi.');
+        $this->assertSame('22222222-2222-2222-2222-222222222222', Setting::getSecret('eids_user_code'));
 
         Http::assertSent(fn ($request) => $request->hasHeader('Authorization')
             && $request['yetkiKodu'] === 'AUTH-CODE-123'

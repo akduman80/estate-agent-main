@@ -26,20 +26,15 @@ class BasicInfoStep
             ->schema([
                 Select::make('user_id')
                     ->label('İlan Sahibi')
-                    ->options(fn (): array => (auth()->user()?->role === UserRole::SUPERVISOR
-                        ? [auth()->id() => 'Ziyade Emlak (Kendi adıma)']
-                        : []) + User::query()
-                        ->whereIn('role', [UserRole::INDIVIDUAL, UserRole::AGENT])
-                        ->where('account_status', AccountStatus::ACTIVE)
-                        ->orderBy('name')
-                        ->pluck('name', 'id')
-                        ->all())
+                    ->options(fn (): array => static::getOwnerOptions())
+                    ->getOptionLabelUsing(fn ($value): ?string => static::getOwnerLabel($value))
                     ->searchable()
                     ->preload()
                     ->default(fn () => request()->integer('owner') ?: null)
                     ->visible(fn (): bool => auth()->user()?->role === UserRole::SUPERVISOR)
                     ->disabled(fn (?Listing $record): bool => (bool) $record?->exists)
                     ->required(fn (): bool => auth()->user()?->role === UserRole::SUPERVISOR)
+                    ->extraAttributes(['class' => 'listing-owner-select'])
                     ->columnSpanFull(),
 
                 Select::make('owner_agent_id')
@@ -128,5 +123,36 @@ class BasicInfoStep
         }
 
         return $formatted;
+    }
+
+    protected static function getOwnerOptions(): array
+    {
+        $platformOption = auth()->user()?->role === UserRole::SUPERVISOR
+            ? [auth()->id() => 'Ziyade Emlak (ZYDEMLAK adına)']
+            : [];
+
+        return $platformOption + User::query()
+            ->whereIn('role', [UserRole::INDIVIDUAL, UserRole::AGENT])
+            ->where('account_status', AccountStatus::ACTIVE)
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->all();
+    }
+
+    protected static function getOwnerLabel(mixed $value): ?string
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        $value = (int) $value;
+
+        if (auth()->user()?->role === UserRole::SUPERVISOR && $value === auth()->id()) {
+            return 'Ziyade Emlak (ZYDEMLAK adına)';
+        }
+
+        return User::query()
+            ->whereKey($value)
+            ->value('name');
     }
 }

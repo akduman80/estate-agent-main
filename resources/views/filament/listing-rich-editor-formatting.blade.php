@@ -232,6 +232,11 @@
         overflow: visible !important;
     }
 
+    .listing-owner-select .choices__list--dropdown,
+    .listing-owner-select .choices__list[aria-expanded] {
+        z-index: 120;
+    }
+
     trix-toolbar[data-listing-formatting-toolbar="true"] {
         overflow: visible !important;
         position: relative;

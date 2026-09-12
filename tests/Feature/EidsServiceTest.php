@@ -6,6 +6,7 @@ use App\Enums\AccountStatus;
 use App\Enums\UserRole;
 use App\Models\Listing;
 use App\Models\ListingEidsRequestLog;
+use App\Models\Setting;
 use App\Models\User;
 use App\Services\EidsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -257,5 +258,45 @@ class EidsServiceTest extends TestCase
         Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === 'platform-user-guid' && $request['VergiNo'] === '0230192423');
         $this->assertSame($user->id, $listing->fresh()->eidsVerification->user_id);
         $this->assertSame(hash('sha256', 'platform-user-guid'), $listing->fresh()->eidsVerification->eids_user_code_hash);
+    }
+
+    public function test_platform_listing_prefers_database_eids_settings_over_config(): void
+    {
+        config()->set('services.eids.company_code', 'config-platform-guid');
+        config()->set('services.eids.username', 'config-user');
+        config()->set('services.eids.password', 'config-pass');
+        config()->set('services.eids.user_code', 'config-platform-user-guid');
+        config()->set('services.eids.tax_no', 'config-tax-no');
+        config()->set('services.eids.base_url', 'https://config-eids.test');
+        config()->set('services.eids.verify_path', '/config-verify');
+
+        Setting::updateOrCreate(['key' => 'eids_company_code'], ['value' => 'db-platform-guid']);
+        Setting::updateOrCreate(['key' => 'eids_base_url'], ['value' => 'https://db-eids.test']);
+        Setting::updateOrCreate(['key' => 'eids_verify_path'], ['value' => '/db-verify']);
+        Setting::putSecret('eids_username', 'db-user');
+        Setting::putSecret('eids_password', 'db-pass');
+        Setting::putSecret('eids_user_code', 'db-platform-user-guid');
+        Setting::putSecret('eids_tax_no', 'db-tax-no');
+
+        Http::fake(['db-eids.test/db-verify' => Http::response([
+            'data' => ['Il' => 'Osmaniye', 'Ilce' => 'Merkez', 'Mahalle' => 'Alibeyli'],
+            'statusCode' => 200, 'errors' => null,
+        ])]);
+
+        $user = User::factory()->create([
+            'role' => UserRole::SUPERVISOR,
+            'account_status' => AccountStatus::ACTIVE,
+        ]);
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $user->id, 'title' => 'DB EİDS', 'slug' => 'db-eids',
+            'price' => 1000, 'type' => 'Satılık', 'category' => 'Arsa', 'source_type' => 'zydemlak',
+            'eids_document_no' => '123', 'city_id' => '80', 'district_id' => 'Merkez',
+        ]));
+
+        $this->assertTrue(app(EidsService::class)->verifyListing($listing));
+        Http::assertSent(fn ($request): bool => $request->hasHeader('Authorization')
+            && $request['FirmaKod'] === 'db-platform-guid'
+            && $request['KullaniciKodu'] === 'db-platform-user-guid'
+            && $request['VergiNo'] === 'db-tax-no');
     }
 }

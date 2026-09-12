@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Services\DatabaseMailConfigurator;
 use App\Services\IletiMerkeziPhoneOtpSender;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -37,6 +38,17 @@ class ManageSettings extends Page
         $user = auth()->user();
 
         return $user && ($user->role === UserRole::SUPERVISOR || $user->role === UserRole::SUPERVISOR->value);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('refreshPlatformEidsCode')
+                ->label('ZYDEMLAK EİDS Kodunu Al / Yenile')
+                ->icon('heroicon-o-shield-check')
+                ->url(route('eids.start'))
+                ->openUrlInNewTab(false),
+        ];
     }
 
     /**
@@ -108,6 +120,20 @@ class ManageSettings extends Page
         ];
     }
 
+    protected function getDefaultEidsSettings(): array
+    {
+        return [
+            'eids_company_code' => config('services.eids.company_code', ''),
+            'eids_base_url' => config('services.eids.base_url', 'https://ws.gtb.gov.tr:8443'),
+            'eids_verify_path' => config('services.eids.verify_path', '/EidsTasinmazAPI'),
+            'eids_user_code_path' => config('services.eids.user_code_path', '/EidsApi/Kullanici/GetKullaniciKodu'),
+            'eids_health_path' => config('services.eids.health_path', '/EidsApi/health'),
+            'eids_sso_url' => config('services.eids.sso_url', 'https://eids.ticaret.gov.tr/oturum'),
+            'eids_callback_url' => config('services.eids.callback_url', ''),
+            'eids_timeout' => (int) config('services.eids.timeout', 20),
+        ];
+    }
+
     protected function getDefaultMarketSettings(): array
     {
         return [
@@ -126,6 +152,7 @@ class ManageSettings extends Page
             $this->getDefaultContactSettings(),
             $this->getDefaultDocumentSettings(),
             $this->getDefaultSecuritySettings(),
+            $this->getDefaultEidsSettings(),
             $this->getDefaultMarketSettings(),
         );
 
@@ -140,6 +167,11 @@ class ManageSettings extends Page
         $settings['smtp_password'] = null;
         $settings['sms_api_key'] = null;
         $settings['sms_api_hash'] = null;
+        $settings['eids_username'] = null;
+        $settings['eids_password'] = null;
+        $settings['eids_user_code'] = null;
+        $settings['eids_tax_no'] = null;
+        $settings['eids_gsm_no'] = null;
 
         // 3. Formu dolduruyoruz[cite: 6]
         $this->form->fill($settings); // [cite: 6]
@@ -331,6 +363,122 @@ class ManageSettings extends Page
                                     ->columnSpanFull(),
                             ])
                             ->columns(3),
+
+                        Forms\Components\Tabs\Tab::make('EİDS Bağlantısı')
+                            ->icon('heroicon-o-shield-check')
+                            ->schema([
+                                Forms\Components\Placeholder::make('eids_status_info')
+                                    ->label('Kayıtlı EİDS durumu')
+                                    ->content(function (): string {
+                                        $stored = [
+                                            'Servis kullanıcı adı' => Setting::getSecret('eids_username'),
+                                            'Servis şifresi' => Setting::getSecret('eids_password'),
+                                            'ZYDEMLAK kullanıcı kodu' => Setting::getSecret('eids_user_code'),
+                                            'Vergi no' => Setting::getSecret('eids_tax_no'),
+                                            'GSM' => Setting::getSecret('eids_gsm_no'),
+                                        ];
+
+                                        return collect($stored)
+                                            ->map(fn ($value, $label): string => $label.': '.(filled($value) ? 'Kayıtlı' : 'Eksik'))
+                                            ->implode(' · ');
+                                    })
+                                    ->helperText('Gizli değerler şifreli saklanır ve kayıttan sonra tekrar gösterilmez. Boş bırakırsanız kayıtlı değer korunur.')
+                                    ->columnSpanFull(),
+
+                                Forms\Components\TextInput::make('eids_company_code')
+                                    ->label('Firma Kodu')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('eids_username')
+                                    ->label('Servis kullanıcı adı')
+                                    ->password()
+                                    ->revealable()
+                                    ->autocomplete('new-password')
+                                    ->dehydrated(fn ($state): bool => filled($state))
+                                    ->helperText(Setting::getSecret('eids_username')
+                                        ? 'Kayıtlı kullanıcı adı korunur. Değiştirmek için yeni değeri yazın.'
+                                        : 'İlk kurulumda zorunludur.'),
+
+                                Forms\Components\TextInput::make('eids_password')
+                                    ->label('Servis şifresi')
+                                    ->password()
+                                    ->revealable()
+                                    ->autocomplete('new-password')
+                                    ->dehydrated(fn ($state): bool => filled($state))
+                                    ->helperText(Setting::getSecret('eids_password')
+                                        ? 'Kayıtlı şifre korunur. Değiştirmek için yeni değeri yazın.'
+                                        : 'İlk kurulumda zorunludur.'),
+
+                                Forms\Components\TextInput::make('eids_user_code')
+                                    ->label('ZYDEMLAK EİDS kullanıcı kodu')
+                                    ->password()
+                                    ->revealable()
+                                    ->autocomplete('new-password')
+                                    ->dehydrated(fn ($state): bool => filled($state))
+                                    ->helperText(Setting::getSecret('eids_user_code')
+                                        ? 'Kayıtlı platform kullanıcı kodu korunur. /eids/start akışı da bu alanı günceller.'
+                                        : 'ZYDEMLAK adına ilanlarda zorunludur. /eids/start akışıyla alınabilir.'),
+
+                                Forms\Components\TextInput::make('eids_tax_no')
+                                    ->label('ZYDEMLAK vergi no')
+                                    ->password()
+                                    ->revealable()
+                                    ->autocomplete('new-password')
+                                    ->dehydrated(fn ($state): bool => filled($state))
+                                    ->helperText(Setting::getSecret('eids_tax_no')
+                                        ? 'Kayıtlı vergi no korunur. Değiştirmek için yeni değeri yazın.'
+                                        : 'Platform kullanıcı kodu alma ve ZYDEMLAK adına ilanlarda kullanılır.'),
+
+                                Forms\Components\TextInput::make('eids_gsm_no')
+                                    ->label('ZYDEMLAK GSM no')
+                                    ->password()
+                                    ->revealable()
+                                    ->autocomplete('new-password')
+                                    ->dehydrated(fn ($state): bool => filled($state))
+                                    ->helperText(Setting::getSecret('eids_gsm_no')
+                                        ? 'Kayıtlı GSM korunur. Değiştirmek için yeni değeri yazın.'
+                                        : 'Platform kullanıcı kodu alma akışında kullanılır.'),
+
+                                Forms\Components\TextInput::make('eids_base_url')
+                                    ->label('Servis ana adresi')
+                                    ->required()
+                                    ->url()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('eids_verify_path')
+                                    ->label('Taşınmaz doğrulama path')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('eids_user_code_path')
+                                    ->label('Kullanıcı kodu path')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('eids_health_path')
+                                    ->label('Health path')
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('eids_sso_url')
+                                    ->label('SSO adresi')
+                                    ->required()
+                                    ->url()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('eids_callback_url')
+                                    ->label('Callback adresi')
+                                    ->url()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('eids_timeout')
+                                    ->label('Timeout (saniye)')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(120)
+                                    ->required(),
+                            ])
+                            ->columns(2),
 
                         Forms\Components\Tabs\Tab::make('OTP ve Güvenlik')
                             ->icon('heroicon-o-shield-check')
@@ -648,7 +796,16 @@ class ManageSettings extends Page
         }
 
         foreach ($data as $key => $value) { // [cite: 15]
-            if (in_array($key, ['smtp_password', 'sms_api_key', 'sms_api_hash'], true)) {
+            if (in_array($key, [
+                'smtp_password',
+                'sms_api_key',
+                'sms_api_hash',
+                'eids_username',
+                'eids_password',
+                'eids_user_code',
+                'eids_tax_no',
+                'eids_gsm_no',
+            ], true)) {
                 if (filled($value)) {
                     Setting::putSecret($key, $value);
                 }

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\UserRole;
+use App\Models\Setting;
 use App\Models\User;
 use App\Services\EidsIdentityService;
+use App\Services\EidsSettingsService;
 use App\Services\OtpFeatureService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -40,7 +42,7 @@ class EidsCallbackController extends Controller
         return redirect()->away($eidsIdentityService->ssoUrl());
     }
 
-    public function callback(Request $request, EidsIdentityService $eidsIdentityService)
+    public function callback(Request $request, EidsIdentityService $eidsIdentityService, EidsSettingsService $eidsSettings)
     {
         $authorizationCode = (string) $request->query('yetkiKodu', '');
         $status = (string) $request->query('durum', '');
@@ -60,10 +62,10 @@ class EidsCallbackController extends Controller
         if ($accountUser) {
             abort_unless($request->user()?->id === $accountUser->id, 403, 'EİDS işlemini başlattığınız hesapla giriş yapın.');
         }
-        $gsmNumber = $accountUser ? $accountUser->phone : config('services.eids.gsm_no');
+        $gsmNumber = $accountUser ? $accountUser->phone : $eidsSettings->platformGsmNumber();
         $taxNumber = $accountUser?->role === UserRole::AGENT
             ? $accountUser->businessProfile?->tax_number
-            : ($accountUser ? null : config('services.eids.tax_no'));
+            : ($accountUser ? null : $eidsSettings->platformTaxNumber());
 
         if (! $eidsIdentityService->isConfiguredForUserCode($gsmNumber)) {
             return response()->view('eids.callback', [
@@ -123,11 +125,13 @@ class EidsCallbackController extends Controller
             ]);
         }
 
+        Setting::putSecret('eids_user_code', $userCode);
+
         return view('eids.callback', [
             'status' => 'success',
-            'message' => 'EİDS kullanıcı kodu alındı. Bu değeri canlı .env dosyasında EIDS_USER_CODE alanına yazın.',
-            'userCode' => $userCode,
-            'envLine' => 'EIDS_USER_CODE='.$userCode,
+            'message' => 'ZYDEMLAK EİDS kullanıcı kodu güvenli biçimde veritabanına kaydedildi.',
+            'userCode' => null,
+            'envLine' => null,
         ]);
     }
 }
