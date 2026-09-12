@@ -63,6 +63,7 @@
         display: grid;
         gap: .2rem;
         margin: 0;
+        position: relative;
     }
 
     .listing-rich-editor-formatting__label {
@@ -84,14 +85,82 @@
         width: 100%;
     }
 
-    .listing-rich-editor-formatting__select {
-        appearance: none;
-        background:
-            linear-gradient(45deg, transparent 50%, rgb(71 85 105) 50%) calc(100% - .85rem) 50% / .35rem .35rem no-repeat,
-            linear-gradient(135deg, rgb(71 85 105) 50%, transparent 50%) calc(100% - .62rem) 50% / .35rem .35rem no-repeat,
-            white;
+    .listing-rich-editor-formatting__font-picker {
+        position: relative;
+        width: 100%;
+    }
+
+    .listing-rich-editor-formatting__font-button {
+        align-items: center;
+        background: white;
+        border: 1px solid rgb(203 213 225);
+        border-radius: .45rem;
+        color: rgb(15 23 42);
         cursor: pointer;
-        padding-right: 1.9rem;
+        display: flex;
+        font-size: .82rem;
+        gap: .5rem;
+        height: 2.25rem;
+        justify-content: space-between;
+        line-height: 1.2;
+        padding-inline: .65rem;
+        text-align: left;
+        width: 100%;
+    }
+
+    .listing-rich-editor-formatting__font-button::after {
+        border-left: .28rem solid transparent;
+        border-right: .28rem solid transparent;
+        border-top: .34rem solid rgb(71 85 105);
+        content: "";
+        flex: 0 0 auto;
+    }
+
+    .listing-rich-editor-formatting__font-name {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .listing-rich-editor-formatting__font-options {
+        background: white;
+        border: 1px solid rgb(203 213 225);
+        border-radius: .55rem;
+        box-shadow: 0 16px 34px rgb(15 23 42 / .18);
+        display: none;
+        left: 0;
+        max-height: 15rem;
+        overflow-y: auto;
+        padding: .25rem;
+        position: absolute;
+        right: 0;
+        top: calc(100% + .25rem);
+        z-index: 10000;
+    }
+
+    .listing-rich-editor-formatting__font-picker[data-open="true"] .listing-rich-editor-formatting__font-options {
+        display: grid;
+        gap: .1rem;
+    }
+
+    .listing-rich-editor-formatting__font-option {
+        border-radius: .35rem;
+        color: rgb(15 23 42);
+        cursor: pointer;
+        display: block;
+        font-size: .86rem;
+        line-height: 1.25;
+        padding: .45rem .55rem;
+        text-align: left;
+        width: 100%;
+    }
+
+    .listing-rich-editor-formatting__font-option:hover,
+    .listing-rich-editor-formatting__font-option[aria-selected="true"] {
+        background: rgb(245 158 11 / .14);
+        color: rgb(180 83 9);
     }
 
     .listing-rich-editor-formatting__input--size {
@@ -305,24 +374,85 @@
             return field;
         };
 
+        const addFontOption = (picker, font) => {
+            const list = picker.querySelector('[data-listing-font-options]');
+
+            if (! list || list.querySelector(`[data-listing-font-value="${CSS.escape(font)}"]`)) return;
+
+            const option = document.createElement('button');
+            option.className = 'listing-rich-editor-formatting__font-option';
+            option.type = 'button';
+            option.dataset.listingFontValue = font;
+            option.setAttribute('aria-selected', 'false');
+            option.style.fontFamily = font;
+            option.textContent = font;
+            option.title = font;
+            list.append(option);
+        };
+
+        const setFontPickerValue = (picker, font) => {
+            addFontOption(picker, font);
+
+            const label = picker.querySelector('[data-listing-font-label]');
+
+            if (label) {
+                label.textContent = font;
+                label.style.fontFamily = font;
+                label.title = font;
+            }
+
+            picker.dataset.listingFontCurrent = font;
+            picker.querySelectorAll('[data-listing-font-value]').forEach((option) => {
+                option.setAttribute('aria-selected', option.dataset.listingFontValue === font ? 'true' : 'false');
+            });
+        };
+
         const createFontControl = (editor) => {
-            const input = document.createElement('select');
-            input.className = 'listing-rich-editor-formatting__input listing-rich-editor-formatting__select';
-            input.dataset.listingFontFamily = 'true';
+            const picker = document.createElement('span');
+            picker.className = 'listing-rich-editor-formatting__font-picker';
+            picker.dataset.listingFontFamily = 'true';
 
-            commonFonts.forEach((font) => {
-                const option = document.createElement('option');
-                option.value = font;
-                option.textContent = font;
-                option.style.fontFamily = font;
-                input.append(option);
+            const button = document.createElement('button');
+            button.className = 'listing-rich-editor-formatting__font-button';
+            button.type = 'button';
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-haspopup', 'listbox');
+
+            const selectedLabel = document.createElement('span');
+            selectedLabel.className = 'listing-rich-editor-formatting__font-name';
+            selectedLabel.dataset.listingFontLabel = 'true';
+
+            const list = document.createElement('span');
+            list.className = 'listing-rich-editor-formatting__font-options';
+            list.dataset.listingFontOptions = 'true';
+            list.setAttribute('role', 'listbox');
+
+            button.append(selectedLabel);
+            picker.append(button, list);
+            commonFonts.forEach((font) => addFontOption(picker, font));
+            setFontPickerValue(picker, commonFonts[0]);
+
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+
+                const isOpen = picker.dataset.open === 'true';
+                picker.dataset.open = isOpen ? 'false' : 'true';
+                button.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
             });
 
-            input.addEventListener('change', () => {
-                applyAttribute(editor, 'listingFontFamily', normalizeFontFamily(input.value));
+            list.addEventListener('click', (event) => {
+                const option = event.target.closest('[data-listing-font-value]');
+
+                if (! option) return;
+
+                const font = option.dataset.listingFontValue;
+                setFontPickerValue(picker, font);
+                picker.dataset.open = 'false';
+                button.setAttribute('aria-expanded', 'false');
+                applyAttribute(editor, 'listingFontFamily', normalizeFontFamily(font));
             });
 
-            return createField('Yazı tipi', input);
+            return createField('Yazı tipi', picker);
         };
 
         const createSizeControl = (editor) => {
@@ -461,15 +591,7 @@
             if (fontInput && attributes.listingFontFamily) {
                 const fontFamily = attributes.listingFontFamily.replace(/^"|"$/g, '');
 
-                if (! [...fontInput.options].some((option) => option.value === fontFamily)) {
-                    const option = document.createElement('option');
-                    option.value = fontFamily;
-                    option.textContent = fontFamily;
-                    option.style.fontFamily = fontFamily;
-                    fontInput.append(option);
-                }
-
-                fontInput.value = fontFamily;
+                setFontPickerValue(fontInput, fontFamily);
             }
 
             if (sizeInput && attributes.listingFontSize) {
@@ -568,6 +690,15 @@
                 if (! dropdown.open || dropdown.contains(event.target)) return;
 
                 dropdown.removeAttribute('open');
+            });
+
+            group.addEventListener('click', (event) => {
+                if (event.target.closest('[data-listing-font-family]')) return;
+
+                group.querySelectorAll('[data-listing-font-family][data-open="true"]').forEach((picker) => {
+                    picker.dataset.open = 'false';
+                    picker.querySelector('[aria-expanded="true"]')?.setAttribute('aria-expanded', 'false');
+                });
             });
 
             window.addEventListener('resize', positionDropdown);
