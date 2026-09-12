@@ -1,6 +1,6 @@
 <style>
     .listing-rich-editor-formatting-dropdown {
-        display: contents;
+        display: inline-block;
         position: relative;
     }
 
@@ -9,7 +9,7 @@
         border: 1px solid rgb(203 213 225);
         border-radius: .45rem;
         color: rgb(15 23 42);
-        display: none;
+        display: inline-flex;
         font-size: .78rem;
         font-weight: 700;
         gap: .45rem;
@@ -34,12 +34,26 @@
     }
 
     .listing-rich-editor-formatting {
-        align-items: flex-end;
-        display: flex;
+        align-items: stretch;
+        background: white;
+        border: 1px solid rgb(226 232 240);
+        border-radius: .7rem;
+        box-shadow: 0 18px 45px rgb(15 23 42 / .16);
+        display: none;
         flex-wrap: wrap;
         gap: .5rem;
-        min-width: min(100%, 36rem);
-        padding: .25rem 0;
+        left: 0;
+        max-width: min(22rem, calc(100vw - 2rem));
+        min-width: min(22rem, calc(100vw - 2rem));
+        padding: .75rem;
+        position: absolute;
+        top: calc(100% + .45rem);
+        width: min(22rem, calc(100vw - 2rem));
+        z-index: 40;
+    }
+
+    .listing-rich-editor-formatting-dropdown[open] .listing-rich-editor-formatting {
+        display: flex;
     }
 
     .listing-rich-editor-formatting__field {
@@ -61,9 +75,9 @@
         color: rgb(15 23 42);
         font-size: .75rem;
         height: 1.9rem;
-        max-width: 10.5rem;
+        max-width: none;
         padding-inline: .45rem;
-        width: 10.5rem;
+        width: 100%;
     }
 
     .listing-rich-editor-formatting__input--size {
@@ -86,8 +100,9 @@
     }
 
     .listing-rich-editor-formatting__color input[type="text"] {
-        max-width: 6.8rem;
-        width: 6.8rem;
+        flex: 1;
+        max-width: none;
+        width: auto;
     }
 
     .listing-rich-editor-formatting__align {
@@ -97,6 +112,7 @@
         display: inline-flex;
         height: 1.9rem;
         overflow: hidden;
+        width: 100%;
     }
 
     .listing-rich-editor-formatting__align-button {
@@ -109,6 +125,7 @@
         justify-content: center;
         min-width: 2.55rem;
         padding-inline: .45rem;
+        width: 100%;
     }
 
     .listing-rich-editor-formatting__align-button + .listing-rich-editor-formatting__align-button {
@@ -140,52 +157,8 @@
         margin-right: .35rem;
     }
 
-    @media (max-width: 900px) {
-        .listing-rich-editor-formatting-dropdown {
-            display: inline-block;
-        }
-
-        .listing-rich-editor-formatting-dropdown__summary {
-            display: inline-flex;
-        }
-
-        .listing-rich-editor-formatting {
-            align-items: stretch;
-            background: white;
-            border: 1px solid rgb(226 232 240);
-            border-radius: .7rem;
-            box-shadow: 0 18px 45px rgb(15 23 42 / .16);
-            display: none;
-            left: 0;
-            max-width: min(22rem, calc(100vw - 2rem));
-            min-width: min(22rem, calc(100vw - 2rem));
-            padding: .75rem;
-            position: absolute;
-            top: calc(100% + .45rem);
-            width: min(22rem, calc(100vw - 2rem));
-            z-index: 40;
-        }
-
-        .listing-rich-editor-formatting-dropdown[open] .listing-rich-editor-formatting {
-            display: flex;
-        }
-
-        .listing-rich-editor-formatting__field,
-        .listing-rich-editor-formatting__input {
-            width: 100%;
-            max-width: none;
-        }
-
-        .listing-rich-editor-formatting__color input[type="text"] {
-            flex: 1;
-            max-width: none;
-            width: auto;
-        }
-
-        .listing-rich-editor-formatting__align,
-        .listing-rich-editor-formatting__align-button {
-            width: 100%;
-        }
+    .listing-rich-editor-formatting__field {
+        width: 100%;
     }
 </style>
 
@@ -493,9 +466,16 @@
             updateToolbarState(editor);
         };
 
+        const addControlsToExistingEditors = () => {
+            document.querySelectorAll('trix-editor[data-listing-description-editor="true"]').forEach(addToolbarControls);
+        };
+
         document.addEventListener('trix-before-initialize', configureTrix);
         document.addEventListener('trix-initialize', (event) => addToolbarControls(event.target));
 
         configureTrix();
+        addControlsToExistingEditors();
+        requestAnimationFrame(addControlsToExistingEditors);
+        setTimeout(addControlsToExistingEditors, 250);
     })();
 </script>
