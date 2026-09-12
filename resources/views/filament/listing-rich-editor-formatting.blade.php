@@ -235,6 +235,9 @@
             label.className = 'listing-rich-editor-formatting__label';
             label.textContent = labelText;
 
+            control.setAttribute('aria-label', labelText);
+            control.setAttribute('title', labelText);
+
             field.append(label, control);
 
             return field;
@@ -285,6 +288,9 @@
             text.type = 'text';
             text.value = defaultColor;
             picker.title = labelText;
+            picker.setAttribute('aria-label', labelText);
+            text.setAttribute('aria-label', `${labelText} HEX veya RGB değeri`);
+            text.setAttribute('title', `${labelText} HEX veya RGB değeri`);
 
             const apply = (value) => {
                 const color = normalizeColor(value);
@@ -331,6 +337,48 @@
             });
 
             return createField('Hizalama', wrapper);
+        };
+
+        const annotateToolbarButtons = (toolbar) => {
+            const actionLabels = {
+                bold: 'Kalın',
+                italic: 'İtalik',
+                strike: 'Üstü çizili',
+                link: 'Bağlantı ekle',
+                heading1: 'Başlık 1',
+                heading2: 'Başlık 2',
+                quote: 'Alıntı',
+                code: 'Kod',
+                bulletList: 'Madde işaretli liste',
+                numberList: 'Numaralı liste',
+                attachFiles: 'Görsel ekle',
+                undo: 'Geri al',
+                redo: 'İleri al',
+                decreaseNestingLevel: 'Girintiyi azalt',
+                increaseNestingLevel: 'Girintiyi artır',
+            };
+            const attributeLabels = {
+                bold: 'Kalın',
+                italic: 'İtalik',
+                strike: 'Üstü çizili',
+                href: 'Bağlantı ekle',
+                heading1: 'Başlık 1',
+                quote: 'Alıntı',
+                code: 'Kod',
+                bullet: 'Madde işaretli liste',
+                number: 'Numaralı liste',
+            };
+
+            toolbar.querySelectorAll('[data-trix-action], [data-trix-attribute]').forEach((button) => {
+                const action = button.dataset.trixAction;
+                const attribute = button.dataset.trixAttribute;
+                const label = actionLabels[action] || attributeLabels[attribute];
+
+                if (! label) return;
+
+                button.setAttribute('aria-label', label);
+                button.setAttribute('title', label);
+            });
         };
 
         const createFontDatalist = (toolbar) => {
@@ -418,6 +466,8 @@
             } else {
                 toolbarRow?.prepend(group);
             }
+
+            annotateToolbarButtons(toolbar);
 
             editor.addEventListener('trix-selection-change', () => updateToolbarState(editor));
             editor.addEventListener('trix-change', () => updateToolbarState(editor));
