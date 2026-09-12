@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Jobs\ProcessListingImage;
 use App\Models\Listing;
 use App\Models\ListingChangeLog;
-use App\Services\EidsService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
@@ -37,10 +36,6 @@ class ListingObserver
      */
     public function updated(Listing $listing): void
     {
-        if ($listing->wasChanged(['eids_document_no'])) {
-            app(EidsService::class)->verifyListing($listing);
-        }
-
         foreach ($listing->getChanges() as $field => $newValue) {
             if (in_array($field, ['updated_at'], true)) {
                 continue;

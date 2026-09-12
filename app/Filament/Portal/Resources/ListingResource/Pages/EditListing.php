@@ -8,6 +8,7 @@ use Filament\Actions;
 use Filament\Forms\Components\Checkbox;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Validation\ValidationException;
 
 class EditListing extends EditRecord
 {
@@ -41,9 +42,21 @@ class EditListing extends EditRecord
                     $this->record->source_label,
                 ))
                 ->action(function (array $data): void {
-                    app(ListingPublicationService::class)->submit($this->record, auth()->user(), (bool) ($data['terms'] ?? false));
-                    Notification::make()->success()->title('İlan yönetici onayına gönderildi')->send();
-                    $this->refreshFormData(['publication_status', 'submitted_at', 'is_active']);
+                    try {
+                        // Yayınlama isteği, formdaki son değişiklikleri de kapsasın.
+                        $this->save(false, false);
+                        $this->record->refresh()->load('eidsVerification');
+                        app(ListingPublicationService::class)->submit($this->record, auth()->user(), (bool) ($data['terms'] ?? false));
+                        Notification::make()->success()->title('İlan yönetici onayına gönderildi')->send();
+                    } catch (ValidationException $exception) {
+                        Notification::make()
+                            ->warning()
+                            ->title('İlan taslakta kaldı')
+                            ->body(implode(' ', $exception->errors()['eids'] ?? $exception->errors()['listing'] ?? ['İlan EİDS onayı alınamadığı için onaya gönderilemedi.']))
+                            ->send();
+                    }
+
+                    $this->refreshFormData(['publication_status', 'submitted_at', 'is_active', 'eids_status']);
                 }),
             Actions\Action::make('unpublishListing')
                 ->label('İlanı yayından kaldır')

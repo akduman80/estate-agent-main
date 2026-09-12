@@ -68,7 +68,9 @@ class EidsCallbackController extends Controller
         if (! $eidsIdentityService->isConfiguredForUserCode($gsmNumber)) {
             return response()->view('eids.callback', [
                 'status' => 'error',
-                'message' => 'EIDS_USERNAME, EIDS_PASSWORD ve EIDS_GSM_NO tanımlı olmalı.',
+                'message' => $accountUser
+                    ? 'EIDS_USERNAME ve EIDS_PASSWORD tanımlı olmalı; ayrıca hesabınızdaki telefon numarası eksiksiz olmalıdır.'
+                    : 'EIDS_USERNAME, EIDS_PASSWORD ve EIDS_GSM_NO tanımlı olmalı.',
                 'userCode' => null,
                 'envLine' => null,
             ], 503);

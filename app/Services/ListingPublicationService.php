@@ -14,7 +14,10 @@ use Illuminate\Validation\ValidationException;
 
 class ListingPublicationService
 {
-    public function __construct(private readonly ListingQuotaService $quotaService) {}
+    public function __construct(
+        private readonly ListingQuotaService $quotaService,
+        private readonly EidsService $eidsService,
+    ) {}
 
     public function submit(Listing $listing, User $user, bool $termsAccepted): void
     {
@@ -35,10 +38,14 @@ class ListingPublicationService
             && $owner->businessProfile?->approval_status !== BusinessApprovalStatus::APPROVED) {
             $errors['business'] = 'Emlak işletmesi yönetici tarafından onaylanmamış.';
         }
-        if ($listing->eids_status !== 'verified') {
-            $errors['eids'] = 'İlanın EİDS taşınmaz/yetki doğrulaması tamamlanmamış.';
+        // EİDS kontrolü yayınlama anında yapılır; kullanıcı ayrıca bir sekmeden sorgu başlatmaz.
+        if ($listing->eids_status !== 'verified' && ! $this->eidsService->verifyListing($listing)) {
+            $listing->refresh()->load('eidsVerification');
+            $listing->forceFill(['publication_status' => 'draft', 'is_active' => false])->saveQuietly();
+            $errors['eids'] = $listing->eidsVerification?->error_message ?: 'İlanın EİDS taşınmaz/yetki doğrulaması tamamlanmamış.';
         }
         if ($listing->eidsVerification?->expires_at?->isPast()) {
+            $listing->forceFill(['publication_status' => 'draft', 'is_active' => false])->saveQuietly();
             $errors['eids'] = 'EİDS ilan yetkisinin süresi dolmuş.';
         }
 

@@ -143,14 +143,14 @@ class ListingEidsRequestLogResource extends Resource
                     ->schema([
                         ViewEntry::make('response_payload_json')
                             ->label('Response')
-                            ->state(fn (ListingEidsRequestLog $record): string => self::formatPayload($record->response_payload))
+                            ->state(fn (ListingEidsRequestLog $record): string => self::formatPayload($record->response_payload, true))
                             ->view('filament.infolists.json-entry')
                             ->columnSpanFull(),
                     ]),
             ]);
     }
 
-    private static function formatPayload(mixed $payload): string
+    private static function formatPayload(mixed $payload, bool $humanizeNulls = false): string
     {
         if ($payload === null || $payload === []) {
             return '-';
@@ -166,8 +166,24 @@ class ListingEidsRequestLogResource extends Resource
             }
         }
 
+        if ($humanizeNulls) {
+            $payload = self::replaceNullValues($payload);
+        }
+
         return json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
             ?: print_r($payload, true);
+    }
+
+    private static function replaceNullValues(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map(
+                static fn (mixed $item): mixed => self::replaceNullValues($item),
+                $value,
+            );
+        }
+
+        return $value === null ? 'EİDS veri döndürmedi' : $value;
     }
 
     public static function getEloquentQuery(): Builder

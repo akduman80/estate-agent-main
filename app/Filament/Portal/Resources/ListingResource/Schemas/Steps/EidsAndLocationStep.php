@@ -3,10 +3,7 @@
 namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 
 use App\Models\Listing;
-use App\Services\EidsService;
 use App\Services\TurkeyAddressService;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
@@ -15,7 +12,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
 class EidsAndLocationStep
@@ -25,121 +21,75 @@ class EidsAndLocationStep
         return Wizard\Step::make('EİDS & Konum')
             ->icon('heroicon-o-shield-check')
             ->description('Yetki ve adres doğrulama')
-            ->schema([
-                Hidden::make('eids_status')->dehydrated(false),
+            ->schema(static::fields());
+    }
 
-                TextInput::make('eids_document_no')
-                    ->label('Tapu Taşınmaz ID')
-                    ->placeholder('Örn: 94536593')
-                    ->numeric()
-                    ->helperText('Tapu Taşınmaz ID bilgisini girin. EİDS doğrulaması ilan kaydedildikten sonra güvenli servis bağlantısı üzerinden yapılır.')
-                    ->live(onBlur: true)
-                    ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
-                    ->required(),
+    /**
+     * EİDS bilgileri ilan formunda ayrı bir sekme olmadan taşınmaz detayları içinde gösterilir.
+     * Doğrulama, kullanıcı yayınlama isteğinde bulunduğunda yapılır.
+     */
+    public static function fields(): array
+    {
+        return [
+            Hidden::make('eids_status')->dehydrated(false),
 
-                Actions::make([
-                    Action::make('verifyEids')
-                        ->label('EİDS Sorgula')
-                        ->icon('heroicon-o-shield-check')
-                        ->color('success')
-                        ->disabled(fn (?Listing $record): bool => ! $record?->exists)
-                        ->tooltip(fn (?Listing $record): string => $record?->exists
-                            ? 'Taşınmaz ID ile EİDS doğrulaması yap'
-                            : 'EİDS sorgusu için önce ilanı kaydedin')
-                        ->requiresConfirmation()
-                        ->modalHeading('EİDS sorgulaması yapılsın mı?')
-                        ->modalDescription('Bu işlem kayıtlı ilanın Taşınmaz ID bilgisini Ticaret Bakanlığı EİDS servisine gönderir.')
-                        ->modalSubmitActionLabel('Sorgula')
-                        ->action(function (?Listing $record, Get $get, Set $set): void {
-                            if (! $record?->exists) {
-                                Notification::make()
-                                    ->title('Önce ilanı kaydedin')
-                                    ->body('EİDS sorgusu için ilanın kayıt numarası oluşmuş olmalı.')
-                                    ->warning()
-                                    ->send();
+            TextInput::make('eids_document_no')
+                ->label('Tapu Taşınmaz ID')
+                ->placeholder('Örn: 94536593')
+                ->numeric()
+                ->helperText('EİDS kontrolü “İlanı Onaya Gönder” seçildiğinde yapılır.')
+                ->live(onBlur: true)
+                ->required(),
 
-                                return;
-                            }
+            Placeholder::make('eids_status_summary')
+                ->label('EİDS Doğrulama Sonucu')
+                ->content(fn (Get $get, ?Listing $record) => new HtmlString(static::statusHtml($get, $record)))
+                ->columnSpanFull(),
 
-                            $documentNo = $get('eids_document_no');
+            Grid::make(['default' => 1, 'md' => 3])
+                ->schema([
+                    Select::make('city_id')
+                        ->label('İl')
+                        ->options(TurkeyAddressService::getCities())
+                        ->searchable()
+                        ->live()
+                        ->afterStateUpdated(function (Set $set): void {
+                            $set('district_id', null);
+                            $set('neighborhood_id', null);
+                        })
+                        ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
+                        ->required(),
 
-                            if (blank($documentNo)) {
-                                Notification::make()
-                                    ->title('Taşınmaz ID zorunlu')
-                                    ->body('Sorgulama yapmadan önce Tapu Taşınmaz ID alanını doldurun.')
-                                    ->danger()
-                                    ->send();
+                    Select::make('district_id')
+                        ->label('İlçe')
+                        ->options(fn (Get $get) => TurkeyAddressService::getDistricts($get('city_id')))
+                        ->searchable()
+                        ->live()
+                        ->afterStateUpdated(fn (Set $set) => $set('neighborhood_id', null))
+                        ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
+                        ->required(),
 
-                                return;
-                            }
+                    Select::make('neighborhood_id')
+                        ->label('Mahalle / Köy')
+                        ->options(fn (Get $get) => TurkeyAddressService::getNeighborhoods(
+                            $get('city_id'),
+                            $get('district_id'),
+                        ))
+                        ->searchable()
+                        ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
+                        ->placeholder('Mahalle veya köy seçin'),
+                ]),
 
-                            if ($record->eids_document_no !== $documentNo) {
-                                $record->forceFill(['eids_document_no' => $documentNo])->saveQuietly();
-                            }
-
-                            $verified = app(EidsService::class)->verifyListing($record);
-                            $record->refresh()->load('eidsVerification');
-                            $set('eids_status', $record->eids_status);
-
-                            Notification::make()
-                                ->title($verified ? 'EİDS doğrulandı' : 'EİDS doğrulanamadı')
-                                ->body($verified
-                                    ? 'EİDS onayı alındığı için ilan sitede yayınlanabilir.'
-                                    : (($record->eidsVerification?->error_message ?: 'Doğrulama sonucu güncellendi.').' Bu ilan EİDS onayı almadığı için taslaklarda duracaktır ve sitede yayınlanmayacaktır.'))
-                                ->{$verified ? 'success' : 'warning'}()
-                                ->send();
-                        }),
-                ])->columnSpanFull(),
-
-                Placeholder::make('eids_status_summary')
-                    ->label('EİDS Doğrulama Sonucu')
-                    ->content(fn (Get $get, ?Listing $record) => new HtmlString(static::statusHtml($get, $record)))
-                    ->columnSpanFull(),
-
-                Grid::make(['default' => 1, 'md' => 3])
-                    ->schema([
-                        Select::make('city_id')
-                            ->label('İl')
-                            ->options(TurkeyAddressService::getCities())
-                            ->searchable()
-                            ->live()
-                            ->afterStateUpdated(function (Set $set): void {
-                                $set('district_id', null);
-                                $set('neighborhood_id', null);
-                            })
-                            ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
-                            ->required(),
-
-                        Select::make('district_id')
-                            ->label('İlçe')
-                            ->options(fn (Get $get) => TurkeyAddressService::getDistricts($get('city_id')))
-                            ->searchable()
-                            ->live()
-                            ->afterStateUpdated(fn (Set $set) => $set('neighborhood_id', null))
-                            ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
-                            ->required(),
-
-                        Select::make('neighborhood_id')
-                            ->label('Mahalle / Köy')
-                            ->options(fn (Get $get) => TurkeyAddressService::getNeighborhoods(
-                                $get('city_id'),
-                                $get('district_id'),
-                            ))
-                            ->searchable()
-                            ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
-                            ->placeholder('Mahalle veya köy seçin'),
-                    ]),
-
-                Grid::make(['default' => 1, 'md' => 3])
-                    ->schema([
-                        Placeholder::make('eids_city')->label('EİDS İl')->content(fn (?Listing $record) => $record?->eidsVerification?->city ?: '-'),
-                        Placeholder::make('eids_district')->label('EİDS İlçe')->content(fn (?Listing $record) => $record?->eidsVerification?->district ?: '-'),
-                        Placeholder::make('eids_neighborhood')->label('EİDS Mahalle')->content(fn (?Listing $record) => $record?->eidsVerification?->neighborhood ?: '-'),
-                        Placeholder::make('eids_block')->label('EİDS Ada')->content(fn (?Listing $record) => $record?->eidsVerification?->block ?: '-'),
-                        Placeholder::make('eids_parcel')->label('EİDS Parsel')->content(fn (?Listing $record) => $record?->eidsVerification?->parcel ?: '-'),
-                        Placeholder::make('eids_expires_at')->label('EİDS İlan Süresi')->content(fn (?Listing $record) => $record?->eidsVerification?->expires_at?->format('d.m.Y H:i') ?: '-'),
-                    ]),
-            ]);
+            Grid::make(['default' => 1, 'md' => 3])
+                ->schema([
+                    Placeholder::make('eids_city')->label('EİDS İl')->content(fn (?Listing $record) => $record?->eidsVerification?->city ?: '-'),
+                    Placeholder::make('eids_district')->label('EİDS İlçe')->content(fn (?Listing $record) => $record?->eidsVerification?->district ?: '-'),
+                    Placeholder::make('eids_neighborhood')->label('EİDS Mahalle')->content(fn (?Listing $record) => $record?->eidsVerification?->neighborhood ?: '-'),
+                    Placeholder::make('eids_block')->label('EİDS Ada')->content(fn (?Listing $record) => $record?->eidsVerification?->block ?: '-'),
+                    Placeholder::make('eids_parcel')->label('EİDS Parsel')->content(fn (?Listing $record) => $record?->eidsVerification?->parcel ?: '-'),
+                    Placeholder::make('eids_expires_at')->label('EİDS İlan Süresi')->content(fn (?Listing $record) => $record?->eidsVerification?->expires_at?->format('d.m.Y H:i') ?: '-'),
+                ]),
+        ];
     }
 
     private static function statusHtml(Get $get, ?Listing $record): string

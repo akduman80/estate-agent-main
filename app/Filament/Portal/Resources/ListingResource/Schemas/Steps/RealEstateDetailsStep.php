@@ -157,6 +157,8 @@ class RealEstateDetailsStep
                             ]))
                             ->default('Hayır'),
                     ]),
+
+                ...EidsAndLocationStep::fields(),
             ]);
     }
 
