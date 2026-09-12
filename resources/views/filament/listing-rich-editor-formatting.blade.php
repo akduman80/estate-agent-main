@@ -1,4 +1,38 @@
 <style>
+    .listing-rich-editor-formatting-dropdown {
+        display: contents;
+        position: relative;
+    }
+
+    .listing-rich-editor-formatting-dropdown__summary {
+        align-items: center;
+        border: 1px solid rgb(203 213 225);
+        border-radius: .45rem;
+        color: rgb(15 23 42);
+        display: none;
+        font-size: .78rem;
+        font-weight: 700;
+        gap: .45rem;
+        height: 2rem;
+        list-style: none;
+        padding-inline: .65rem;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+    .listing-rich-editor-formatting-dropdown__summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .listing-rich-editor-formatting-dropdown__summary::after {
+        border-left: .28rem solid transparent;
+        border-right: .28rem solid transparent;
+        border-top: .34rem solid currentColor;
+        content: "";
+        display: block;
+        opacity: .65;
+    }
+
     .listing-rich-editor-formatting {
         align-items: flex-end;
         display: flex;
@@ -56,6 +90,44 @@
         width: 6.8rem;
     }
 
+    .listing-rich-editor-formatting__align {
+        align-items: center;
+        border: 1px solid rgb(203 213 225);
+        border-radius: .45rem;
+        display: inline-flex;
+        height: 1.9rem;
+        overflow: hidden;
+    }
+
+    .listing-rich-editor-formatting__align-button {
+        align-items: center;
+        color: rgb(51 65 85);
+        display: inline-flex;
+        font-size: .72rem;
+        font-weight: 700;
+        height: 100%;
+        justify-content: center;
+        min-width: 2.55rem;
+        padding-inline: .45rem;
+    }
+
+    .listing-rich-editor-formatting__align-button + .listing-rich-editor-formatting__align-button {
+        border-left: 1px solid rgb(203 213 225);
+    }
+
+    .listing-rich-editor-formatting__align-button[aria-pressed="true"] {
+        background: rgb(245 158 11 / .14);
+        color: rgb(180 83 9);
+    }
+
+    trix-editor span[style*="text-align"] {
+        display: block;
+    }
+
+    .listing-description span[style*="text-align"] {
+        display: block;
+    }
+
     trix-toolbar .trix-button-row {
         align-items: flex-start;
         flex-wrap: wrap;
@@ -68,12 +140,51 @@
         margin-right: .35rem;
     }
 
-    @media (max-width: 640px) {
-        .listing-rich-editor-formatting,
+    @media (max-width: 900px) {
+        .listing-rich-editor-formatting-dropdown {
+            display: inline-block;
+        }
+
+        .listing-rich-editor-formatting-dropdown__summary {
+            display: inline-flex;
+        }
+
+        .listing-rich-editor-formatting {
+            align-items: stretch;
+            background: white;
+            border: 1px solid rgb(226 232 240);
+            border-radius: .7rem;
+            box-shadow: 0 18px 45px rgb(15 23 42 / .16);
+            display: none;
+            left: 0;
+            max-width: min(22rem, calc(100vw - 2rem));
+            min-width: min(22rem, calc(100vw - 2rem));
+            padding: .75rem;
+            position: absolute;
+            top: calc(100% + .45rem);
+            width: min(22rem, calc(100vw - 2rem));
+            z-index: 40;
+        }
+
+        .listing-rich-editor-formatting-dropdown[open] .listing-rich-editor-formatting {
+            display: flex;
+        }
+
         .listing-rich-editor-formatting__field,
         .listing-rich-editor-formatting__input {
             width: 100%;
             max-width: none;
+        }
+
+        .listing-rich-editor-formatting__color input[type="text"] {
+            flex: 1;
+            max-width: none;
+            width: auto;
+        }
+
+        .listing-rich-editor-formatting__align,
+        .listing-rich-editor-formatting__align-button {
+            width: 100%;
         }
     }
 </style>
@@ -119,6 +230,10 @@
                 inheritable: true,
                 styleProperty: 'backgroundColor',
             };
+            window.Trix.config.textAttributes.listingTextAlign = {
+                inheritable: true,
+                styleProperty: 'textAlign',
+            };
         };
 
         const normalizeColor = (value) => {
@@ -160,6 +275,8 @@
 
             return `${normalized}px`;
         };
+
+        const normalizeTextAlign = (value) => ['left', 'center', 'right'].includes(value) ? value : null;
 
         const applyAttribute = (editor, attribute, value) => {
             if (! editor?.editor) return;
@@ -251,6 +368,34 @@
             return createField(labelText, wrapper);
         };
 
+        const createAlignmentControl = (editor) => {
+            const wrapper = document.createElement('span');
+            wrapper.className = 'listing-rich-editor-formatting__align';
+            wrapper.dataset.listingTextAlign = 'true';
+
+            [
+                ['left', 'Sol'],
+                ['center', 'Orta'],
+                ['right', 'Sağ'],
+            ].forEach(([value, label]) => {
+                const button = document.createElement('button');
+                button.className = 'listing-rich-editor-formatting__align-button';
+                button.type = 'button';
+                button.dataset.listingTextAlignValue = value;
+                button.setAttribute('aria-pressed', 'false');
+                button.textContent = label;
+                button.title = `${label} hizala`;
+
+                button.addEventListener('click', () => {
+                    applyAttribute(editor, 'listingTextAlign', normalizeTextAlign(value));
+                });
+
+                wrapper.append(button);
+            });
+
+            return createField('Hizalama', wrapper);
+        };
+
         const createFontDatalist = (toolbar) => {
             const datalist = document.createElement('datalist');
             datalist.id = `listing-fonts-${Math.random().toString(36).slice(2)}`;
@@ -284,6 +429,12 @@
                 sizeInput.value = attributes.listingFontSize.replace('px', '');
             }
 
+            const activeAlign = normalizeTextAlign(attributes.listingTextAlign) || 'left';
+
+            controls.querySelectorAll('[data-listing-text-align-value]').forEach((button) => {
+                button.setAttribute('aria-pressed', button.dataset.listingTextAlignValue === activeAlign ? 'true' : 'false');
+            });
+
             [
                 ['listingTextColor', '[data-listing-text-color]'],
                 ['listingHighlightColor', '[data-listing-highlight-color]'],
@@ -304,27 +455,37 @@
 
             if (! toolbar || toolbar.querySelector('[data-listing-formatting-controls]')) return;
 
+            const dropdown = document.createElement('details');
+            dropdown.className = 'listing-rich-editor-formatting-dropdown';
+            dropdown.dataset.trixButtonGroup = 'listing-formatting-tools';
+
+            const summary = document.createElement('summary');
+            summary.className = 'listing-rich-editor-formatting-dropdown__summary';
+            summary.textContent = 'Biçim';
+
             const group = document.createElement('div');
             group.className = 'listing-rich-editor-formatting';
             group.dataset.listingFormattingControls = 'true';
-            group.dataset.trixButtonGroup = 'listing-formatting-tools';
 
             const datalistId = createFontDatalist(toolbar);
 
             group.append(
                 createFontControl(editor, datalistId),
                 createSizeControl(editor),
+                createAlignmentControl(editor),
                 createColorControl(editor, 'Yazı rengi', 'listingTextColor', '#111827', 'listingTextColor'),
                 createColorControl(editor, 'Vurgu rengi', 'listingHighlightColor', '#fef08a', 'listingHighlightColor'),
             );
+
+            dropdown.append(summary, group);
 
             const textTools = toolbar.querySelector('[data-trix-button-group="text-tools"]');
             const toolbarRow = toolbar.querySelector('.trix-button-row') || toolbar.querySelector('.flex.gap-x-3');
 
             if (textTools?.parentNode) {
-                textTools.after(group);
+                textTools.after(dropdown);
             } else {
-                toolbarRow?.prepend(group);
+                toolbarRow?.prepend(dropdown);
             }
 
             editor.addEventListener('trix-selection-change', () => updateToolbarState(editor));

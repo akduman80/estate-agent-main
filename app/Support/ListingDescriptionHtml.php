@@ -37,7 +37,7 @@ class ListingDescriptionHtml
             return nl2br(e($html));
         }
 
-        $document = new DOMDocument();
+        $document = new DOMDocument;
 
         libxml_use_internal_errors(true);
         $document->loadHTML('<?xml encoding="utf-8" ?><body>'.$html.'</body>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -152,6 +152,14 @@ class ListingDescriptionHtml
                     $allowed[] = 'font-size: '.$fontSize;
                 }
             }
+
+            if ($property === 'text-align') {
+                $textAlign = self::cleanTextAlign($value);
+
+                if ($textAlign) {
+                    $allowed[] = 'text-align: '.$textAlign;
+                }
+            }
         }
 
         return implode('; ', array_unique($allowed));
@@ -206,6 +214,13 @@ class ListingDescriptionHtml
         }
 
         return $matches[1].'px';
+    }
+
+    private static function cleanTextAlign(string $value): ?string
+    {
+        $value = strtolower(trim($value));
+
+        return in_array($value, ['left', 'center', 'right'], true) ? $value : null;
     }
 
     private static function isAllowedHref(string $href): bool
