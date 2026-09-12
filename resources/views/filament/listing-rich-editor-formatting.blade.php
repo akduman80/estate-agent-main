@@ -47,14 +47,12 @@
         display: none;
         flex-wrap: wrap;
         gap: .5rem;
-        left: 0;
         max-width: min(22rem, calc(100vw - 2rem));
         min-width: min(22rem, calc(100vw - 2rem));
         padding: .75rem;
-        position: absolute;
-        top: calc(100% + .45rem);
+        position: fixed;
         width: min(22rem, calc(100vw - 2rem));
-        z-index: 100;
+        z-index: 9999;
     }
 
     .listing-rich-editor-formatting-dropdown[open] .listing-rich-editor-formatting {
@@ -505,15 +503,34 @@
             summary.textContent = 'Biçim';
             summary.setAttribute('aria-label', 'Biçimlendirme seçeneklerini aç veya kapat');
             summary.setAttribute('title', 'Biçimlendirme seçeneklerini aç veya kapat');
+
+            const positionDropdown = () => {
+                const panel = dropdown.querySelector('[data-listing-formatting-controls]');
+
+                if (! panel || ! dropdown.open) return;
+
+                const summaryRect = summary.getBoundingClientRect();
+                const panelWidth = Math.min(352, window.innerWidth - 32);
+                const left = Math.min(Math.max(16, summaryRect.left), window.innerWidth - panelWidth - 16);
+
+                panel.style.left = `${left}px`;
+                panel.style.top = `${summaryRect.bottom + 8}px`;
+                panel.style.width = `${panelWidth}px`;
+                panel.style.minWidth = `${panelWidth}px`;
+                panel.style.maxWidth = `${panelWidth}px`;
+            };
+
             summary.addEventListener('click', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
                 dropdown.toggleAttribute('open');
+                positionDropdown();
             });
 
             const group = document.createElement('div');
             group.className = 'listing-rich-editor-formatting';
             group.dataset.listingFormattingControls = 'true';
+            group.addEventListener('click', (event) => event.stopPropagation());
 
             const datalistId = createFontDatalist(toolbar);
 
@@ -537,6 +554,15 @@
             }
 
             annotateToolbarButtons(toolbar);
+
+            document.addEventListener('click', (event) => {
+                if (! dropdown.open || dropdown.contains(event.target)) return;
+
+                dropdown.removeAttribute('open');
+            });
+
+            window.addEventListener('resize', positionDropdown);
+            window.addEventListener('scroll', positionDropdown, true);
 
             editor.addEventListener('trix-selection-change', () => updateToolbarState(editor));
             editor.addEventListener('trix-change', () => updateToolbarState(editor));
