@@ -21,6 +21,10 @@
         white-space: nowrap;
     }
 
+    .listing-rich-editor-formatting-dropdown__summary {
+        cursor: pointer;
+    }
+
     .listing-rich-editor-formatting-dropdown__summary::-webkit-details-marker {
         display: none;
     }
@@ -499,6 +503,13 @@
             const summary = document.createElement('summary');
             summary.className = 'listing-rich-editor-formatting-dropdown__summary';
             summary.textContent = 'Biçim';
+            summary.setAttribute('aria-label', 'Biçimlendirme seçeneklerini aç veya kapat');
+            summary.setAttribute('title', 'Biçimlendirme seçeneklerini aç veya kapat');
+            summary.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                dropdown.toggleAttribute('open');
+            });
 
             const group = document.createElement('div');
             group.className = 'listing-rich-editor-formatting';
