@@ -1,26 +1,73 @@
 <style>
-    .listing-rich-editor-formatting {
+    .listing-rich-editor-formatting-dropdown {
+        display: inline-block;
+        position: relative;
+        z-index: 80;
+    }
+
+    .listing-rich-editor-formatting-dropdown__summary {
         align-items: center;
+        border: 1px solid rgb(203 213 225);
+        border-radius: .45rem;
+        color: rgb(15 23 42);
         display: inline-flex;
-        flex: 0 0 auto;
-        flex-wrap: nowrap;
-        gap: .25rem;
+        font-size: .78rem;
+        font-weight: 700;
+        gap: .45rem;
+        height: 2rem;
+        list-style: none;
+        padding-inline: .65rem;
+        user-select: none;
         white-space: nowrap;
     }
 
+    .listing-rich-editor-formatting-dropdown__summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .listing-rich-editor-formatting-dropdown__summary::after {
+        border-left: .28rem solid transparent;
+        border-right: .28rem solid transparent;
+        border-top: .34rem solid currentColor;
+        content: "";
+        display: block;
+        opacity: .65;
+    }
+
+    .listing-rich-editor-formatting {
+        align-items: stretch;
+        background: white;
+        border: 1px solid rgb(226 232 240);
+        border-radius: .7rem;
+        box-shadow: 0 18px 45px rgb(15 23 42 / .16);
+        display: none;
+        flex-wrap: wrap;
+        gap: .5rem;
+        left: 0;
+        max-width: min(22rem, calc(100vw - 2rem));
+        min-width: min(22rem, calc(100vw - 2rem));
+        padding: .75rem;
+        position: absolute;
+        top: calc(100% + .45rem);
+        width: min(22rem, calc(100vw - 2rem));
+        z-index: 100;
+    }
+
+    .listing-rich-editor-formatting-dropdown[open] .listing-rich-editor-formatting {
+        display: flex;
+    }
+
     .listing-rich-editor-formatting__field {
-        align-items: center;
-        display: inline-flex;
+        display: grid;
+        gap: .2rem;
         margin: 0;
     }
 
     .listing-rich-editor-formatting__label {
-        height: 1px;
-        overflow: hidden;
-        position: absolute;
-        white-space: nowrap;
-        width: 1px;
-        clip: rect(1px, 1px, 1px, 1px);
+        color: rgb(100 116 139);
+        font-size: .68rem;
+        font-weight: 700;
+        line-height: 1;
     }
 
     .listing-rich-editor-formatting__input {
@@ -28,33 +75,35 @@
         border-radius: .375rem;
         color: rgb(15 23 42);
         font-size: .75rem;
-        height: 2rem;
+        height: 1.9rem;
         max-width: none;
         padding-inline: .45rem;
-        width: 7.25rem;
+        width: 100%;
     }
 
     .listing-rich-editor-formatting__input--size {
-        text-align: center;
-        width: 4.4rem;
+        max-width: 5.4rem;
+        width: 5.4rem;
     }
 
     .listing-rich-editor-formatting__color {
         align-items: center;
         display: flex;
+        gap: .25rem;
     }
 
     .listing-rich-editor-formatting__color input[type="color"] {
         border: 1px solid rgb(203 213 225);
         border-radius: .375rem;
-        cursor: pointer;
-        height: 2rem;
+        height: 1.9rem;
         padding: .1rem;
         width: 2.1rem;
     }
 
-    .listing-rich-editor-formatting__input--color-text {
-        display: none;
+    .listing-rich-editor-formatting__color input[type="text"] {
+        flex: 1;
+        max-width: none;
+        width: auto;
     }
 
     .listing-rich-editor-formatting__align {
@@ -62,20 +111,22 @@
         border: 1px solid rgb(203 213 225);
         border-radius: .45rem;
         display: inline-flex;
-        height: 2rem;
+        height: 1.9rem;
         overflow: hidden;
+        width: 100%;
     }
 
     .listing-rich-editor-formatting__align-button {
         align-items: center;
         color: rgb(51 65 85);
         display: inline-flex;
-        font-size: .7rem;
+        font-size: .72rem;
         font-weight: 700;
         height: 100%;
         justify-content: center;
-        min-width: 2.25rem;
-        padding-inline: .38rem;
+        min-width: 2.55rem;
+        padding-inline: .45rem;
+        width: 100%;
     }
 
     .listing-rich-editor-formatting__align-button + .listing-rich-editor-formatting__align-button {
@@ -106,12 +157,10 @@
     }
 
     trix-toolbar .trix-button-row {
-        align-items: center;
-        flex-wrap: nowrap;
-        gap: .35rem;
-        overflow-x: auto !important;
-        overflow-y: visible !important;
-        padding-bottom: .25rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: .5rem;
+        overflow: visible !important;
     }
 
     trix-toolbar .trix-button-group {
@@ -120,8 +169,8 @@
         margin-right: .35rem;
     }
 
-    trix-toolbar .trix-button-group {
-        flex: 0 0 auto;
+    .listing-rich-editor-formatting__field {
+        width: 100%;
     }
 </style>
 
@@ -283,7 +332,7 @@
             picker.value = defaultColor;
 
             const text = document.createElement('input');
-            text.className = 'listing-rich-editor-formatting__input listing-rich-editor-formatting__input--color-text';
+            text.className = 'listing-rich-editor-formatting__input';
             text.placeholder = '#000000 veya rgb(0,0,0)';
             text.type = 'text';
             text.value = defaultColor;
@@ -443,10 +492,17 @@
             toolbar.dataset.listingFormattingToolbar = 'true';
             toolbar.closest('.fi-fo-rich-editor')?.classList.add('listing-rich-editor-formatting-host');
 
+            const dropdown = document.createElement('details');
+            dropdown.className = 'listing-rich-editor-formatting-dropdown';
+            dropdown.dataset.trixButtonGroup = 'listing-formatting-tools';
+
+            const summary = document.createElement('summary');
+            summary.className = 'listing-rich-editor-formatting-dropdown__summary';
+            summary.textContent = 'Biçim';
+
             const group = document.createElement('div');
             group.className = 'listing-rich-editor-formatting';
             group.dataset.listingFormattingControls = 'true';
-            group.dataset.trixButtonGroup = 'listing-formatting-tools';
 
             const datalistId = createFontDatalist(toolbar);
 
@@ -458,13 +514,15 @@
                 createColorControl(editor, 'Vurgu rengi', 'listingHighlightColor', '#fef08a', 'listingHighlightColor'),
             );
 
+            dropdown.append(summary, group);
+
             const textTools = toolbar.querySelector('[data-trix-button-group="text-tools"]');
             const toolbarRow = toolbar.querySelector('.trix-button-row') || toolbar.querySelector('.flex.gap-x-3');
 
             if (textTools?.parentNode) {
-                textTools.after(group);
+                textTools.after(dropdown);
             } else {
-                toolbarRow?.prepend(group);
+                toolbarRow?.prepend(dropdown);
             }
 
             annotateToolbarButtons(toolbar);
