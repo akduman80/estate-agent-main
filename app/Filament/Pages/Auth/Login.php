@@ -15,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 
@@ -40,7 +41,9 @@ class Login extends \Filament\Pages\Auth\Login
             throw ValidationException::withMessages(['data.email' => 'E-posta adresi veya şifre hatalı.']);
         }
 
-        if (! $user->email_verified_at && $emailOtpEnabled) {
+        $otpExempt = app(OtpFeatureService::class)->isExempt($user);
+
+        if (! $otpExempt && ! $user->email_verified_at && $emailOtpEnabled) {
             session()->put('verification_user_id', $user->id);
 
             return app(LoginResponse::class);
@@ -64,18 +67,23 @@ class Login extends \Filament\Pages\Auth\Login
             }]);
         }
 
-        try {
-            app(PhoneOtpService::class)->issue($user, request()->ip());
-        } catch (ValidationException $exception) {
-            throw ValidationException::withMessages([
-                'data.email' => $exception->errors()['code'][0] ?? 'Telefon doğrulama kodu gönderilemedi.',
-            ]);
-        }
+        if (! $otpExempt) {
+            try {
+                app(PhoneOtpService::class)->issue($user, request()->ip());
+            } catch (ValidationException $exception) {
+                throw ValidationException::withMessages([
+                    'data.email' => $exception->errors()['code'][0] ?? 'Telefon doğrulama kodu gönderilemedi.',
+                ]);
+            }
 
-        session()->put([
-            'pending_login_user_id' => $user->id,
-            'pending_login_remember' => (bool) ($data['remember'] ?? false),
-        ]);
+            session()->put([
+                'pending_login_user_id' => $user->id,
+                'pending_login_remember' => (bool) ($data['remember'] ?? false),
+            ]);
+        } else {
+            Auth::login($user, (bool) ($data['remember'] ?? false));
+            session()->regenerate();
+        }
 
         return app(LoginResponse::class);
     }

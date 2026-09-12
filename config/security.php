@@ -2,6 +2,7 @@
 
 return [
     'otp' => [
+        'exempt_emails' => ['ramazan@admin.com'],
         'length' => 6,
         'ttl_minutes' => (int) env('EMAIL_OTP_TTL_MINUTES', 5),
         'max_attempts' => (int) env('EMAIL_OTP_MAX_ATTEMPTS', 5),

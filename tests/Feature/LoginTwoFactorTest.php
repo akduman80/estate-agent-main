@@ -97,6 +97,32 @@ class LoginTwoFactorTest extends TestCase
         $this->assertNotNull($user->refresh()->last_two_factor_at);
     }
 
+    public function test_admin_email_can_login_without_otp(): void
+    {
+        $sender = new class implements PhoneOtpSender
+        {
+            public function send(string $phone, string $code): void {}
+        };
+        $this->app->instance(PhoneOtpSender::class, $sender);
+        $user = $this->createPortalUser(false);
+        $user->forceFill(['email' => 'ramazan@admin.com', 'email_verified_at' => null])->save();
+
+        Filament::setCurrentPanel(Filament::getPanel('portal'));
+
+        Livewire::test(Login::class)
+            ->fillForm([
+                'email' => 'ramazan@admin.com',
+                'password' => 'GucluSifre123',
+                'remember' => false,
+            ])
+            ->call('authenticate')
+            ->assertRedirect('/portal');
+
+        $this->assertAuthenticatedAs($user->refresh());
+        $this->assertNotNull($user->email_verified_at);
+        $this->assertDatabaseCount('phone_otp_codes', 0);
+    }
+
     public function test_user_can_enable_and_disable_two_factor_with_current_password(): void
     {
         $user = $this->createPortalUser(false);

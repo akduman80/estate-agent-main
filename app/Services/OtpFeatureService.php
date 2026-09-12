@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Models\Setting;
 
 class OtpFeatureService
@@ -14,6 +15,15 @@ class OtpFeatureService
     public function phoneEnabled(): bool
     {
         return filter_var(Setting::get('phone_otp_enabled', false), FILTER_VALIDATE_BOOL);
+    }
+
+    public function isExempt(User $user): bool
+    {
+        return in_array(
+            mb_strtolower(trim((string) $user->email)),
+            array_map('mb_strtolower', config('security.otp.exempt_emails', [])),
+            true,
+        );
     }
 
     /**
