@@ -22,9 +22,13 @@ class OtpCodeMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: $this->purpose === OtpPurpose::LOGIN
-            ? 'ZYDEMLAK giriş doğrulama kodu'
-            : 'ZYDEMLAK e-posta doğrulama kodu');
+        $subject = match ($this->purpose) {
+            OtpPurpose::LOGIN => 'ZYDEMLAK giriş doğrulama kodu',
+            OtpPurpose::PASSWORD_RESET => 'ZYDEMLAK şifre sıfırlama kodu',
+            default => 'ZYDEMLAK e-posta doğrulama kodu',
+        };
+
+        return new Envelope(subject: $subject);
     }
 
     public function content(): Content

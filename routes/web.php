@@ -66,7 +66,7 @@ Route::post('/iki-asamali-dogrulama/yeniden-gonder', [TwoFactorController::class
 
 Route::get('/sifremi-unuttum', [PasswordResetController::class, 'requestForm'])->middleware('guest')->name('password.request');
 Route::post('/sifremi-unuttum', [PasswordResetController::class, 'sendLink'])->middleware('guest')->name('password.email');
-Route::get('/sifre-sifirla/{token}', [PasswordResetController::class, 'resetForm'])->middleware('guest')->name('password.reset');
+Route::get('/sifre-sifirla/{token?}', [PasswordResetController::class, 'resetForm'])->middleware('guest')->name('password.reset');
 Route::post('/sifre-sifirla', [PasswordResetController::class, 'reset'])->middleware('guest')->name('password.update');
 
 Route::get('/telefon-dogrula', [PhoneVerificationController::class, 'show'])->middleware('auth')->name('phone.verification.notice');

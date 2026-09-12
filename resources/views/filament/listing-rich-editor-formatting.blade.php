@@ -1,15 +1,17 @@
 <style>
     .listing-rich-editor-formatting {
-        align-items: end;
+        align-items: flex-end;
         display: flex;
         flex-wrap: wrap;
         gap: .5rem;
-        padding-block: .25rem;
+        min-width: min(100%, 36rem);
+        padding: .25rem 0;
     }
 
     .listing-rich-editor-formatting__field {
         display: grid;
         gap: .2rem;
+        margin: 0;
     }
 
     .listing-rich-editor-formatting__label {
@@ -27,10 +29,12 @@
         height: 1.9rem;
         max-width: 10.5rem;
         padding-inline: .45rem;
+        width: 10.5rem;
     }
 
     .listing-rich-editor-formatting__input--size {
         max-width: 5.4rem;
+        width: 5.4rem;
     }
 
     .listing-rich-editor-formatting__color {
@@ -49,6 +53,19 @@
 
     .listing-rich-editor-formatting__color input[type="text"] {
         max-width: 6.8rem;
+        width: 6.8rem;
+    }
+
+    trix-toolbar .trix-button-row {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    trix-toolbar .trix-button-group {
+        margin-bottom: 0;
+        margin-left: 0;
+        margin-right: .35rem;
     }
 
     @media (max-width: 640px) {
@@ -302,7 +319,7 @@
             );
 
             const textTools = toolbar.querySelector('[data-trix-button-group="text-tools"]');
-            const toolbarRow = toolbar.querySelector('.flex.gap-x-3');
+            const toolbarRow = toolbar.querySelector('.trix-button-row') || toolbar.querySelector('.flex.gap-x-3');
 
             if (textTools?.parentNode) {
                 textTools.after(group);

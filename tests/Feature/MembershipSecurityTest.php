@@ -13,6 +13,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Services\EmailOtpService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -205,6 +206,45 @@ class MembershipSecurityTest extends TestCase
                 $exception->errors()['code'][0]
             );
         }
+    }
+
+    public function test_forgot_password_resets_password_with_emailed_code(): void
+    {
+        Mail::fake();
+        $user = User::factory()->create([
+            'email' => 'ayse@example.com',
+            'password' => Hash::make('EskiSifre123'),
+        ]);
+        $code = null;
+
+        $response = $this->post(route('password.email'), [
+            'email' => 'ayse@example.com',
+        ]);
+
+        $response->assertRedirect(route('password.reset'));
+        $this->assertDatabaseHas('email_otp_codes', [
+            'user_id' => $user->id,
+            'purpose' => OtpPurpose::PASSWORD_RESET->value,
+        ]);
+        Mail::assertSent(OtpCodeMail::class, function (OtpCodeMail $mail) use (&$code): bool {
+            $code = $mail->code;
+
+            return $mail->hasTo('ayse@example.com') && $mail->purpose === OtpPurpose::PASSWORD_RESET;
+        });
+
+        $response = $this->post(route('password.update'), [
+            'email' => 'ayse@example.com',
+            'code' => $code,
+            'password' => 'YeniSifre123',
+            'password_confirmation' => 'YeniSifre123',
+        ]);
+
+        $response->assertRedirect(route('login'));
+        $this->assertTrue(Hash::check('YeniSifre123', $user->refresh()->password));
+        $this->assertNotNull(EmailOtpCode::where('user_id', $user->id)
+            ->where('purpose', OtpPurpose::PASSWORD_RESET->value)
+            ->firstOrFail()
+            ->consumed_at);
     }
 
     private function createOtp(User $user, OtpPurpose $purpose, string $code): EmailOtpCode
