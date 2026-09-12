@@ -22,7 +22,6 @@ class AccountSecurityController extends Controller
         return view('account.security', [
             'user' => $request->user(),
             'emailOtpEnabled' => $otpFeatures->emailEnabled(),
-            'canManageTwoFactor' => in_array($request->user()->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true),
         ]);
     }
 

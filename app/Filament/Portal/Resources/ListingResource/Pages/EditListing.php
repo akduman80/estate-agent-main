@@ -45,17 +45,21 @@ class EditListing extends EditRecord
                     Notification::make()->success()->title('İlan yönetici onayına gönderildi')->send();
                     $this->refreshFormData(['publication_status', 'submitted_at', 'is_active']);
                 }),
-            Actions\Action::make('closeListing')
-                ->label('İlanı Kapat')
-                ->icon('heroicon-o-lock-closed')
-                ->color('danger')
+            Actions\Action::make('unpublishListing')
+                ->label('İlanı yayından kaldır')
+                ->icon('heroicon-o-eye-slash')
+                ->color('warning')
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->record->publication_status !== 'closed')
+                ->disabled(fn (): bool => ! ($this->record->is_active && $this->record->publication_status === 'approved'))
                 ->action(function (): void {
-                    $this->record->update(['publication_status' => 'closed', 'is_active' => false]);
-                    Notification::make()->warning()->title('İlan kapatıldı')->send();
+                    app(ListingPublicationService::class)->unpublish($this->record, auth()->user());
+                    Notification::make()->warning()->title('İlan yayından kaldırıldı')->send();
                     $this->redirect(ListingResource::getUrl('index'));
                 }),
+            Actions\DeleteAction::make()
+                ->label('İlanı kaldır')
+                ->modalHeading('İlan kalıcı olarak silinsin mi?')
+                ->modalDescription('Bu işlem geri alınamaz. İlan kalıcı olarak silinecek.'),
         ];
     }
 

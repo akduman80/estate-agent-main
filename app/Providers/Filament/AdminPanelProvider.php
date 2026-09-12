@@ -42,6 +42,15 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('ZYDEMLAK')
             ->brandLogo(asset('fe-assets/assets/img/logo.png'))
             ->brandLogoHeight('3rem')
+            ->homeUrl(fn (): string => route('home'))
+            ->renderHook(
+                PanelsRenderHook::PAGE_START,
+                fn () => view('filament.panel-back-button', [
+                    'dashboardUrl' => url('/admin'),
+                    'label' => '← Admin paneline dön',
+                    'panelPath' => 'admin',
+                ]),
+            )
             ->login(Login::class)
             ->userMenuItems([
                 'website' => MenuItem::make()->label('Siteyi Görüntüle')->url(fn (): string => route('home'))->icon('heroicon-o-globe-alt'),

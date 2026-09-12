@@ -19,8 +19,21 @@ class LoginTwoFactorTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_individual_with_two_factor_disabled_logs_in_with_password_only(): void
+    public function test_individual_with_two_factor_disabled_still_receives_sms_login_code(): void
     {
+        $sender = new class implements PhoneOtpSender
+        {
+            public string $phone = '';
+
+            public string $code = '';
+
+            public function send(string $phone, string $code): void
+            {
+                $this->phone = $phone;
+                $this->code = $code;
+            }
+        };
+        $this->app->instance(PhoneOtpSender::class, $sender);
         $user = $this->createPortalUser(false);
 
         Filament::setCurrentPanel(Filament::getPanel('portal'));
@@ -32,10 +45,12 @@ class LoginTwoFactorTest extends TestCase
                 'remember' => false,
             ])
             ->call('authenticate')
-            ->assertRedirect('/portal');
+            ->assertRedirect(route('two-factor.show'));
 
-        $this->assertAuthenticatedAs($user);
-        $this->assertDatabaseCount('phone_otp_codes', 0);
+        $this->assertGuest();
+        $this->assertSame($user->phone, $sender->phone);
+        $this->assertMatchesRegularExpression('/^\d{6}$/', $sender->code);
+        $this->assertDatabaseCount('phone_otp_codes', 1);
     }
 
     public function test_agent_with_two_factor_enabled_receives_sms_and_cannot_login_before_code(): void

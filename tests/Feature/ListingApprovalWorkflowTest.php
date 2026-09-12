@@ -5,12 +5,15 @@ namespace Tests\Feature;
 use App\Enums\AccountStatus;
 use App\Enums\UserRole;
 use App\Mail\ApprovalRequestedMail;
+use App\Filament\Portal\Resources\ListingResource\Pages\ListListings;
 use App\Models\Listing;
 use App\Models\User;
 use App\Services\ListingPublicationService;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ListingApprovalWorkflowTest extends TestCase
@@ -58,5 +61,87 @@ class ListingApprovalWorkflowTest extends TestCase
 
         $this->expectException(ValidationException::class);
         $listing->update(['parcel_number' => '21']);
+    }
+
+    public function test_listing_can_be_unpublished_without_deleting_it(): void
+    {
+        $owner = User::factory()->create([
+            'role' => UserRole::INDIVIDUAL,
+            'account_status' => AccountStatus::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
+
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $owner->id,
+            'title' => 'Yayından kaldırılacak ilan',
+            'slug' => 'yayindan-kaldirilacak-ilan',
+            'price' => 1000000,
+            'type' => 'Satılık',
+            'category' => 'Arsa',
+            'eids_status' => 'verified',
+            'publication_status' => 'approved',
+            'eids_document_no' => '12345',
+            'city_id' => '80',
+            'district_id' => 'Merkez',
+            'is_active' => true,
+        ]));
+
+        app(ListingPublicationService::class)->unpublish($listing, $owner);
+
+        $this->assertDatabaseHas('listings', [
+            'id' => $listing->id,
+            'publication_status' => 'unpublished',
+            'is_active' => false,
+        ]);
+        $this->get(route('listings.show', $listing))->assertNotFound();
+    }
+
+    public function test_listing_table_exposes_required_listing_actions(): void
+    {
+        $owner = User::factory()->create([
+            'role' => UserRole::INDIVIDUAL,
+            'account_status' => AccountStatus::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
+
+        $published = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $owner->id,
+            'title' => 'Yayındaki ilan',
+            'slug' => 'yayindaki-ilan',
+            'price' => 1000000,
+            'type' => 'Satılık',
+            'category' => 'Arsa',
+            'eids_status' => 'verified',
+            'publication_status' => 'approved',
+            'eids_document_no' => '12345',
+            'city_id' => '80',
+            'district_id' => 'Merkez',
+            'is_active' => true,
+        ]));
+
+        $draft = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $owner->id,
+            'title' => 'Taslak ilan',
+            'slug' => 'taslak-ilan',
+            'price' => 900000,
+            'type' => 'Satılık',
+            'category' => 'Arsa',
+            'eids_status' => 'pending',
+            'publication_status' => 'draft',
+            'eids_document_no' => '12346',
+            'city_id' => '80',
+            'district_id' => 'Merkez',
+            'is_active' => false,
+        ]));
+
+        Filament::setCurrentPanel(Filament::getPanel('portal'));
+
+        Livewire::actingAs($owner)
+            ->test(ListListings::class)
+            ->assertTableActionExists('edit', null, $published)
+            ->assertTableActionExists('delete', null, $published)
+            ->assertTableActionExists('unpublish', null, $published)
+            ->assertTableActionEnabled('unpublish', $published)
+            ->assertTableActionDisabled('unpublish', $draft);
     }
 }

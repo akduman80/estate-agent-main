@@ -13,6 +13,12 @@ class PhoneOtpService
 
     public function issue(User $user, ?string $ipAddress): void
     {
+        if (blank($user->phone)) {
+            throw ValidationException::withMessages([
+                'code' => 'SMS doğrulaması için hesabınızda telefon numarası bulunmalıdır.',
+            ]);
+        }
+
         $settings = config('security.otp');
         $latest = PhoneOtpCode::query()->where('user_id', $user->id)->latest()->first();
 

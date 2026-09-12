@@ -30,7 +30,16 @@ class PortalPanelProvider extends PanelProvider
             ->brandName('ZYDEMLAK')
             ->brandLogo(asset('fe-assets/assets/img/logo.png'))
             ->brandLogoHeight('3rem')
+            ->homeUrl(fn (): string => route('home'))
             ->login(Login::class)
+            ->renderHook(
+                PanelsRenderHook::PAGE_START,
+                fn () => view('filament.panel-back-button', [
+                    'dashboardUrl' => url('/portal'),
+                    'label' => '← Panelim’e dön',
+                    'panelPath' => 'portal',
+                ]),
+            )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn () => view('filament.listing-rich-editor-formatting'),

@@ -14,7 +14,6 @@ use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
@@ -63,16 +62,6 @@ class Login extends \Filament\Pages\Auth\Login
                 AccountStatus::REJECTED => 'Hesap başvurunuz reddedilmiş.',
                 default => 'Hesabınız henüz aktif değil.',
             }]);
-        }
-
-        $requiresSmsTwoFactor = in_array($user->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true)
-            && $user->two_factor_enabled;
-
-        if (! $requiresSmsTwoFactor) {
-            Auth::login($user, (bool) ($data['remember'] ?? false));
-            session()->regenerate();
-
-            return app(LoginResponse::class);
         }
 
         try {

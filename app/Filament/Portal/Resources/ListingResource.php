@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Filament\Portal\Resources\ListingResource\Pages;
 use App\Filament\Portal\Resources\ListingResource\Schemas\ListingFormSchema;
 use App\Models\Listing;
+use App\Models\SiteVisit;
 use App\Models\User;
 use App\Services\ListingPublicationService;
 use App\Services\ListingQuotaService;
@@ -70,8 +71,19 @@ class ListingResource extends Resource
                         'approved' => 'Yayında',
                         'pending_approval' => 'Yönetici Onayında',
                         'rejected' => 'Reddedildi',
+                        'unpublished', 'closed', 'expired' => 'Yayında değil',
                         default => 'Taslak',
                     }),
+                Tables\Columns\TextColumn::make('visitor_count')
+                    ->label('Görüntülenme')
+                    ->getStateUsing(fn (Listing $record): int => SiteVisit::query()
+                        ->where('route_name', 'listings.show')
+                        ->where('path', '/ilan/'.$record->slug)
+                        ->distinct('visitor_hash')
+                        ->count('visitor_hash'))
+                    ->alignCenter()
+                    ->width('120px')
+                    ->grow(false),
                 Tables\Columns\TextColumn::make('eids_status')
                     ->label('EİDS')
                     ->badge()
@@ -97,6 +109,25 @@ class ListingResource extends Resource
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('İlanı kaldır')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('İlan kalıcı olarak silinsin mi?')
+                        ->modalDescription('Bu işlem geri alınamaz. İlan ve ilişkili panel kayıtları kalıcı olarak silinecek.'),
+                    Tables\Actions\Action::make('unpublish')
+                        ->label('İlanı yayından kaldır')
+                        ->icon('heroicon-o-eye-slash')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->modalHeading('İlan yayından kaldırılsın mı?')
+                        ->modalDescription('İlan silinmeden panelde korunacak, ziyaretçilere gösterilmeyecek ve durumu Yayında değil olarak güncellenecek.')
+                        ->disabled(fn (Listing $record): bool => ! ($record->is_active && $record->publication_status === 'approved'))
+                        ->action(function (Listing $record): void {
+                            app(ListingPublicationService::class)->unpublish($record, auth()->user());
+                            Notification::make()->warning()->title('İlan yayından kaldırıldı')->send();
+                        }),
                     Tables\Actions\Action::make('approve')
                         ->label('Onayla')->icon('heroicon-o-check-circle')->color('success')
                         ->requiresConfirmation()

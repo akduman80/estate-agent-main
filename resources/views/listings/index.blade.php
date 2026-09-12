@@ -51,17 +51,17 @@
                         </summary>
                         <form action="{{ route('listings.index') }}" method="get" class="space-y-5 p-5" data-location-selects>
                             <label class="block">
-                                <span class="text-xs font-bold text-slate-700">Kelime, konum veya ilan no</span>
+                                <span class="text-xs font-bold text-slate-700">Kelime / İlan No</span>
                                 <span class="relative block"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 mt-0.5 -translate-y-1/2 text-xs text-slate-400"></i><input type="search" name="q" value="{{ request('q') }}" placeholder="Örn: 3+1, Kadirli, 123..." class="{{ $inputClass }} pl-9"></span>
                             </label>
 
-                            <label class="block"><span class="text-xs font-bold text-slate-700">İl</span><select name="city" class="{{ $inputClass }}" data-city-select data-districts-url="{{ route('locations.districts') }}" data-neighborhoods-url="{{ route('locations.neighborhoods') }}"><option value="">Tüm iller</option>@foreach($cities as $city)<option value="{{ $city }}" @selected(request('city') === $city)>{{ $city }}</option>@endforeach</select></label>
+                            <label class="block"><span class="text-xs font-bold text-slate-700">İl</span><select name="city" class="{{ $inputClass }}" data-city-select data-districts-url="{{ route('locations.districts') }}" data-neighborhoods-url="{{ route('locations.neighborhoods') }}"><option value="">Tüm İller</option>@foreach($cities as $city)<option value="{{ $city }}" @selected(request('city') === $city)>{{ $city }}</option>@endforeach</select></label>
                             <label class="block"><span class="text-xs font-bold text-slate-700">İlçe</span><select name="district" class="{{ $inputClass }}" data-district-select data-selected="{{ request('district') }}" disabled><option value="">Önce il seçin</option></select></label>
                             <label class="block"><span class="text-xs font-bold text-slate-700">Mahalle / Köy</span><select name="neighborhood" class="{{ $inputClass }}" data-neighborhood-select data-selected="{{ request('neighborhood') }}" disabled><option value="">Önce ilçe seçin</option></select></label>
 
                             <div class="grid grid-cols-2 gap-3">
-                                <label class="block"><span class="text-xs font-bold text-slate-700">Gayrimenkul</span><select name="category" class="{{ $inputClass }}"><option value="">Tümü</option>@foreach($categoryOptions as $category)<option value="{{ $category }}" @selected(request('category') === $category)>{{ $category }}</option>@endforeach</select></label>
-                                <label class="block"><span class="text-xs font-bold text-slate-700">İlan durumu</span><select name="type" class="{{ $inputClass }}"><option value="">Tümü</option>@foreach($typeOptions as $type)<option value="{{ $type }}" @selected(request('type') === $type)>{{ $type }}</option>@endforeach</select></label>
+                                <label class="block"><span class="text-xs font-bold text-slate-700">Gayrimenkul Tipi</span><select name="category" class="{{ $inputClass }}"><option value="">Tümü</option>@foreach($categoryOptions as $category)<option value="{{ $category }}" @selected(request('category') === $category)>{{ $category }}</option>@endforeach</select></label>
+                                <label class="block"><span class="text-xs font-bold text-slate-700">İlan Durumu</span><select name="type" class="{{ $inputClass }}"><option value="">Tümü</option>@foreach($typeOptions as $type)<option value="{{ $type }}" @selected(request('type') === $type)>{{ $type }}</option>@endforeach</select></label>
                             </div>
 
                             <fieldset>

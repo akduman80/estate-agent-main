@@ -5,6 +5,7 @@ namespace App\Filament\Portal\Widgets;
 use App\Enums\UserRole;
 use App\Filament\Portal\Resources\ListingResource;
 use App\Models\Listing;
+use App\Models\SiteVisit;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -58,7 +59,7 @@ class RecentListings extends BaseWidget
                         'approved' => 'Yayında',
                         'pending_approval' => 'Onayda',
                         'rejected' => 'Düzeltme Gerekli',
-                        'closed' => 'Kapalı',
+                        'unpublished', 'closed', 'expired' => 'Yayında değil',
                         default => 'Taslak',
                     })
                     ->color(fn (string $state): string => match ($state) {
@@ -67,6 +68,14 @@ class RecentListings extends BaseWidget
                         'rejected' => 'danger',
                         default => 'gray',
                     }),
+                Tables\Columns\TextColumn::make('visitor_count')
+                    ->label('Görüntülenme')
+                    ->getStateUsing(fn (Listing $record): int => SiteVisit::query()
+                        ->where('route_name', 'listings.show')
+                        ->where('path', '/ilan/'.$record->slug)
+                        ->distinct('visitor_hash')
+                        ->count('visitor_hash'))
+                    ->alignCenter(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Güncelleme')
                     ->since()

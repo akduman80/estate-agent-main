@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\AccountStatus;
 use App\Enums\UserRole;
 use App\Filament\Pages\Auth\Login;
+use App\Contracts\PhoneOtpSender;
 use App\Mail\OtpCodeMail;
 use App\Models\Setting;
 use App\Models\User;
@@ -46,11 +47,25 @@ class OtpFeatureToggleTest extends TestCase
         Mail::assertNotSent(OtpCodeMail::class);
     }
 
-    public function test_login_authenticates_directly_when_otp_is_passive(): void
+    public function test_login_still_requires_sms_code_when_email_otp_is_passive(): void
     {
+        $sender = new class implements PhoneOtpSender
+        {
+            public string $phone = '';
+
+            public string $code = '';
+
+            public function send(string $phone, string $code): void
+            {
+                $this->phone = $phone;
+                $this->code = $code;
+            }
+        };
+        $this->app->instance(PhoneOtpSender::class, $sender);
         $this->setEmailOtp(false);
         $user = User::factory()->create([
             'email' => 'uye@example.com',
+            'phone' => '905551112233',
             'password' => Hash::make('GucluSifre123'),
             'role' => UserRole::INDIVIDUAL,
             'account_status' => AccountStatus::ACTIVE,
@@ -66,10 +81,13 @@ class OtpFeatureToggleTest extends TestCase
                 'remember' => false,
             ])
             ->call('authenticate')
-            ->assertRedirect('/portal');
+            ->assertRedirect(route('two-factor.show'));
 
-        $this->assertAuthenticatedAs($user);
+        $this->assertGuest();
+        $this->assertSame($user->phone, $sender->phone);
+        $this->assertMatchesRegularExpression('/^\d{6}$/', $sender->code);
         $this->assertDatabaseCount('email_otp_codes', 0);
+        $this->assertDatabaseCount('phone_otp_codes', 1);
     }
 
     public function test_password_change_uses_current_password_without_otp_when_passive(): void

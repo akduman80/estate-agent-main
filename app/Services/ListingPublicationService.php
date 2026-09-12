@@ -89,6 +89,16 @@ class ListingPublicationService
         ])->save();
     }
 
+    public function unpublish(Listing $listing, User $user): void
+    {
+        abort_unless($listing->user_id === $user->id || $user->role === UserRole::SUPERVISOR, 403);
+
+        $listing->forceFill([
+            'publication_status' => 'unpublished',
+            'is_active' => false,
+        ])->save();
+    }
+
     private function immutableValues(Listing $listing): array
     {
         $verification = $listing->eidsVerification;

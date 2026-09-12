@@ -15,10 +15,6 @@ class TwoFactorController extends Controller
         abort_unless($request->session()->has('pending_login_user_id'), 403);
         $user = User::findOrFail($request->session()->get('pending_login_user_id'));
 
-        if (! $user->two_factor_enabled) {
-            return $this->completeWithoutOtp($request);
-        }
-
         return view('auth.two-factor', [
             'maskedPhone' => $this->maskPhone($user->phone),
         ]);
@@ -29,10 +25,6 @@ class TwoFactorController extends Controller
         abort_unless($request->session()->has('pending_login_user_id'), 403);
         $data = $request->validate(['code' => ['required', 'digits:6']]);
         $user = User::findOrFail($request->session()->get('pending_login_user_id'));
-
-        if (! $user->two_factor_enabled) {
-            return $this->completeWithoutOtp($request);
-        }
 
         $otpService->verify($user, $data['code']);
 
@@ -49,26 +41,9 @@ class TwoFactorController extends Controller
         abort_unless($request->session()->has('pending_login_user_id'), 403);
         $user = User::findOrFail($request->session()->get('pending_login_user_id'));
 
-        if (! $user->two_factor_enabled) {
-            return $this->completeWithoutOtp($request);
-        }
-
         $otpService->issue($user, $request->ip());
 
         return back()->with('status', 'Yeni giriş kodu telefonunuza gönderildi.');
-    }
-
-    private function completeWithoutOtp(Request $request)
-    {
-        abort_unless($request->session()->has('pending_login_user_id'), 403);
-        $user = User::findOrFail($request->session()->get('pending_login_user_id'));
-
-        Auth::login($user, (bool) $request->session()->pull('pending_login_remember', false));
-        $request->session()->regenerate();
-        $request->session()->forget('pending_login_user_id');
-
-        return redirect()->intended($user->role->getRedirectPath())
-            ->with('status', 'İki aşamalı doğrulama kapalı olduğu için giriş kodu istenmedi.');
     }
 
     private function maskPhone(?string $phone): string

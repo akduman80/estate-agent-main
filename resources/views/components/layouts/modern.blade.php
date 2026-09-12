@@ -34,9 +34,9 @@
                 <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-14 w-auto max-w-36 object-contain transition duration-300 group-hover:scale-105 sm:h-16 sm:max-w-44">
             </a>
 
-            <nav class="hidden items-center gap-1 text-sm font-medium lg:flex xl:gap-2" aria-label="Ana menü">
+            <nav class="hidden items-center gap-1 text-sm font-bold lg:flex xl:gap-2" aria-label="Ana menü">
                 <a href="{{ route('home') }}" class="whitespace-nowrap rounded-lg px-3 py-2 transition {{ request()->routeIs('home') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Anasayfa</a>
-                <a href="{{ route('listings.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">Tüm İlanlar</a>
+                <a href="{{ route('listings.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 font-bold text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 transition {{ request()->routeIs('blogs.*') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Emlak Haberleri</a>
                 <a href="{{ route('projects.index') }}" class="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2 font-extrabold shadow-[0_10px_22px_rgb(15_23_42_/_0.14),0_2px_5px_rgb(15_23_42_/_0.10)] transition {{ request()->routeIs('projects.*') ? 'bg-blue-950 text-white ring-2 ring-orange-300 ring-offset-2' : 'bg-blue-950 text-white hover:-translate-y-0.5 hover:bg-blue-900 hover:shadow-[0_14px_26px_rgb(15_23_42_/_0.18),0_3px_7px_rgb(15_23_42_/_0.12)]' }}">
                     <x-project-nav-icon class="h-5 w-5 shrink-0 text-orange-300" />
@@ -48,7 +48,7 @@
             <div class="header-actions flex shrink-0 items-center gap-2">
                 @if($headerDocuments->isNotEmpty())
                     <details class="group relative hidden lg:block">
-                        <summary class="flex cursor-pointer list-none items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 [&::-webkit-details-marker]:hidden">
+                        <summary class="flex cursor-pointer list-none items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 [&::-webkit-details-marker]:hidden">
                             <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
                             <span>Dokümanlar</span>
                             <i class="fa-solid fa-chevron-down text-[10px] transition group-open:rotate-180" aria-hidden="true"></i>
@@ -98,10 +98,10 @@
         </div>
 
         <nav data-mobile-menu class="hidden border-t border-slate-100 bg-white px-4 py-3 lg:hidden" aria-label="Mobil menü">
-            <div class="mx-auto grid max-w-7xl gap-1 text-sm font-semibold">
+            <div class="mx-auto grid max-w-7xl gap-1 text-sm font-bold">
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Anasayfa</a>
-                <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Tüm İlanlar</a>
-                <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Emlak Haberleri</a>
+                <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 font-bold hover:bg-orange-50 hover:text-orange-600">Tüm İlanlar</a>
+                <a href="{{ route('blogs.index') }}" class="rounded-lg px-3 py-2 font-bold hover:bg-orange-50 hover:text-orange-600">Emlak Haberleri</a>
                 <a href="{{ route('projects.index') }}" class="flex items-center justify-between rounded-lg bg-blue-950 px-3 py-3 font-extrabold text-white shadow-sm hover:bg-blue-900">
                     <span class="flex items-center gap-2"><x-project-nav-icon class="h-6 w-6 text-orange-300" /> Projeler</span>
                     <span class="rounded bg-orange-400 px-1.5 py-0.5 text-[10px] font-black uppercase leading-none text-blue-950">Yeni</span>
@@ -109,7 +109,7 @@
                 @if($headerDocuments->isNotEmpty())
                     <details class="group rounded-lg border border-orange-200 bg-orange-50">
                         <summary class="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-orange-700 [&::-webkit-details-marker]:hidden">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Dokümanlar</span>
+                            <span class="flex items-center gap-2 font-bold"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Dokümanlar</span>
                             <i class="fa-solid fa-chevron-down text-xs transition group-open:rotate-180" aria-hidden="true"></i>
                         </summary>
                         <div class="space-y-1 border-t border-orange-100 bg-white p-2">

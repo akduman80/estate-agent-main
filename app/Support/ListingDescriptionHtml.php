@@ -27,22 +27,6 @@ class ListingDescriptionHtml
         'ul',
     ];
 
-    private const ALLOWED_TEXT_COLORS = [
-        '#111827',
-        '#475569',
-        '#dc2626',
-        '#ea580c',
-        '#16a34a',
-        '#2563eb',
-    ];
-
-    private const ALLOWED_HIGHLIGHT_COLORS = [
-        '#fef08a',
-        '#fed7aa',
-        '#bbf7d0',
-        '#bfdbfe',
-    ];
-
     public static function render(?string $html): string
     {
         if (blank($html)) {
@@ -145,12 +129,28 @@ class ListingDescriptionHtml
             $property = strtolower($property);
             $color = self::normalizeColor($value);
 
-            if ($property === 'color' && in_array($color, self::ALLOWED_TEXT_COLORS, true)) {
+            if ($property === 'color' && $color) {
                 $allowed[] = 'color: '.$color;
             }
 
-            if ($property === 'background-color' && in_array($color, self::ALLOWED_HIGHLIGHT_COLORS, true)) {
+            if ($property === 'background-color' && $color) {
                 $allowed[] = 'background-color: '.$color;
+            }
+
+            if ($property === 'font-family') {
+                $fontFamily = self::cleanFontFamily($value);
+
+                if ($fontFamily) {
+                    $allowed[] = 'font-family: '.$fontFamily;
+                }
+            }
+
+            if ($property === 'font-size') {
+                $fontSize = self::cleanFontSize($value);
+
+                if ($fontSize) {
+                    $allowed[] = 'font-size: '.$fontSize;
+                }
             }
         }
 
@@ -174,6 +174,38 @@ class ListingDescriptionHtml
         }
 
         return null;
+    }
+
+    private static function cleanFontFamily(string $value): ?string
+    {
+        $value = trim($value);
+
+        if ($value === '' || mb_strlen($value) > 120) {
+            return null;
+        }
+
+        if (! preg_match('/^[\pL\pN\s"\',.\-]+$/u', $value)) {
+            return null;
+        }
+
+        return $value;
+    }
+
+    private static function cleanFontSize(string $value): ?string
+    {
+        $value = strtolower(trim($value));
+
+        if (! preg_match('/^(\d{1,3}(?:\.\d{1,2})?)px$/', $value, $matches)) {
+            return null;
+        }
+
+        $size = (float) $matches[1];
+
+        if ($size <= 0 || $size > 200) {
+            return null;
+        }
+
+        return $matches[1].'px';
     }
 
     private static function isAllowedHref(string $href): bool

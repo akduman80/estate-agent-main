@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Enums\AccountStatus;
 use App\Enums\UserRole;
+use App\Filament\Portal\Widgets\RecentListings;
 use App\Filament\Widgets\PopularSitePages;
 use App\Filament\Widgets\SiteTrafficOverview;
+use App\Models\Listing;
 use App\Models\SiteVisit;
 use App\Models\User;
 use App\Services\TurkeyAddressService;
@@ -78,5 +80,47 @@ class SiteVisitTrackingTest extends TestCase
             ->test(PopularSitePages::class)
             ->assertSee('Popüler Site Sayfaları')
             ->assertSee('/');
+    }
+
+    public function test_portal_user_can_see_listing_unique_visit_count(): void
+    {
+        $user = User::factory()->create([
+            'role' => UserRole::INDIVIDUAL,
+            'account_status' => AccountStatus::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
+
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $user->id,
+            'title' => 'Panel ziyaret sayacı ilanı',
+            'slug' => 'panel-ziyaret-sayaci-ilani',
+            'price' => 1000000,
+            'type' => 'Satılık',
+            'category' => 'Arsa',
+            'eids_status' => 'verified',
+            'publication_status' => 'approved',
+            'eids_document_no' => '94536593',
+            'city_id' => '80',
+            'district_id' => 'Sumbas',
+            'is_active' => true,
+        ]));
+
+        foreach (['a', 'b', 'b'] as $hash) {
+            SiteVisit::query()->create([
+                'path' => '/ilan/'.$listing->slug,
+                'route_name' => 'listings.show',
+                'method' => 'GET',
+                'status_code' => 200,
+                'visitor_hash' => str_repeat($hash, 64),
+                'visited_at' => now(),
+            ]);
+        }
+
+        Filament::setCurrentPanel(Filament::getPanel('portal'));
+
+        Livewire::actingAs($user)
+            ->test(RecentListings::class)
+            ->assertSee('Görüntülenme')
+            ->assertSee('2');
     }
 }

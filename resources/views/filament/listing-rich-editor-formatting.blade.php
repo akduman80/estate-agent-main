@@ -1,56 +1,110 @@
 <style>
     .listing-rich-editor-formatting {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        padding-block: .25rem;
+    }
+
+    .listing-rich-editor-formatting__field {
+        display: grid;
+        gap: .2rem;
+    }
+
+    .listing-rich-editor-formatting__label {
+        color: rgb(100 116 139);
+        font-size: .68rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .listing-rich-editor-formatting__input {
+        border: 1px solid rgb(203 213 225);
+        border-radius: .375rem;
+        color: rgb(15 23 42);
+        font-size: .75rem;
+        height: 1.9rem;
+        max-width: 10.5rem;
+        padding-inline: .45rem;
+    }
+
+    .listing-rich-editor-formatting__input--size {
+        max-width: 5.4rem;
+    }
+
+    .listing-rich-editor-formatting__color {
         align-items: center;
         display: flex;
         gap: .25rem;
     }
 
-    .listing-rich-editor-formatting__label {
-        color: rgb(100 116 139);
-        font-size: .75rem;
-        font-weight: 700;
-        padding-inline: .25rem;
-    }
-
-    .listing-rich-editor-formatting__button {
+    .listing-rich-editor-formatting__color input[type="color"] {
         border: 1px solid rgb(203 213 225);
         border-radius: .375rem;
-        height: 1.75rem;
-        min-width: 1.75rem;
+        height: 1.9rem;
+        padding: .1rem;
+        width: 2.1rem;
     }
 
-    .listing-rich-editor-formatting__button:hover {
-        border-color: rgb(249 115 22);
+    .listing-rich-editor-formatting__color input[type="text"] {
+        max-width: 6.8rem;
     }
 
-    .listing-rich-editor-formatting__button.trix-active {
-        border-color: rgb(249 115 22);
-        box-shadow: 0 0 0 2px rgb(249 115 22 / .25);
+    @media (max-width: 640px) {
+        .listing-rich-editor-formatting,
+        .listing-rich-editor-formatting__field,
+        .listing-rich-editor-formatting__input {
+            width: 100%;
+            max-width: none;
+        }
     }
 </style>
 
 <script>
     (() => {
-        const textColors = [
-            ['Siyah', '#111827', 'listingTextBlack'],
-            ['Gri', '#475569', 'listingTextSlate'],
-            ['Kırmızı', '#dc2626', 'listingTextRed'],
-            ['Turuncu', '#ea580c', 'listingTextOrange'],
-            ['Yeşil', '#16a34a', 'listingTextGreen'],
-            ['Mavi', '#2563eb', 'listingTextBlue'],
+        const commonFonts = [
+            'Arial',
+            'Arial Black',
+            'Verdana',
+            'Times New Roman',
+            'Georgia',
+            'Tahoma',
+            'Trebuchet MS',
+            'Courier New',
+            'Impact',
+            'Lucida Console',
+            'Palatino Linotype',
+            'Segoe UI',
+            'Inter',
+            'Roboto',
+            'Montserrat',
+            'Open Sans',
         ];
 
-        const highlightColors = [
-            ['Sarı vurgu', '#fef08a', 'listingHighlightYellow'],
-            ['Turuncu vurgu', '#fed7aa', 'listingHighlightOrange'],
-            ['Yeşil vurgu', '#bbf7d0', 'listingHighlightGreen'],
-            ['Mavi vurgu', '#bfdbfe', 'listingHighlightBlue'],
-        ];
+        const configureTrix = () => {
+            if (! window.Trix || window.__listingRichEditorFormattingConfigured) return;
 
-        const textColorAttributes = textColors.map(([, , attribute]) => attribute);
-        const highlightColorAttributes = highlightColors.map(([, , attribute]) => attribute);
+            window.__listingRichEditorFormattingConfigured = true;
+            window.Trix.config.textAttributes.listingFontFamily = {
+                inheritable: true,
+                styleProperty: 'fontFamily',
+            };
+            window.Trix.config.textAttributes.listingFontSize = {
+                inheritable: true,
+                styleProperty: 'fontSize',
+            };
+            window.Trix.config.textAttributes.listingTextColor = {
+                inheritable: true,
+                styleProperty: 'color',
+            };
+            window.Trix.config.textAttributes.listingHighlightColor = {
+                inheritable: true,
+                styleProperty: 'backgroundColor',
+            };
+        };
 
-        const toHex = (value) => {
+        const normalizeColor = (value) => {
             if (! value) return null;
 
             const normalized = value.trim().toLowerCase();
@@ -61,79 +115,168 @@
                 return '#' + normalized.slice(1).split('').map((char) => char + char).join('');
             }
 
-            const rgb = normalized.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+            const rgb = normalized.match(/^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})/);
 
             if (! rgb) return null;
 
-            return '#' + rgb.slice(1, 4).map((part) => Number(part).toString(16).padStart(2, '0')).join('');
+            const parts = rgb.slice(1, 4).map((part) => Math.max(0, Math.min(255, Number(part))));
+
+            return '#' + parts.map((part) => part.toString(16).padStart(2, '0')).join('');
         };
 
-        const configureTrix = () => {
-            if (! window.Trix || window.__listingRichEditorFormattingConfigured) return;
+        const normalizeFontFamily = (value) => {
+            const font = (value || '').trim();
 
-            window.__listingRichEditorFormattingConfigured = true;
+            if (! font || font.length > 80 || ! /^[\p{L}\p{N}\s"',.-]+$/u.test(font)) return null;
 
-            textColors.forEach(([label, color, attribute]) => {
-                window.Trix.config.textAttributes[attribute] = {
-                    inheritable: true,
-                    parser: (element) => toHex(window.getComputedStyle(element).color) === color,
-                    style: { color },
-                };
-            });
-
-            highlightColors.forEach(([label, color, attribute]) => {
-                window.Trix.config.textAttributes[attribute] = {
-                    inheritable: true,
-                    parser: (element) => toHex(window.getComputedStyle(element).backgroundColor) === color,
-                    style: { backgroundColor: color },
-                };
-            });
+            return font.includes(' ') && ! /^["'].*["']$/.test(font) ? `"${font.replaceAll('"', '')}"` : font;
         };
 
-        const applyExclusiveAttribute = (editor, attribute, attributes) => {
+        const normalizeFontSize = (value) => {
+            const normalized = (value || '').trim().replace(',', '.');
+
+            if (! /^\d{1,3}(\.\d{1,2})?$/.test(normalized)) return null;
+
+            const size = Number(normalized);
+
+            if (size <= 0 || size > 200) return null;
+
+            return `${normalized}px`;
+        };
+
+        const applyAttribute = (editor, attribute, value) => {
             if (! editor?.editor) return;
 
-            const wasActive = editor.editor.attributeIsActive(attribute);
-
-            attributes.forEach((candidate) => editor.editor.deactivateAttribute(candidate));
-
-            if (! wasActive) {
-                editor.editor.activateAttribute(attribute);
+            if (value) {
+                editor.editor.activateAttribute(attribute, value);
+            } else {
+                editor.editor.deactivateAttribute(attribute);
             }
 
             editor.editorController?.render();
             editor.focus();
-            updateToolbarState(editor);
         };
 
-        const createButton = ({ title, attribute, color, isHighlight = false }) => {
-            const button = document.createElement('button');
+        const createField = (labelText, control) => {
+            const field = document.createElement('label');
+            field.className = 'listing-rich-editor-formatting__field';
 
-            button.className = 'listing-rich-editor-formatting__button';
-            button.dataset.listingFormattingAttribute = attribute;
-            button.style.backgroundColor = color;
-            button.tabIndex = -1;
-            button.title = title;
-            button.type = 'button';
+            const label = document.createElement('span');
+            label.className = 'listing-rich-editor-formatting__label';
+            label.textContent = labelText;
 
-            if (! isHighlight) {
-                button.style.boxShadow = `inset 0 -4px 0 ${color}`;
-                button.style.backgroundColor = '#ffffff';
-            }
+            field.append(label, control);
 
-            return button;
+            return field;
+        };
+
+        const createFontControl = (editor, datalistId) => {
+            const input = document.createElement('input');
+            input.className = 'listing-rich-editor-formatting__input';
+            input.dataset.listingFontFamily = 'true';
+            input.setAttribute('list', datalistId);
+            input.placeholder = 'Font ara veya yaz';
+            input.type = 'text';
+
+            input.addEventListener('change', () => {
+                applyAttribute(editor, 'listingFontFamily', normalizeFontFamily(input.value));
+            });
+
+            return createField('Yazı tipi', input);
+        };
+
+        const createSizeControl = (editor) => {
+            const input = document.createElement('input');
+            input.className = 'listing-rich-editor-formatting__input listing-rich-editor-formatting__input--size';
+            input.dataset.listingFontSize = 'true';
+            input.inputMode = 'decimal';
+            input.placeholder = '14.5';
+            input.step = '0.1';
+            input.type = 'number';
+
+            input.addEventListener('change', () => {
+                applyAttribute(editor, 'listingFontSize', normalizeFontSize(input.value));
+            });
+
+            return createField('Yazı boyutu', input);
+        };
+
+        const createColorControl = (editor, labelText, attribute, defaultColor, marker) => {
+            const wrapper = document.createElement('span');
+            wrapper.className = 'listing-rich-editor-formatting__color';
+
+            const picker = document.createElement('input');
+            picker.type = 'color';
+            picker.value = defaultColor;
+
+            const text = document.createElement('input');
+            text.className = 'listing-rich-editor-formatting__input';
+            text.placeholder = '#000000 veya rgb(0,0,0)';
+            text.type = 'text';
+            text.value = defaultColor;
+
+            const apply = (value) => {
+                const color = normalizeColor(value);
+
+                if (! color) return;
+
+                picker.value = color;
+                text.value = color;
+                applyAttribute(editor, attribute, color);
+            };
+
+            picker.addEventListener('input', () => apply(picker.value));
+            text.addEventListener('change', () => apply(text.value));
+
+            wrapper.dataset[marker] = 'true';
+            wrapper.append(picker, text);
+
+            return createField(labelText, wrapper);
+        };
+
+        const createFontDatalist = (toolbar) => {
+            const datalist = document.createElement('datalist');
+            datalist.id = `listing-fonts-${Math.random().toString(36).slice(2)}`;
+
+            commonFonts.forEach((font) => {
+                const option = document.createElement('option');
+                option.value = font;
+                datalist.appendChild(option);
+            });
+
+            toolbar.appendChild(datalist);
+
+            return datalist.id;
         };
 
         const updateToolbarState = (editor) => {
-            if (! editor?.editor) return;
-
             const toolbar = document.getElementById(editor.getAttribute('toolbar'));
+            const controls = toolbar?.querySelector('[data-listing-formatting-controls]');
+            const attributes = editor.editor?.composition?.currentAttributes?.toObject?.() || {};
 
-            toolbar?.querySelectorAll('[data-listing-formatting-attribute]').forEach((button) => {
-                button.classList.toggle(
-                    'trix-active',
-                    editor.editor.attributeIsActive(button.dataset.listingFormattingAttribute),
-                );
+            if (! controls) return;
+
+            const fontInput = controls.querySelector('[data-listing-font-family]');
+            const sizeInput = controls.querySelector('[data-listing-font-size]');
+
+            if (fontInput && attributes.listingFontFamily) {
+                fontInput.value = attributes.listingFontFamily.replace(/^"|"$/g, '');
+            }
+
+            if (sizeInput && attributes.listingFontSize) {
+                sizeInput.value = attributes.listingFontSize.replace('px', '');
+            }
+
+            [
+                ['listingTextColor', '[data-listing-text-color]'],
+                ['listingHighlightColor', '[data-listing-highlight-color]'],
+            ].forEach(([attribute, selector]) => {
+                const value = normalizeColor(attributes[attribute]);
+
+                if (! value) return;
+
+                controls.querySelector(`${selector} input[type="color"]`).value = value;
+                controls.querySelector(`${selector} input[type="text"]`).value = value;
             });
         };
 
@@ -149,33 +292,14 @@
             group.dataset.listingFormattingControls = 'true';
             group.dataset.trixButtonGroup = 'listing-formatting-tools';
 
-            const textLabel = document.createElement('span');
-            textLabel.className = 'listing-rich-editor-formatting__label';
-            textLabel.textContent = 'Renk';
-            group.appendChild(textLabel);
+            const datalistId = createFontDatalist(toolbar);
 
-            textColors.forEach(([title, color, attribute]) => {
-                const button = createButton({ title, color, attribute });
-                button.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    applyExclusiveAttribute(editor, attribute, textColorAttributes);
-                });
-                group.appendChild(button);
-            });
-
-            const highlightLabel = document.createElement('span');
-            highlightLabel.className = 'listing-rich-editor-formatting__label';
-            highlightLabel.textContent = 'Vurgu';
-            group.appendChild(highlightLabel);
-
-            highlightColors.forEach(([title, color, attribute]) => {
-                const button = createButton({ title, color, attribute, isHighlight: true });
-                button.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    applyExclusiveAttribute(editor, attribute, highlightColorAttributes);
-                });
-                group.appendChild(button);
-            });
+            group.append(
+                createFontControl(editor, datalistId),
+                createSizeControl(editor),
+                createColorControl(editor, 'Yazı rengi', 'listingTextColor', '#111827', 'listingTextColor'),
+                createColorControl(editor, 'Vurgu rengi', 'listingHighlightColor', '#fef08a', 'listingHighlightColor'),
+            );
 
             const textTools = toolbar.querySelector('[data-trix-button-group="text-tools"]');
             const toolbarRow = toolbar.querySelector('.flex.gap-x-3');
