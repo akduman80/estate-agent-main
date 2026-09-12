@@ -73,6 +73,7 @@
     }
 
     .listing-rich-editor-formatting__input {
+        background: white;
         border: 1px solid rgb(203 213 225);
         border-radius: .375rem;
         color: rgb(15 23 42);
@@ -81,6 +82,16 @@
         max-width: none;
         padding-inline: .45rem;
         width: 100%;
+    }
+
+    .listing-rich-editor-formatting__select {
+        appearance: none;
+        background:
+            linear-gradient(45deg, transparent 50%, rgb(71 85 105) 50%) calc(100% - .85rem) 50% / .35rem .35rem no-repeat,
+            linear-gradient(135deg, rgb(71 85 105) 50%, transparent 50%) calc(100% - .62rem) 50% / .35rem .35rem no-repeat,
+            white;
+        cursor: pointer;
+        padding-right: 1.9rem;
     }
 
     .listing-rich-editor-formatting__input--size {
@@ -294,13 +305,18 @@
             return field;
         };
 
-        const createFontControl = (editor, datalistId) => {
-            const input = document.createElement('input');
-            input.className = 'listing-rich-editor-formatting__input';
+        const createFontControl = (editor) => {
+            const input = document.createElement('select');
+            input.className = 'listing-rich-editor-formatting__input listing-rich-editor-formatting__select';
             input.dataset.listingFontFamily = 'true';
-            input.setAttribute('list', datalistId);
-            input.placeholder = 'Font ara veya yaz';
-            input.type = 'text';
+
+            commonFonts.forEach((font) => {
+                const option = document.createElement('option');
+                option.value = font;
+                option.textContent = font;
+                option.style.fontFamily = font;
+                input.append(option);
+            });
 
             input.addEventListener('change', () => {
                 applyAttribute(editor, 'listingFontFamily', normalizeFontFamily(input.value));
@@ -432,21 +448,6 @@
             });
         };
 
-        const createFontDatalist = (toolbar) => {
-            const datalist = document.createElement('datalist');
-            datalist.id = `listing-fonts-${Math.random().toString(36).slice(2)}`;
-
-            commonFonts.forEach((font) => {
-                const option = document.createElement('option');
-                option.value = font;
-                datalist.appendChild(option);
-            });
-
-            toolbar.appendChild(datalist);
-
-            return datalist.id;
-        };
-
         const updateToolbarState = (editor) => {
             const toolbar = document.getElementById(editor.getAttribute('toolbar'));
             const controls = toolbar?.querySelector('[data-listing-formatting-controls]');
@@ -458,7 +459,17 @@
             const sizeInput = controls.querySelector('[data-listing-font-size]');
 
             if (fontInput && attributes.listingFontFamily) {
-                fontInput.value = attributes.listingFontFamily.replace(/^"|"$/g, '');
+                const fontFamily = attributes.listingFontFamily.replace(/^"|"$/g, '');
+
+                if (! [...fontInput.options].some((option) => option.value === fontFamily)) {
+                    const option = document.createElement('option');
+                    option.value = fontFamily;
+                    option.textContent = fontFamily;
+                    option.style.fontFamily = fontFamily;
+                    fontInput.append(option);
+                }
+
+                fontInput.value = fontFamily;
             }
 
             if (sizeInput && attributes.listingFontSize) {
@@ -532,10 +543,8 @@
             group.dataset.listingFormattingControls = 'true';
             group.addEventListener('click', (event) => event.stopPropagation());
 
-            const datalistId = createFontDatalist(toolbar);
-
             group.append(
-                createFontControl(editor, datalistId),
+                createFontControl(editor),
                 createSizeControl(editor),
                 createAlignmentControl(editor),
                 createColorControl(editor, 'Yazı rengi', 'listingTextColor', '#111827', 'listingTextColor'),
