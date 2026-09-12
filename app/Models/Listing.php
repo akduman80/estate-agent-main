@@ -15,6 +15,7 @@ class Listing extends Model
 {
     protected $fillable = [
         'user_id',
+        'created_by_id',
         'business_profile_id',
         'source_type',
         'title',

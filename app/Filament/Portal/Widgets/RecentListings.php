@@ -107,6 +107,10 @@ class RecentListings extends BaseWidget
             $query->where('user_id', $user->getKey());
         }
 
+        if ($user?->role === UserRole::CONSULTANT) {
+            $query->where('created_by_id', $user->getKey());
+        }
+
         return $query;
     }
 }

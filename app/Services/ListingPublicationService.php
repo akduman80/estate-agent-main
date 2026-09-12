@@ -6,6 +6,7 @@ use App\Enums\AccountStatus;
 use App\Enums\BusinessApprovalStatus;
 use App\Enums\UserRole;
 use App\Mail\ApprovalRequestedMail;
+use App\Models\AgentConsultant;
 use App\Models\Listing;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
@@ -17,20 +18,21 @@ class ListingPublicationService
 
     public function submit(Listing $listing, User $user, bool $termsAccepted): void
     {
-        abort_unless($listing->user_id === $user->id || $user->role === UserRole::SUPERVISOR, 403);
+        abort_unless($this->canManage($listing, $user), 403);
 
         $errors = [];
         if (! $termsAccepted) {
             $errors['terms'] = 'Yayın öncesi değiştirilemez alanlar onaylanmalıdır.';
         }
-        if ($user->account_status !== AccountStatus::ACTIVE || ! $user->email_verified_at) {
+        $owner = $listing->user;
+        if ($owner?->account_status !== AccountStatus::ACTIVE || ! $owner?->email_verified_at) {
             $errors['account'] = 'Aktif ve e-postası doğrulanmış bir hesap gereklidir.';
         }
-        if ($user->role !== UserRole::SUPERVISOR && ! $user->eids_identity_verified_at) {
+        if ($owner?->role !== UserRole::SUPERVISOR && ! $owner?->eids_identity_verified_at) {
             $errors['eids_identity'] = 'Önce EİDS kimlik doğrulamasını tamamlayın.';
         }
-        if ($user->role === UserRole::AGENT
-            && $user->businessProfile?->approval_status !== BusinessApprovalStatus::APPROVED) {
+        if ($owner?->role === UserRole::AGENT
+            && $owner->businessProfile?->approval_status !== BusinessApprovalStatus::APPROVED) {
             $errors['business'] = 'Emlak işletmesi yönetici tarafından onaylanmamış.';
         }
         if ($listing->eids_status !== 'verified') {
@@ -91,7 +93,7 @@ class ListingPublicationService
 
     public function unpublish(Listing $listing, User $user): void
     {
-        abort_unless($listing->user_id === $user->id || $user->role === UserRole::SUPERVISOR, 403);
+        abort_unless($this->canManage($listing, $user), 403);
 
         $listing->forceFill([
             'publication_status' => 'unpublished',
@@ -116,5 +118,20 @@ class ListingPublicationService
             'user_id' => $listing->user_id,
             'business_profile_id' => $listing->business_profile_id,
         ];
+    }
+
+    private function canManage(Listing $listing, User $user): bool
+    {
+        if ($user->role === UserRole::SUPERVISOR || $listing->user_id === $user->id) {
+            return true;
+        }
+
+        return $user->role === UserRole::CONSULTANT
+            && $listing->created_by_id === $user->id
+            && AgentConsultant::query()
+                ->where('agent_id', $listing->user_id)
+                ->where('consultant_id', $user->id)
+                ->where('status', 'active')
+                ->exists();
     }
 }

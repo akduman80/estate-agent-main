@@ -76,6 +76,33 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Listing::class);
     }
 
+    public function createdListings()
+    {
+        return $this->hasMany(Listing::class, 'created_by_id');
+    }
+
+    public function consultantAssignments()
+    {
+        return $this->hasMany(AgentConsultant::class, 'consultant_id');
+    }
+
+    public function agentAssignments()
+    {
+        return $this->hasMany(AgentConsultant::class, 'agent_id');
+    }
+
+    public function agents()
+    {
+        return $this->belongsToMany(User::class, 'agent_consultants', 'consultant_id', 'agent_id')
+            ->wherePivot('status', 'active');
+    }
+
+    public function consultants()
+    {
+        return $this->belongsToMany(User::class, 'agent_consultants', 'agent_id', 'consultant_id')
+            ->wherePivot('status', 'active');
+    }
+
     public function consents()
     {
         return $this->hasMany(UserConsent::class);
@@ -95,7 +122,7 @@ class User extends Authenticatable implements FilamentUser
 
         return match ($panel->getId()) {
             'admin' => $this->role === UserRole::SUPERVISOR,
-            'portal' => in_array($this->role, [UserRole::AGENT, UserRole::INDIVIDUAL, UserRole::SUPERVISOR], true),
+            'portal' => in_array($this->role, [UserRole::AGENT, UserRole::CONSULTANT, UserRole::INDIVIDUAL, UserRole::SUPERVISOR], true),
             'editor' => in_array($this->role, [UserRole::EDITOR, UserRole::SUPERVISOR], true),
             default => false,
         };

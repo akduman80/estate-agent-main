@@ -4,6 +4,7 @@ namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 
 use App\Enums\AccountStatus;
 use App\Enums\UserRole;
+use App\Models\AgentConsultant;
 use App\Models\Listing;
 use App\Models\Setting;
 use App\Models\User;
@@ -39,6 +40,21 @@ class BasicInfoStep
                     ->visible(fn (): bool => auth()->user()?->role === UserRole::SUPERVISOR)
                     ->disabled(fn (?Listing $record): bool => (bool) $record?->exists)
                     ->required(fn (): bool => auth()->user()?->role === UserRole::SUPERVISOR)
+                    ->columnSpanFull(),
+
+                Select::make('owner_agent_id')
+                    ->label('İlan sahibi agent')
+                    ->options(fn (): array => AgentConsultant::query()
+                        ->where('consultant_id', auth()->id())
+                        ->where('status', 'active')
+                        ->with('agent')
+                        ->get()
+                        ->pluck('agent.name', 'agent.id')
+                        ->all())
+                    ->visible(fn (): bool => auth()->user()?->role === UserRole::CONSULTANT)
+                    ->required(fn (): bool => auth()->user()?->role === UserRole::CONSULTANT)
+                    ->searchable()
+                    ->preload()
                     ->columnSpanFull(),
 
                 TextInput::make('title')

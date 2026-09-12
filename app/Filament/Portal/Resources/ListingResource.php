@@ -182,6 +182,10 @@ class ListingResource extends Resource
         $user = auth()->user();
 
         // Eğer kullanıcı AGENT ise sadece kendi ilanlarını görsün
+        if ($user?->role === UserRole::CONSULTANT) {
+            return $query->where('created_by_id', $user->id);
+        }
+
         if ($user && in_array($user->role, [UserRole::AGENT, UserRole::INDIVIDUAL], true)) {
             return $query->where('user_id', $user->id);
         }

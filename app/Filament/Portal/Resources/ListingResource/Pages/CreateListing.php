@@ -4,6 +4,7 @@ namespace App\Filament\Portal\Resources\ListingResource\Pages;
 
 use App\Enums\UserRole;
 use App\Filament\Portal\Resources\ListingResource;
+use App\Models\AgentConsultant;
 use App\Models\User;
 use App\Services\ListingQuotaService;
 use Filament\Notifications\Notification;
@@ -36,20 +37,29 @@ class CreateListing extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $authenticatedUser = auth()->user();
-        $owner = $authenticatedUser->role === UserRole::SUPERVISOR
-            ? User::query()->find($data['user_id'] ?? null)
-            : $authenticatedUser;
+        $owner = match ($authenticatedUser->role) {
+            UserRole::SUPERVISOR => User::query()->find($data['user_id'] ?? null),
+            UserRole::CONSULTANT => AgentConsultant::query()
+                ->where('consultant_id', $authenticatedUser->id)
+                ->where('agent_id', $data['owner_agent_id'] ?? 0)
+                ->where('status', 'active')
+                ->with('agent')
+                ->first()?->agent,
+            default => $authenticatedUser,
+        };
 
         $isPlatformOwner = $authenticatedUser->role === UserRole::SUPERVISOR
             && $owner?->id === $authenticatedUser->id;
 
-        if (! $owner || (! $isPlatformOwner && ! in_array($owner->role, [UserRole::INDIVIDUAL, UserRole::AGENT], true))) {
+        if (! $owner || (! $isPlatformOwner && $owner->role !== UserRole::AGENT && ! in_array($owner->role, [UserRole::INDIVIDUAL], true))) {
             throw ValidationException::withMessages(['user_id' => 'Geçerli bir bireysel üye veya emlakçı seçmelisiniz.']);
         }
 
         app(ListingQuotaService::class)->assertAvailable($owner);
 
         $data['user_id'] = $owner->id;
+        $data['created_by_id'] = $authenticatedUser->id;
+        unset($data['owner_agent_id']);
         $data['slug'] = Str::slug($data['title']).'-'.rand(1000, 9999);
         $data['is_active'] = false;
         $data['publication_status'] = 'draft';
