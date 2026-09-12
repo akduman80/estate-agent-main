@@ -46,6 +46,7 @@ class RegistrationController extends Controller
             'account_type' => ['required', Rule::in(['individual', 'business'])],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
+            'identity_number' => ['required', new TurkishIdentityNumber],
             'phone' => ['required', 'string', 'max:24'],
             'email' => ['required', 'email:rfc', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(10)->letters()->mixedCase()->numbers()],
@@ -66,9 +67,7 @@ class RegistrationController extends Controller
             'consents' => ['array'],
         ];
 
-        if ($type === 'individual') {
-            $rules['identity_number'] = ['required', new TurkishIdentityNumber];
-        } else {
+        if ($type !== 'individual') {
             $rules += [
                 'office_name' => ['required', 'string', 'max:255'],
                 'license_number' => ['required', 'string', 'max:100', 'unique:business_profiles,license_number'],
@@ -81,12 +80,12 @@ class RegistrationController extends Controller
 
         $data = $request->validate($rules);
 
-        if ($type === 'individual') {
-            $identityHash = hash('sha256', preg_replace('/\D/', '', $data['identity_number']));
-            if (User::query()->where('identity_number_hash', $identityHash)->exists()) {
-                throw ValidationException::withMessages(['identity_number' => 'Bu kimlik numarasıyla daha önce hesap oluşturulmuş.']);
-            }
-        } else {
+        $identityHash = hash('sha256', preg_replace('/\D/', '', $data['identity_number']));
+        if (User::query()->where('identity_number_hash', $identityHash)->exists()) {
+            throw ValidationException::withMessages(['identity_number' => 'Bu kimlik numarasıyla daha önce hesap oluşturulmuş.']);
+        }
+
+        if ($type !== 'individual') {
             $taxHash = hash('sha256', preg_replace('/\D/', '', $data['tax_number']));
             if (BusinessProfile::query()->where('tax_number_hash', $taxHash)->exists()) {
                 throw ValidationException::withMessages(['tax_number' => 'Bu vergi numarasıyla daha önce işletme hesabı oluşturulmuş.']);
@@ -101,7 +100,7 @@ class RegistrationController extends Controller
         }
 
         $user = DB::transaction(function () use ($data, $type, $request, $acceptedDocuments, $emailOtpEnabled): User {
-            $identity = $type === 'individual' ? preg_replace('/\D/', '', $data['identity_number']) : null;
+            $identity = preg_replace('/\D/', '', $data['identity_number']);
 
             $user = User::create([
                 'name' => $data['first_name'].' '.$data['last_name'],
