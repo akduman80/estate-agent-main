@@ -2,6 +2,7 @@
     .listing-rich-editor-formatting-dropdown {
         display: inline-block;
         position: relative;
+        z-index: 80;
     }
 
     .listing-rich-editor-formatting-dropdown__summary {
@@ -49,7 +50,7 @@
         position: absolute;
         top: calc(100% + .45rem);
         width: min(22rem, calc(100vw - 2rem));
-        z-index: 40;
+        z-index: 100;
     }
 
     .listing-rich-editor-formatting-dropdown[open] .listing-rich-editor-formatting {
@@ -145,10 +146,21 @@
         display: block;
     }
 
+    .listing-rich-editor-formatting-host {
+        overflow: visible !important;
+    }
+
+    trix-toolbar[data-listing-formatting-toolbar="true"] {
+        overflow: visible !important;
+        position: relative;
+        z-index: 90;
+    }
+
     trix-toolbar .trix-button-row {
         align-items: flex-start;
         flex-wrap: wrap;
         gap: .5rem;
+        overflow: visible !important;
     }
 
     trix-toolbar .trix-button-group {
@@ -427,6 +439,9 @@
             const toolbar = document.getElementById(editor.getAttribute('toolbar'));
 
             if (! toolbar || toolbar.querySelector('[data-listing-formatting-controls]')) return;
+
+            toolbar.dataset.listingFormattingToolbar = 'true';
+            toolbar.closest('.fi-fo-rich-editor')?.classList.add('listing-rich-editor-formatting-host');
 
             const dropdown = document.createElement('details');
             dropdown.className = 'listing-rich-editor-formatting-dropdown';
