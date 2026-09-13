@@ -166,7 +166,11 @@ class ListingEidsRequestLogResource extends Resource
                                 'pending' => 'warning',
                                 default => 'gray',
                             }),
-                        TextEntry::make('error_message')->label('Hata Mesajı')->columnSpanFull(),
+                        TextEntry::make('error_message')
+                            ->label(fn (ListingEidsRequestLog $record): string => $record->result_status === 'rejected' ? 'Reddetme Nedeni' : 'Hata Mesajı')
+                            ->placeholder('EİDS açıklama döndürmedi')
+                            ->columnSpanFull()
+                            ->color(fn (ListingEidsRequestLog $record): string => $record->result_status === 'rejected' ? 'danger' : 'gray'),
                     ]),
                 Section::make('EİDS Kimlik Bağlamı')
                     ->columns(3)

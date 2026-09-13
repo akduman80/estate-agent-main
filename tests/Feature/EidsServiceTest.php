@@ -100,6 +100,45 @@ class EidsServiceTest extends TestCase
             && $request['IlanNo'] === (string) $listing->id);
     }
 
+    public function test_it_logs_the_message_when_eids_returns_a_message_instead_of_errors(): void
+    {
+        config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.user_code', '22222222-2222-2222-2222-222222222222');
+        config()->set('services.eids.tax_no', '0230192423');
+        config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
+        config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
+
+        Http::fake([
+            'ws.gtb.gov.tr:8443/EidsTasinmazAPI' => Http::response([
+                'statusCode' => 400,
+                'message' => 'Taşınmaz için ilan yetkisi bulunamadı.',
+            ], 400),
+        ]);
+
+        $user = User::factory()->create(['eids_user_code' => '22222222-2222-2222-2222-222222222222']);
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $user->id,
+            'title' => 'EİDS reddedilen ilanı',
+            'slug' => 'eids-message-reddedilen-ilani',
+            'price' => 1000000,
+            'type' => 'Satılık',
+            'category' => 'Arsa',
+            'square_meters' => 500,
+            'eids_document_no' => '94536593',
+            'city_id' => '80',
+            'district_id' => 'Merkez',
+        ]));
+
+        $this->assertFalse(app(EidsService::class)->verifyListing($listing));
+
+        $log = ListingEidsRequestLog::query()->firstOrFail();
+        $this->assertSame('rejected', $log->result_status);
+        $this->assertSame('Taşınmaz için ilan yetkisi bulunamadı.', $log->error_message);
+        $this->assertSame('Taşınmaz için ilan yetkisi bulunamadı.', $log->response_payload['message']);
+    }
+
     public function test_it_rejects_a_listing_when_user_code_is_missing(): void
     {
         config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');

@@ -53,8 +53,7 @@ class EidsService
             $response = $exception->response;
             if ($response->status() === 400) {
                 $payload = $response->json() ?? [];
-                $errors = data_get($payload, 'errors') ?: ['EİDS yetkilendirmesi doğrulanamadı.'];
-                $errors = is_array($errors) ? $errors : [$errors];
+                $errors = $this->errorsFromPayload($payload, 'EİDS yetkilendirmesi doğrulanamadı.');
                 $this->markAsRejected($listing, $errors, $payload);
                 $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', implode(' ', $errors), $response, $startedAt, $attemptedAt);
 
@@ -92,9 +91,9 @@ class EidsService
         $statusCode = (int) data_get($payload, 'statusCode', $response->status());
 
         if ($statusCode !== 200 || blank(data_get($payload, 'data'))) {
-            $errors = data_get($payload, 'errors', ['EİDS doğrulaması reddedildi.']);
-            $this->markAsRejected($listing, is_array($errors) ? $errors : [$errors], $payload);
-            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', implode(' ', array_filter(is_array($errors) ? $errors : [$errors])), $response, $startedAt, $attemptedAt);
+            $errors = $this->errorsFromPayload($payload, 'EİDS doğrulaması reddedildi.');
+            $this->markAsRejected($listing, $errors, $payload);
+            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', implode(' ', $errors), $response, $startedAt, $attemptedAt);
 
             return false;
         }
@@ -314,5 +313,36 @@ class EidsService
         }
 
         return $payload;
+    }
+
+    /**
+     * EİDS farklı hata sözleşmeleriyle errors, message veya Messages döndürebilir.
+     * Ham response ayrıca loglandığı için burada yalnızca kullanıcıya gösterilecek
+     * okunabilir nedeni normalize ediyoruz.
+     */
+    private function errorsFromPayload(array $payload, string $fallback): array
+    {
+        foreach (['errors', 'Errors', 'message', 'Message', 'messages', 'Messages'] as $key) {
+            $value = data_get($payload, $key);
+
+            if (blank($value)) {
+                continue;
+            }
+
+            $values = is_array($value) ? $value : [$value];
+            $messages = [];
+
+            array_walk_recursive($values, function (mixed $message) use (&$messages): void {
+                if (is_scalar($message) && filled((string) $message)) {
+                    $messages[] = (string) $message;
+                }
+            });
+
+            if ($messages !== []) {
+                return array_values(array_unique($messages));
+            }
+        }
+
+        return [$fallback];
     }
 }
