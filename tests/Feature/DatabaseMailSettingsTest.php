@@ -117,4 +117,43 @@ class DatabaseMailSettingsTest extends TestCase
 
         $this->assertSame(30, app(OtpFeatureService::class)->emailPolicy()['ttl_minutes']);
     }
+
+    public function test_settings_form_saves_regular_values_to_database(): void
+    {
+        $supervisor = User::factory()->create([
+            'role' => UserRole::SUPERVISOR,
+            'account_status' => AccountStatus::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
+
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::actingAs($supervisor)
+            ->test(ManageSettings::class)
+            ->set('data.site_phone', '0532 111 22 33')
+            ->set('data.eids_company_code', 'firma-kodu')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertSame('0532 111 22 33', Setting::get('site_phone'));
+        $this->assertSame('firma-kodu', Setting::get('eids_company_code'));
+    }
+
+    public function test_json_settings_are_loaded_as_arrays_when_form_is_reopened(): void
+    {
+        Setting::updateOrCreate(['key' => 'options_type'], ['value' => ['Satılık', 'Kiralık']]);
+        Setting::clearCache('options_type');
+
+        $supervisor = User::factory()->create([
+            'role' => UserRole::SUPERVISOR,
+            'account_status' => AccountStatus::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
+
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::actingAs($supervisor)
+            ->test(ManageSettings::class)
+            ->assertSet('data.options_type', ['Satılık', 'Kiralık']);
+    }
 }

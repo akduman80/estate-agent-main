@@ -146,7 +146,13 @@ class ManageSettings extends Page
     public function mount(): void
     {
         // 1. Veritabanındaki tüm ayarları çekiyoruz[cite: 6]
-        $settings = Setting::pluck('value', 'key')->toArray(); // [cite: 6]
+        // `pluck()` returns the database representation and bypasses the model's
+        // JSON cast. This leaves array settings (TagsInput/Repeater) as JSON
+        // strings in the form and they are written back in the wrong shape.
+        $settings = Setting::query()
+            ->get()
+            ->mapWithKeys(fn (Setting $setting): array => [$setting->key => $setting->value])
+            ->toArray();
         $defaults = array_merge(
             $this->getDefaultOptionSettings(),
             $this->getDefaultContactSettings(),
@@ -158,7 +164,9 @@ class ManageSettings extends Page
 
         // 2. Veritabanında boş olan/henüz kaydedilmemiş anahtarlara varsayılan dizileri atıyoruz
         foreach ($defaults as $key => $defaultValues) {
-            if (! isset($settings[$key]) || empty($settings[$key])) {
+            // An explicitly saved empty value must remain empty; otherwise a
+            // user cannot clear a setting from this page.
+            if (! array_key_exists($key, $settings)) {
                 $settings[$key] = $defaultValues;
             }
         }
