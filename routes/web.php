@@ -41,7 +41,7 @@ Route::get('/konum/ilceler', [LocationController::class, 'districts'])
 Route::get('/konum/mahalleler', [LocationController::class, 'neighborhoods'])
     ->name('locations.neighborhoods');
 
-Route::get('/eids/start', [EidsCallbackController::class, 'start'])->name('eids.start');
+Route::get('/eids/start', [EidsCallbackController::class, 'start'])->middleware('auth')->name('eids.start');
 Route::get('/eids/callback', [EidsCallbackController::class, 'callback'])->name('eids.callback');
 Route::get('/hesabim/eids/baslat', [EidsCallbackController::class, 'startForAccount'])->middleware('auth')->name('account.eids.start');
 

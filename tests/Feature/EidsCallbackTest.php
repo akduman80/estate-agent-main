@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Enums\AccountStatus;
+use App\Enums\UserRole;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -15,20 +18,30 @@ class EidsCallbackTest extends TestCase
     {
         config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');
         config()->set('services.eids.sso_url', 'https://eids.ticaret.gov.tr/oturum');
+        $admin = User::factory()->create([
+            'role' => UserRole::SUPERVISOR,
+            'account_status' => AccountStatus::ACTIVE,
+        ]);
 
-        $response = $this->get('/eids/start');
+        $response = $this->actingAs($admin)->get('/eids/start');
 
         $response->assertRedirect('https://eids.ticaret.gov.tr/oturum?firmaKodu=11111111-1111-1111-1111-111111111111');
     }
 
-    public function test_it_requests_the_user_code_from_the_eids_callback(): void
+    public function test_it_stores_platform_user_code_only_for_platform_flow(): void
     {
+        config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');
         config()->set('services.eids.username', 'eids-user');
         config()->set('services.eids.password', 'eids-pass');
         config()->set('services.eids.tax_no', '0230192423');
         config()->set('services.eids.gsm_no', '905303607769');
         config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
+        config()->set('services.eids.sso_url', 'https://eids.ticaret.gov.tr/oturum');
         config()->set('services.eids.user_code_path', '/EidsApi/Kullanici/GetKullaniciKodu');
+        $admin = User::factory()->create([
+            'role' => UserRole::SUPERVISOR,
+            'account_status' => AccountStatus::ACTIVE,
+        ]);
 
         Http::fake([
             'ws.gtb.gov.tr:8443/EidsApi/Kullanici/GetKullaniciKodu' => Http::response([
@@ -40,15 +53,78 @@ class EidsCallbackTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->get('/eids/callback?yetkiKodu=AUTH-CODE-123&durum=Basarili');
+        $this->actingAs($admin)->get('/eids/start')->assertRedirect();
+        $response = $this->actingAs($admin)->get('/eids/callback?yetkiKodu=AUTH-CODE-123&durum=Basarili');
 
         $response->assertOk();
-        $response->assertSee('ZYDEMLAK EİDS kullanıcı kodu güvenli biçimde veritabanına kaydedildi.');
+        $response->assertSee('ZYDEMLAK platform EİDS kullanıcı kodu güvenli biçimde veritabanına kaydedildi.');
         $this->assertSame('22222222-2222-2222-2222-222222222222', Setting::getSecret('eids_user_code'));
 
         Http::assertSent(fn ($request) => $request->hasHeader('Authorization')
             && $request['yetkiKodu'] === 'AUTH-CODE-123'
             && $request['vergiNo'] === '0230192423'
             && $request['gsmNo'] === '905303607769');
+    }
+
+    public function test_account_eids_flow_stores_code_on_authenticated_user(): void
+    {
+        config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
+        config()->set('services.eids.sso_url', 'https://eids.ticaret.gov.tr/oturum');
+        config()->set('services.eids.user_code_path', '/EidsApi/Kullanici/GetKullaniciKodu');
+        $agent = User::factory()->create([
+            'role' => UserRole::AGENT,
+            'account_status' => AccountStatus::ACTIVE,
+            'phone' => '05303607769',
+            'phone_verified_at' => now(),
+        ]);
+        $agent->businessProfile()->create([
+            'office_name' => 'ZİYADE EMLAK',
+            'license_number' => '123',
+            'tax_office' => 'Osmaniye',
+            'tax_number' => '0230192423',
+            'tax_number_hash' => hash('sha256', '0230192423'),
+            'city' => 'Osmaniye',
+            'district' => 'Merkez',
+            'address' => 'Test adres',
+            'approval_status' => 'approved',
+        ]);
+
+        Http::fake([
+            'ws.gtb.gov.tr:8443/EidsApi/Kullanici/GetKullaniciKodu' => Http::response([
+                'kullaniciKodu' => 'agent-user-guid',
+                'hataMesaji' => null,
+                'hataKodu' => null,
+            ], 200),
+        ]);
+
+        $this->actingAs($agent)->get('/hesabim/eids/baslat')->assertRedirect();
+        $response = $this->actingAs($agent)->get('/eids/callback?yetkiKodu=AUTH-CODE-456&durum=Basarili');
+
+        $response->assertOk();
+        $response->assertSee('EİDS kimlik doğrulamanız hesabınıza güvenli biçimde kaydedildi.');
+        $this->assertSame('agent-user-guid', $agent->fresh()->eids_user_code);
+        $this->assertNotNull($agent->fresh()->eids_identity_verified_at);
+        $this->assertNull(Setting::getSecret('eids_user_code'));
+
+        Http::assertSent(fn ($request) => $request['yetkiKodu'] === 'AUTH-CODE-456'
+            && $request['vergiNo'] === '0230192423'
+            && $request['gsmNo'] === '05303607769');
+    }
+
+    public function test_callback_without_matching_flow_does_not_store_platform_code(): void
+    {
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.gsm_no', '905303607769');
+
+        $response = $this->get('/eids/callback?yetkiKodu=AUTH-CODE-789&durum=Basarili');
+
+        $response->assertStatus(409);
+        $response->assertSee('EİDS işlemi başlatılan oturumla eşleşmedi.');
+        $this->assertNull(Setting::getSecret('eids_user_code'));
+        Http::assertNothingSent();
     }
 }

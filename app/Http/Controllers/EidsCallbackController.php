@@ -14,9 +14,13 @@ use Throwable;
 
 class EidsCallbackController extends Controller
 {
-    public function start(EidsIdentityService $eidsIdentityService)
+    public function start(Request $request, EidsIdentityService $eidsIdentityService)
     {
+        abort_unless($request->user()?->role === UserRole::SUPERVISOR, 403, 'Yalnızca yöneticiler ZYDEMLAK platform EİDS kodunu yenileyebilir.');
         abort_unless($eidsIdentityService->isConfiguredForSso(), 503, 'EIDS_COMPANY_CODE tanımlı değil.');
+
+        $request->session()->forget('eids_identity_user_id');
+        $request->session()->put('eids_platform_identity', true);
 
         return redirect()->away($eidsIdentityService->ssoUrl());
     }
@@ -37,6 +41,7 @@ class EidsCallbackController extends Controller
             'Önce emlak ofisinizin vergi numarasını tamamlayın.'
         );
 
+        $request->session()->forget('eids_platform_identity');
         $request->session()->put('eids_identity_user_id', $request->user()->id);
 
         return redirect()->away($eidsIdentityService->ssoUrl());
@@ -59,9 +64,23 @@ class EidsCallbackController extends Controller
         $accountUser = $request->session()->has('eids_identity_user_id')
             ? User::query()->with('businessProfile')->find($request->session()->get('eids_identity_user_id'))
             : null;
+        $isPlatformFlow = (bool) $request->session()->get('eids_platform_identity', false);
+        if (! $accountUser && ! $isPlatformFlow && $request->user()) {
+            $accountUser = $request->user()->load('businessProfile');
+        }
         if ($accountUser) {
             abort_unless($request->user()?->id === $accountUser->id, 403, 'EİDS işlemini başlattığınız hesapla giriş yapın.');
         }
+
+        if (! $accountUser && ! $isPlatformFlow) {
+            return response()->view('eids.callback', [
+                'status' => 'error',
+                'message' => 'EİDS işlemi başlatılan oturumla eşleşmedi. Lütfen hesabınızla giriş yapıp EİDS doğrulamasını tekrar başlatın.',
+                'userCode' => null,
+                'envLine' => null,
+            ], 409);
+        }
+
         $gsmNumber = $accountUser ? $accountUser->phone : $eidsSettings->platformGsmNumber();
         $taxNumber = $accountUser?->role === UserRole::AGENT
             ? $accountUser->businessProfile?->tax_number
@@ -116,6 +135,7 @@ class EidsCallbackController extends Controller
                 'eids_identity_verified_at' => now(),
             ])->save();
             $request->session()->forget('eids_identity_user_id');
+            $request->session()->forget('eids_platform_identity');
 
             return view('eids.callback', [
                 'status' => 'success',
@@ -126,10 +146,11 @@ class EidsCallbackController extends Controller
         }
 
         Setting::putSecret('eids_user_code', $userCode);
+        $request->session()->forget('eids_platform_identity');
 
         return view('eids.callback', [
             'status' => 'success',
-            'message' => 'ZYDEMLAK EİDS kullanıcı kodu güvenli biçimde veritabanına kaydedildi.',
+            'message' => 'ZYDEMLAK platform EİDS kullanıcı kodu güvenli biçimde veritabanına kaydedildi.',
             'userCode' => null,
             'envLine' => null,
         ]);
