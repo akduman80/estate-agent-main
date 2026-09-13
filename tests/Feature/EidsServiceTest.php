@@ -276,7 +276,7 @@ class EidsServiceTest extends TestCase
         $this->assertSame(400, ListingEidsRequestLog::firstOrFail()->response_status);
     }
 
-    public function test_platform_listing_uses_configured_code_even_when_supervisor_has_personal_code(): void
+    public function test_zydemlak_listing_uses_office_code_without_tax_number(): void
     {
         config()->set('services.eids.company_code', 'platform-guid');
         config()->set('services.eids.username', 'eids-user');
@@ -303,7 +303,7 @@ class EidsServiceTest extends TestCase
         ]));
 
         $this->assertTrue(app(EidsService::class)->verifyListing($listing));
-        Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === 'platform-user-guid' && $request['VergiNo'] === '0230192423');
+        Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === 'platform-user-guid' && $request['VergiNo'] === null);
         $this->assertSame($user->id, $listing->fresh()->eidsVerification->user_id);
         $this->assertSame(hash('sha256', 'platform-user-guid'), $listing->fresh()->eidsVerification->eids_user_code_hash);
 
@@ -312,12 +312,12 @@ class EidsServiceTest extends TestCase
         $this->assertSame('Süpervizör', $log->owner_name);
         $this->assertSame('supervisor', $log->owner_role);
         $this->assertSame('zydemlak', $log->listing_source_type);
-        $this->assertSame('company', $log->authorization_subject_type);
-        $this->assertSame('zydemlak_platform_company', $log->eids_identity_context);
+        $this->assertSame('person', $log->authorization_subject_type);
+        $this->assertSame('zydemlak_office_identity', $log->eids_identity_context);
         $this->assertSame('settings.eids_user_code', $log->eids_user_code_source);
         $this->assertSame(hash('sha256', 'platform-user-guid'), $log->eids_user_code_hash);
-        $this->assertSame('2423', $log->tax_number_last4);
-        $this->assertTrue($log->sent_tax_number);
+        $this->assertNull($log->tax_number_last4);
+        $this->assertFalse($log->sent_tax_number);
         $this->assertTrue($log->sent_user_code);
     }
 
@@ -358,6 +358,6 @@ class EidsServiceTest extends TestCase
         Http::assertSent(fn ($request): bool => $request->hasHeader('Authorization')
             && $request['FirmaKod'] === 'db-platform-guid'
             && $request['KullaniciKodu'] === 'db-platform-user-guid'
-            && $request['VergiNo'] === 'db-tax-no');
+            && $request['VergiNo'] === null);
     }
 }

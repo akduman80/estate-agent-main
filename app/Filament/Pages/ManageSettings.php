@@ -44,7 +44,7 @@ class ManageSettings extends Page
     {
         return [
             Action::make('refreshPlatformEidsCode')
-                ->label('ZYDEMLAK EİDS Kodunu Al / Yenile')
+                ->label('Ziyade Emlak platform EİDS kimliğini Al / Yenile')
                 ->icon('heroicon-o-shield-check')
                 ->url(route('eids.start'))
                 ->openUrlInNewTab(false),

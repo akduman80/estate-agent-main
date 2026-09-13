@@ -125,6 +125,10 @@ class EidsService
         $taxNumber = match ($listing->source_type) {
             'owner' => null,
             'real_estate_office' => $listing->businessProfile?->tax_number ?: $listing->user?->businessProfile?->tax_number,
+            // Supervisor siteye giriş yapan kullanıcıdır; EİDS tarafında ise
+            // Ziyade Emlak'ın İlhan Akduman üzerinden alınmış ofis kimliği
+            // kullanılır. T.C. kimlik numarası VergiNo olarak gönderilemez.
+            'zydemlak' => null,
             default => $this->settings->platformTaxNumber(),
         };
 
@@ -201,7 +205,7 @@ class EidsService
     private function identityContextForListing(Listing $listing): string
     {
         if ($listing->source_type === 'zydemlak' && $listing->user?->role === UserRole::SUPERVISOR) {
-            return 'zydemlak_platform_company';
+            return 'zydemlak_office_identity';
         }
 
         return match ($listing->source_type) {
