@@ -81,6 +81,14 @@ class EidsServiceTest extends TestCase
         $this->assertSame('sha256:'.hash('sha256', '22222222-2222-2222-2222-222222222222'), $log->request_payload['KullaniciKodu']);
         $this->assertEquals(94536593.0, $log->request_payload['TasinmazId']);
         $this->assertSame((string) $listing->id, $log->request_payload['IlanNo']);
+        $this->assertSame($user->id, $log->owner_user_id);
+        $this->assertSame('user_account', $log->eids_identity_context);
+        $this->assertSame('company', $log->authorization_subject_type);
+        $this->assertSame('users.eids_user_code', $log->eids_user_code_source);
+        $this->assertSame(hash('sha256', '22222222-2222-2222-2222-222222222222'), $log->eids_user_code_hash);
+        $this->assertSame('2423', $log->tax_number_last4);
+        $this->assertTrue($log->sent_tax_number);
+        $this->assertTrue($log->sent_user_code);
         $this->assertSame('Osmaniye', $log->response_payload['data']['Il']);
         $this->assertNotNull($log->attempted_at);
 
@@ -244,6 +252,7 @@ class EidsServiceTest extends TestCase
         ])]);
 
         $user = User::factory()->create([
+            'name' => 'Süpervizör',
             'role' => UserRole::SUPERVISOR,
             'account_status' => AccountStatus::ACTIVE,
             'eids_user_code' => 'individual-user-guid',
@@ -258,6 +267,19 @@ class EidsServiceTest extends TestCase
         Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === 'platform-user-guid' && $request['VergiNo'] === '0230192423');
         $this->assertSame($user->id, $listing->fresh()->eidsVerification->user_id);
         $this->assertSame(hash('sha256', 'platform-user-guid'), $listing->fresh()->eidsVerification->eids_user_code_hash);
+
+        $log = ListingEidsRequestLog::firstOrFail();
+        $this->assertSame($user->id, $log->owner_user_id);
+        $this->assertSame('Süpervizör', $log->owner_name);
+        $this->assertSame('supervisor', $log->owner_role);
+        $this->assertSame('zydemlak', $log->listing_source_type);
+        $this->assertSame('company', $log->authorization_subject_type);
+        $this->assertSame('zydemlak_platform_company', $log->eids_identity_context);
+        $this->assertSame('settings.eids_user_code', $log->eids_user_code_source);
+        $this->assertSame(hash('sha256', 'platform-user-guid'), $log->eids_user_code_hash);
+        $this->assertSame('2423', $log->tax_number_last4);
+        $this->assertTrue($log->sent_tax_number);
+        $this->assertTrue($log->sent_user_code);
     }
 
     public function test_platform_listing_prefers_database_eids_settings_over_config(): void

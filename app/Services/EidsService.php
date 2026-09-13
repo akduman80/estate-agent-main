@@ -159,6 +159,7 @@ class EidsService
     ): void {
         ListingEidsRequestLog::create([
             'listing_id' => $listing->id,
+            ...$this->identityDiagnostics($listing, $requestPayload),
             'endpoint' => $endpoint,
             'method' => 'POST',
             'request_payload' => $this->sanitizeRequestPayload($requestPayload),
@@ -169,6 +170,59 @@ class EidsService
             'duration_ms' => (int) round((microtime(true) - $startedAt) * 1000),
             'attempted_at' => $attemptedAt,
         ]);
+    }
+
+    private function identityDiagnostics(Listing $listing, array $requestPayload): array
+    {
+        $listing->loadMissing(['user.businessProfile', 'businessProfile']);
+
+        $owner = $listing->user;
+        $businessProfile = $listing->businessProfile ?: $owner?->businessProfile;
+        $taxNumber = filled($requestPayload['VergiNo'] ?? null) ? (string) $requestPayload['VergiNo'] : null;
+        $userCode = filled($requestPayload['KullaniciKodu'] ?? null) ? (string) $requestPayload['KullaniciKodu'] : null;
+        $identityContext = $this->identityContextForListing($listing);
+
+        return [
+            'owner_user_id' => $owner?->id,
+            'owner_name' => $owner?->name,
+            'owner_role' => $owner?->role instanceof UserRole ? $owner->role->value : $owner?->role,
+            'business_profile_id' => $listing->business_profile_id ?: $businessProfile?->id,
+            'business_office_name' => $businessProfile?->office_name,
+            'listing_source_type' => $listing->source_type,
+            'authorization_subject_type' => filled($taxNumber) ? 'company' : 'person',
+            'eids_identity_context' => $identityContext,
+            'eids_user_code_source' => $this->userCodeSourceForListing($listing, $userCode),
+            'eids_user_code_hash' => filled($userCode) ? hash('sha256', $userCode) : null,
+            'tax_number_last4' => filled($taxNumber) ? substr($taxNumber, -4) : null,
+            'sent_tax_number' => filled($taxNumber),
+            'sent_user_code' => filled($userCode),
+        ];
+    }
+
+    private function identityContextForListing(Listing $listing): string
+    {
+        if ($listing->source_type === 'zydemlak' && $listing->user?->role === UserRole::SUPERVISOR) {
+            return 'zydemlak_platform_company';
+        }
+
+        return match ($listing->source_type) {
+            'owner' => 'owner_person',
+            'real_estate_office' => 'agent_company',
+            default => 'user_account',
+        };
+    }
+
+    private function userCodeSourceForListing(Listing $listing, ?string $userCode): string
+    {
+        if (blank($userCode)) {
+            return 'missing';
+        }
+
+        if ($listing->source_type === 'zydemlak' && $listing->user?->role === UserRole::SUPERVISOR) {
+            return 'settings.eids_user_code';
+        }
+
+        return 'users.eids_user_code';
     }
 
     private function markAsVerified(Listing $listing, array $data, array $payload): void

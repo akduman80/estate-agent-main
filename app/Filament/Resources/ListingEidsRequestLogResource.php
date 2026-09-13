@@ -56,6 +56,35 @@ class ListingEidsRequestLogResource extends Resource
                 TextColumn::make('request_payload.IlanNo')
                     ->label('İlan No')
                     ->searchable(),
+                TextColumn::make('eids_identity_context')
+                    ->label('EİDS Bağlamı')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'zydemlak_platform_company' => 'ZYDEMLAK / Şirket',
+                        'agent_company' => 'Agent / Şirket',
+                        'owner_person' => 'Şahıs',
+                        'user_account' => 'Kullanıcı',
+                        default => $state ?: '-',
+                    })
+                    ->color(fn (?string $state): string => match ($state) {
+                        'zydemlak_platform_company' => 'info',
+                        'agent_company' => 'warning',
+                        'owner_person' => 'success',
+                        default => 'gray',
+                    }),
+                TextColumn::make('tax_number_last4')
+                    ->label('Vergi Son 4')
+                    ->placeholder('-')
+                    ->toggleable(),
+                TextColumn::make('eids_user_code_source')
+                    ->label('Kod Kaynağı')
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'settings.eids_user_code' => 'Platform Ayarı',
+                        'users.eids_user_code' => 'Kullanıcı',
+                        'missing' => 'Eksik',
+                        default => $state ?: '-',
+                    })
+                    ->toggleable(),
                 TextColumn::make('result_status')
                     ->label('Sonuç')
                     ->badge()
@@ -92,6 +121,14 @@ class ListingEidsRequestLogResource extends Resource
                         'rejected' => 'Reddedildi',
                         'pending' => 'Beklemede',
                         'error' => 'Hata',
+                    ]),
+                SelectFilter::make('eids_identity_context')
+                    ->label('EİDS Bağlamı')
+                    ->options([
+                        'zydemlak_platform_company' => 'ZYDEMLAK / Şirket',
+                        'agent_company' => 'Agent / Şirket',
+                        'owner_person' => 'Şahıs',
+                        'user_account' => 'Kullanıcı',
                     ]),
             ])
             ->actions([
@@ -130,6 +167,41 @@ class ListingEidsRequestLogResource extends Resource
                                 default => 'gray',
                             }),
                         TextEntry::make('error_message')->label('Hata Mesajı')->columnSpanFull(),
+                    ]),
+                Section::make('EİDS Kimlik Bağlamı')
+                    ->columns(3)
+                    ->schema([
+                        TextEntry::make('eids_identity_context')
+                            ->label('Sorgu Bağlamı')
+                            ->badge()
+                            ->formatStateUsing(fn (?string $state): string => match ($state) {
+                                'zydemlak_platform_company' => 'ZYDEMLAK / Şirket',
+                                'agent_company' => 'Agent / Şirket',
+                                'owner_person' => 'Şahıs',
+                                'user_account' => 'Kullanıcı',
+                                default => $state ?: '-',
+                            }),
+                        TextEntry::make('authorization_subject_type')
+                            ->label('Yetki Tipi')
+                            ->formatStateUsing(fn (?string $state): string => match ($state) {
+                                'company' => 'Şirket / Vergi No ile',
+                                'person' => 'Şahıs / Vergi No olmadan',
+                                default => $state ?: '-',
+                            }),
+                        TextEntry::make('eids_user_code_source')
+                            ->label('Kullanıcı Kodu Kaynağı')
+                            ->formatStateUsing(fn (?string $state): string => match ($state) {
+                                'settings.eids_user_code' => 'Platform ayarı',
+                                'users.eids_user_code' => 'Kullanıcı hesabı',
+                                'missing' => 'Eksik',
+                                default => $state ?: '-',
+                            }),
+                        TextEntry::make('owner_name')->label('İlan Sahibi')->placeholder('-'),
+                        TextEntry::make('owner_role')->label('İlan Sahibi Rolü')->placeholder('-'),
+                        TextEntry::make('listing_source_type')->label('İlan Kaynağı')->placeholder('-'),
+                        TextEntry::make('business_office_name')->label('Emlak İşletmesi')->placeholder('-'),
+                        TextEntry::make('tax_number_last4')->label('Vergi No Son 4')->placeholder('-'),
+                        TextEntry::make('eids_user_code_hash')->label('Kullanıcı Kodu Hash')->placeholder('-')->columnSpanFull(),
                     ]),
                 Section::make('Gönderilen Bilgiler')
                     ->schema([
