@@ -15,7 +15,7 @@ class MobileProjectPublishController extends Controller
 
         if ($expectedToken === '') {
             return response()->json([
-                'message' => 'Mobil yayın servisi henüz yapılandırılmadı. Sunucuda ZYD_MOBILE_PUBLISH_TOKEN tanımlanmalı.',
+                'message' => 'Mobil yayın servisi henüz yapılandırılmadı. Sunucuda ZYD_MOBILE_PUBLISH_TOKEN veya ZYD_PUBLISH_TOKEN tanımlanmalı.',
             ], 503);
         }
 

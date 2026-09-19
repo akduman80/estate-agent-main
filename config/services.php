@@ -70,7 +70,7 @@ return [
     ],
 
     'zyd_mobile' => [
-        'publish_token' => env('ZYD_MOBILE_PUBLISH_TOKEN'),
+        'publish_token' => env('ZYD_MOBILE_PUBLISH_TOKEN', env('ZYD_PUBLISH_TOKEN')),
     ],
 
 ];
