@@ -17,6 +17,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalDocumentController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\MobileProjectPublishController;
 use App\Http\Controllers\PollVoteController;
 use App\Http\Controllers\ProjectController;
 use App\Livewire\BlogList;
@@ -83,3 +84,7 @@ Route::post('/hesap/sifre-degistir/onayla', [AccountSecurityController::class, '
 Route::get('/sozlesmeler/{document:slug}', [LegalDocumentController::class, 'show'])->name('legal.show');
 
 Route::post('/github-deploy-webhook', GitHubDeployController::class);
+
+Route::post('/api/v1/projects/publish', MobileProjectPublishController::class)
+    ->middleware('throttle:30,1')
+    ->name('api.projects.publish');

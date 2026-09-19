@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'github-deploy-webhook',
+            'api/v1/projects/publish',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

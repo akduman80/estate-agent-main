@@ -69,4 +69,8 @@ return [
         'gold_url' => env('GOLD_API_URL', 'https://api.gold-api.com'),
     ],
 
+    'zyd_mobile' => [
+        'publish_token' => env('ZYD_MOBILE_PUBLISH_TOKEN'),
+    ],
+
 ];
