@@ -35,9 +35,26 @@ class EidsService
             return false;
         }
 
-        if (blank($listing->eids_document_no) || blank(data_get($requestPayload, 'KullaniciKodu'))) {
-            $this->markAsRejected($listing, ['Taşınmaz ID zorunludur. İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.']);
-            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', 'Taşınmaz ID zorunludur. İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.', null, $startedAt, $attemptedAt);
+        if (blank($listing->eids_document_no)) {
+            $message = 'Taşınmaz ID zorunludur.';
+            $this->markAsRejected($listing, [$message]);
+            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', $message, null, $startedAt, $attemptedAt);
+
+            return false;
+        }
+
+        if (blank(data_get($requestPayload, 'KullaniciKodu'))) {
+            $message = 'İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.';
+            $this->markAsRejected($listing, [$message]);
+            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', $message, null, $startedAt, $attemptedAt);
+
+            return false;
+        }
+
+        if ($this->isAgentCompanyListing($listing) && ! $this->isGuid(data_get($requestPayload, 'KullaniciKodu'))) {
+            $message = 'Agent hesabındaki EİDS kullanıcı kodu geçerli GUID formatında değil. Lütfen agent panelinden EİDS kimlik doğrulamasını yenileyin.';
+            $this->markAsRejected($listing, [$message]);
+            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', $message, null, $startedAt, $attemptedAt);
 
             return false;
         }
@@ -148,6 +165,18 @@ class EidsService
         }
 
         return $listing->user?->eids_user_code;
+    }
+
+    private function isAgentCompanyListing(Listing $listing): bool
+    {
+        return $listing->source_type === 'real_estate_office'
+            && $listing->user?->role === UserRole::AGENT;
+    }
+
+    private function isGuid(mixed $value): bool
+    {
+        return is_string($value)
+            && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value) === 1;
     }
 
     private function logRequest(
