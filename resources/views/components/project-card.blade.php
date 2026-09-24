@@ -1,7 +1,7 @@
 @props(['project', 'compact' => false])
 
 @php
-    $imageUrl = $project->cover_image ? \Illuminate\Support\Facades\Storage::url($project->cover_image) : asset('fe-assets/assets/img/demo/property-4.jpg');
+    $imageUrl = $project->cover_image ? \Illuminate\Support\Facades\Storage::disk('public')->url($project->cover_image) : asset('fe-assets/assets/img/demo/property-4.jpg');
     $statusLabel = match ($project->status) {
         'planning' => 'Planlanıyor',
         'completed' => 'Tamamlandı',

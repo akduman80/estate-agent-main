@@ -35,6 +35,42 @@ class HomeExperienceTest extends TestCase
         $this->get(route('projects.show', $draft))->assertNotFound();
     }
 
+    public function test_project_map_only_contains_published_projects_with_coordinates(): void
+    {
+        config()->set('services.google_maps.browser_key', 'browser-key');
+
+        $visible = Project::create([
+            'title' => 'Haritada Görünen Proje',
+            'slug' => 'haritada-gorunen-proje',
+            'developer_name' => 'ZYD',
+            'latitude' => 37.07,
+            'longitude' => 36.25,
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+        Project::create([
+            'title' => 'Taslak Harita Projesi',
+            'slug' => 'taslak-harita-projesi',
+            'developer_name' => 'ZYD',
+            'latitude' => 37.08,
+            'longitude' => 36.26,
+            'is_published' => false,
+        ]);
+        Project::create([
+            'title' => 'Konumsuz Yayın',
+            'slug' => 'konumsuz-yayin',
+            'developer_name' => 'ZYD',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+
+        $this->get(route('projects.index'))
+            ->assertOk()
+            ->assertSee('id="project-map"', false)
+            ->assertSee($visible->title)
+            ->assertDontSee('Taslak Harita Projesi');
+    }
+
     public function test_authenticated_user_can_save_featured_listing_count(): void
     {
         $user = User::factory()->create(['featured_listing_count' => 3]);

@@ -1,5 +1,12 @@
 @php
-    $imageUrl = $project->cover_image ? \Illuminate\Support\Facades\Storage::url($project->cover_image) : asset('fe-assets/assets/img/demo/property-4.jpg');
+    $gallery = $project->images
+        ->pluck('image_path')
+        ->prepend($project->cover_image)
+        ->filter()
+        ->unique()
+        ->map(fn ($path) => \Illuminate\Support\Facades\Storage::disk('public')->url($path))
+        ->values();
+    $imageUrl = $gallery->first() ?: asset('fe-assets/assets/img/demo/property-4.jpg');
     $statusLabel = match ($project->status) { 'planning' => 'Planlanıyor', 'completed' => 'Tamamlandı', default => 'Devam Ediyor' };
 @endphp
 <x-layouts.modern :title="$project->title.' | ZYDEMLAK'" :description="$project->summary">
@@ -13,6 +20,18 @@
                 @if($project->location)<p class="mt-3 text-sm text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-orange-500"></i>{{ $project->location }}</p>@endif
                 @if($project->summary)<p class="mt-6 text-lg font-semibold leading-8 text-slate-700">{{ $project->summary }}</p>@endif
                 @if($project->content)<div class="article-content mt-6 text-slate-700">{!! $project->content !!}</div>@endif
+                @if($gallery->count() > 1)
+                    <section class="mt-8 border-t border-slate-100 pt-6" aria-labelledby="project-gallery-heading">
+                        <h2 id="project-gallery-heading" class="mb-4 text-xl font-extrabold text-blue-950">Proje fotoğrafları</h2>
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                            @foreach($gallery as $index => $image)
+                                <a href="{{ $image }}" target="_blank" rel="noopener noreferrer" class="overflow-hidden rounded-xl bg-slate-100">
+                                    <img src="{{ $image }}" alt="{{ $project->title }} - {{ $index + 1 }}. fotoğraf" class="aspect-[4/3] h-full w-full object-cover transition hover:scale-105" loading="lazy">
+                                </a>
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
             </div>
         </div>
     </main>

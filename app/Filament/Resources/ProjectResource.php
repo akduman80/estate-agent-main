@@ -39,6 +39,8 @@ class ProjectResource extends Resource
                 Forms\Components\TextInput::make('city')->label('İl'),
                 Forms\Components\TextInput::make('district')->label('İlçe'),
                 Forms\Components\TextInput::make('neighborhood')->label('Mahalle'),
+                Forms\Components\TextInput::make('latitude')->label('Enlem')->numeric(),
+                Forms\Components\TextInput::make('longitude')->label('Boylam')->numeric(),
                 Forms\Components\FileUpload::make('cover_image')->label('Kapak görseli')->image()->disk('public')
                     ->directory('projects')->imageEditor()->imageCropAspectRatio('4:3')->columnSpanFull(),
                 Forms\Components\Textarea::make('summary')->label('Kısa açıklama')->rows(3)->columnSpanFull(),
@@ -49,6 +51,10 @@ class ProjectResource extends Resource
                 Forms\Components\Toggle::make('is_published')->label('Yayında')->default(false),
                 Forms\Components\DateTimePicker::make('published_at')->label('Yayın tarihi')->seconds(false),
             ])->columns(3),
+            Forms\Components\Section::make('Mobil uygulama bağlantısı')->schema([
+                Forms\Components\TextInput::make('mobile_project_uuid')->label('Kalıcı mobil proje UUID')->disabled(),
+                Forms\Components\TextInput::make('mobile_local_project_id')->label('Eski yerel proje ID')->disabled(),
+            ])->columns(2)->collapsed(),
         ]);
     }
 

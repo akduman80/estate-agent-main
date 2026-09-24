@@ -73,4 +73,8 @@ return [
         'publish_token' => env('ZYD_MOBILE_PUBLISH_TOKEN', env('ZYD_PUBLISH_TOKEN')),
     ],
 
+    'google_maps' => [
+        'browser_key' => env('GOOGLE_MAPS_BROWSER_KEY'),
+    ],
+
 ];
