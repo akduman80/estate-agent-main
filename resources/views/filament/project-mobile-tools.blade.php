@@ -210,18 +210,10 @@
                         return;
                     }
 
-                    const pond = window.FilePond?.find?.(filePond);
-
-                    if (pond?.addFiles) {
-                        pond.addFiles(files);
-                    } else if (pond?.addFile && files[0]) {
-                        pond.addFile(files[0]);
-                    } else {
-                        const transfer = new DataTransfer();
-                        files.forEach((file) => transfer.items.add(file));
-                        field.files = transfer.files;
-                        field.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
+                    const transfer = new DataTransfer();
+                    files.forEach((file) => transfer.items.add(file));
+                    field.files = transfer.files;
+                    field.dispatchEvent(new Event('change', { bubbles: true }));
 
                     cameraInput.remove();
                 }, { once: true });
