@@ -43,6 +43,7 @@
         <button
             type="button"
             x-on:click="toggleExpanded()"
+            data-map-expand-button
             class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm font-bold text-primary-700 shadow-sm transition hover:bg-primary-100 dark:border-primary-500/30 dark:bg-primary-500/10 dark:text-primary-300"
         >
             <x-heroicon-o-arrows-pointing-out x-show="! expanded" class="h-5 w-5" />

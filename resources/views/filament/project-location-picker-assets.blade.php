@@ -18,6 +18,10 @@
             height: calc(100dvh - 11rem) !important;
             min-height: 28rem !important;
         }
+
+        [data-project-location-picker][data-expanded="true"] [data-map-expand-button] {
+            color: rgb(17 24 39) !important;
+        }
     </style>
     <script>
         window.projectLocationPicker = (config) => ({
