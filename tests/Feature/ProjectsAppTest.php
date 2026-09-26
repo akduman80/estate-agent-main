@@ -24,8 +24,7 @@ class ProjectsAppTest extends TestCase
             ->assertSee('/pwa/projects.webmanifest', false)
             ->assertSee('zydProjectMobileToolsLoaded', false)
             ->assertSee('padding-left: .75rem', false)
-            ->assertSee('border-spacing: 0 .85rem', false)
-            ->assertSee('overflow-x: visible', false)
+            ->assertSee('overflow-x: hidden', false)
             ->assertDontSee("Projeler App'ini Telefona Yükle");
     }
 

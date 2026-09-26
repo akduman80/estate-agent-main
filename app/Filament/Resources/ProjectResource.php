@@ -159,12 +159,12 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\ImageColumn::make('cover_image')->label('Görsel')->disk('public')->square()->size(96),
+            Tables\Columns\ImageColumn::make('cover_image')->label('Görsel')->disk('public')->square()->size(72)->visibleFrom('md'),
             Tables\Columns\TextColumn::make('title')->label('Proje')->searchable()->sortable(),
-            Tables\Columns\TextColumn::make('developer_name')->label('Müteahhit')->searchable(),
-            Tables\Columns\TextColumn::make('status')->label('Durum')->badge(),
-            Tables\Columns\IconColumn::make('is_featured')->label('Öne çıkan')->boolean(),
-            Tables\Columns\IconColumn::make('is_published')->label('Yayında')->boolean(),
+            Tables\Columns\TextColumn::make('developer_name')->label('Müteahhit')->searchable()->visibleFrom('md'),
+            Tables\Columns\TextColumn::make('status')->label('Durum')->badge()->visibleFrom('md'),
+            Tables\Columns\IconColumn::make('is_featured')->label('Öne çıkan')->boolean()->visibleFrom('md'),
+            Tables\Columns\IconColumn::make('is_published')->label('Yayında')->boolean()->visibleFrom('md'),
         ])
             ->recordUrl(fn (Project $record): string => static::getUrl('edit', ['record' => $record]))
             ->actions([Tables\Actions\EditAction::make()])

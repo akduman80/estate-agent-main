@@ -64,58 +64,16 @@
         }
 
         .fi-ta-content {
-            overflow-x: visible !important;
+            overflow-x: hidden !important;
         }
 
         .fi-ta table {
-            border-collapse: separate !important;
-            border-spacing: 0 .85rem !important;
-            min-width: 0 !important;
+            min-width: 100% !important;
             width: 100% !important;
-        }
-
-        .fi-ta thead {
-            display: none !important;
-        }
-
-        .fi-ta tbody,
-        .fi-ta tr,
-        .fi-ta td {
-            display: block !important;
-            width: 100% !important;
-        }
-
-        .fi-ta tr {
-            background: rgb(255 255 255);
-            border: 1px solid rgb(229 231 235);
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgb(15 23 42 / .08);
-            overflow: hidden;
-            padding: .75rem;
         }
 
         .fi-ta td {
-            border: 0 !important;
-            padding: .25rem 0 !important;
-        }
-
-        .fi-ta td:first-child {
-            padding-bottom: .75rem !important;
-        }
-
-        .fi-ta td:first-child img {
-            aspect-ratio: 1 / 1;
-            border-radius: .9rem;
-            height: auto !important;
-            max-height: none !important;
-            object-fit: cover;
-            width: 100% !important;
-        }
-
-        .fi-ta td:nth-child(2) {
-            font-size: 1.1rem;
-            font-weight: 800;
-            line-height: 1.25;
+            white-space: normal !important;
         }
 
         .fi-ta-actions,
