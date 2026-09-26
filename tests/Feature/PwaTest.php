@@ -18,10 +18,20 @@ class PwaTest extends TestCase
         $this->get('/admin')->assertRedirect('/admin/login');
     }
 
+    public function test_projects_login_exposes_the_projects_installable_app(): void
+    {
+        $this->get('/projeler-app/login')->assertOk()
+            ->assertSee('/pwa/projects.webmanifest', false)
+            ->assertSee('/pwa/install.js', false)
+            ->assertDontSee('/pwa/admin.webmanifest', false);
+
+        $this->get('/projeler-app')->assertRedirect('/projeler-app/login');
+    }
+
     public function test_manifests_have_distinct_ids_and_valid_local_icons(): void
     {
         $ids = [];
-        foreach (['site' => '/', 'admin' => '/admin'] as $kind => $start) {
+        foreach (['site' => '/', 'admin' => '/admin', 'projects' => '/projeler-app/projects'] as $kind => $start) {
             $manifest = json_decode(file_get_contents(public_path("pwa/$kind.webmanifest")), true, flags: JSON_THROW_ON_ERROR);
             $ids[] = $manifest['id'];
             $this->assertSame($start, $manifest['start_url']);
@@ -31,6 +41,6 @@ class PwaTest extends TestCase
                 $this->assertSame("{$width}x{$height}", $icon['sizes']);
             }
         }
-        $this->assertCount(2, array_unique($ids));
+        $this->assertCount(3, array_unique($ids));
     }
 }

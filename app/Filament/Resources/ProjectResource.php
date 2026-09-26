@@ -51,10 +51,13 @@ class ProjectResource extends Resource
                     ->dehydrated(false)
                     ->columnSpanFull(),
                 FileUpload::make('cover_image')->label('Kapak görseli')->image()->disk('public')
-                    ->directory('projects')->imageEditor()->imageCropAspectRatio('4:3')->columnSpanFull(),
+                    ->directory('projects')->imageEditor()->imageCropAspectRatio('4:3')
+                    ->helperText('Telefonda kamerayla yeni fotoğraf çekebilir veya galeriden seçebilirsiniz.')
+                    ->extraInputAttributes(['accept' => 'image/*'])
+                    ->columnSpanFull(),
                 FileUpload::make('gallery_images')
                     ->label('Proje fotoğrafları')
-                    ->helperText('Birden fazla fotoğraf seçebilirsiniz. Sürükleyerek sıralayabilirsiniz; kapak görseli slaytta ilk sırada gösterilir.')
+                    ->helperText('Kamerayla fotoğraf çekebilir veya galeriden birden fazla fotoğraf seçebilirsiniz. Sürükleyerek sıralayabilirsiniz.')
                     ->multiple()
                     ->image()
                     ->disk('public')
@@ -63,6 +66,7 @@ class ProjectResource extends Resource
                     ->maxSize(15360)
                     ->reorderable()
                     ->imageEditor()
+                    ->extraInputAttributes(['accept' => 'image/*'])
                     ->dehydrated(false)
                     ->loadStateFromRelationshipsUsing(function (FileUpload $component, Project $record): void {
                         $component->state($record->images()->pluck('image_path')->all());
@@ -88,10 +92,11 @@ class ProjectResource extends Resource
             Forms\Components\Section::make('Proje videosu')->schema([
                 FileUpload::make('video_path')
                     ->label('Video dosyası')
-                    ->helperText(fn (): string => 'En fazla '.((int) config('projects.video.max_size_kb') / 1024).' MB. Yalnızca MP4 veya WebM yükleyin. Telefonda hızlı açılması için 1080p ve kısa video önerilir.')
+                    ->helperText(fn (): string => 'Kamerayla video çekebilir veya galeriden seçebilirsiniz. En fazla '.((int) config('projects.video.max_size_kb') / 1024).' MB; kısa video önerilir.')
                     ->disk('public')
                     ->directory('projects/videos')
                     ->acceptedFileTypes(config('projects.video.mime_types'))
+                    ->extraInputAttributes(['accept' => 'video/*'])
                     ->maxSize(config('projects.video.max_size_kb'))
                     ->openable()
                     ->downloadable()

@@ -10,14 +10,15 @@
     const remove = () => { banner?.remove(); banner = null; };
     const show = (ios = false) => {
         if (standalone() || banner) return;
-        const kind = location.pathname === '/admin' || location.pathname.startsWith('/admin/') ? 'admin' : 'site';
+        const kind = window.zydPwaKind || (location.pathname === '/admin' || location.pathname.startsWith('/admin/') ? 'admin' : 'site');
         try { if (sessionStorage.getItem(`pwa-dismissed-${kind}`)) return; } catch {}
         banner = document.createElement('aside');
         banner.setAttribute('aria-label', 'Uygulamayı yükle');
         banner.style.cssText = 'position:fixed;bottom:calc(90px + env(safe-area-inset-bottom, 0px));right:16px;left:16px;margin-left:auto;max-width:340px;z-index:9999;padding:16px;background:#172554;color:white;border-radius:14px;box-shadow:0 4px 24px #0003;font:14px/1.5 system-ui';
         const message = document.createElement('p');
         message.style.cssText = 'margin:0 0 12px';
-        message.textContent = ios ? 'iPhone’da Safari paylaş menüsünden “Ana Ekrana Ekle”yi seçin. Varsa “Web Uygulaması Olarak Aç”ı etkinleştirin.' : (kind === 'admin' ? 'Yönetim panelini' : 'ZYDEMLAK’ı') + ' telefonunuza uygulama olarak ekleyin.';
+        const appName = kind === 'projects' ? 'ZYDEMLAK Projeler’i' : (kind === 'admin' ? 'Yönetim panelini' : 'ZYDEMLAK’ı');
+        message.textContent = ios ? `${appName} yüklemek için Safari paylaş menüsünden “Ana Ekrana Ekle”yi seçin.` : `${appName} telefonunuza uygulama olarak ekleyin.`;
         banner.append(message);
         const button = (label, action) => {
             const element = document.createElement('button');

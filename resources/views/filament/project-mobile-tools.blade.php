@@ -1,0 +1,97 @@
+<style>
+    .zyd-speech-button {
+        align-items: center;
+        align-self: center;
+        background: transparent;
+        border: 0;
+        border-radius: .5rem;
+        color: rgb(234 88 12);
+        cursor: pointer;
+        display: inline-flex;
+        flex: 0 0 auto;
+        font-size: 1.2rem;
+        justify-content: center;
+        min-height: 2.5rem;
+        min-width: 2.5rem;
+    }
+    .zyd-speech-button:hover { background: rgb(255 247 237); }
+    .zyd-speech-button[data-listening="true"] {
+        animation: zyd-speech-pulse 1s infinite;
+        background: rgb(255 237 213);
+        color: rgb(194 65 12);
+    }
+    @keyframes zyd-speech-pulse { 50% { opacity: .55; } }
+</style>
+<script>
+(() => {
+    if (window.zydProjectMobileToolsLoaded) return;
+    window.zydProjectMobileToolsLoaded = true;
+
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (! Recognition) return;
+
+    let activeRecognition = null;
+    let activeButton = null;
+
+    const stopActiveRecognition = () => {
+        activeRecognition?.stop();
+        activeRecognition = null;
+        if (activeButton) activeButton.dataset.listening = 'false';
+        activeButton = null;
+    };
+
+    const startDictation = (field, button) => {
+        if (activeRecognition) {
+            stopActiveRecognition();
+            return;
+        }
+
+        const recognition = new Recognition();
+        activeRecognition = recognition;
+        activeButton = button;
+        button.dataset.listening = 'true';
+        recognition.lang = 'tr-TR';
+        recognition.interimResults = false;
+        recognition.continuous = false;
+
+        recognition.onresult = (event) => {
+            const transcript = Array.from(event.results)
+                .map((result) => result[0].transcript)
+                .join(' ')
+                .trim();
+            if (! transcript) return;
+
+            const separator = field.value?.trim() ? ' ' : '';
+            field.value = `${field.value || ''}${separator}${transcript}`;
+            field.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: transcript }));
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+            field.focus();
+        };
+        recognition.onerror = () => stopActiveRecognition();
+        recognition.onend = () => stopActiveRecognition();
+        recognition.start();
+    };
+
+    const enhanceFields = () => {
+        document.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach((field) => {
+            if (field.dataset.zydSpeechReady || field.disabled || field.readOnly) return;
+            if (field.closest('[role="dialog"]') && ! field.closest('.fi-fo-field-wrp')) return;
+            field.dataset.zydSpeechReady = 'true';
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'zyd-speech-button';
+            button.dataset.listening = 'false';
+            button.title = 'Konuşarak yaz';
+            button.setAttribute('aria-label', 'Bu alana konuşarak yaz');
+            button.textContent = '🎙️';
+            button.addEventListener('click', () => startDictation(field, button));
+            field.insertAdjacentElement('afterend', button);
+        });
+    };
+
+    enhanceFields();
+    new MutationObserver(enhanceFields).observe(document.body, { childList: true, subtree: true });
+    document.addEventListener('livewire:navigated', enhanceFields);
+})();
+</script>

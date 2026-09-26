@@ -122,6 +122,7 @@ class User extends Authenticatable implements FilamentUser
 
         return match ($panel->getId()) {
             'admin' => $this->role === UserRole::SUPERVISOR,
+            'projects' => $this->role === UserRole::SUPERVISOR,
             'portal' => in_array($this->role, [UserRole::AGENT, UserRole::CONSULTANT, UserRole::INDIVIDUAL, UserRole::SUPERVISOR], true),
             'editor' => in_array($this->role, [UserRole::EDITOR, UserRole::SUPERVISOR], true),
             default => false,

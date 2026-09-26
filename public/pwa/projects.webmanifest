@@ -1,0 +1,26 @@
+{
+  "id": "/projeler-app",
+  "name": "ZYDEMLAK Projeler",
+  "short_name": "Projeler",
+  "description": "ZYDEMLAK mobil proje yönetimi",
+  "lang": "tr",
+  "start_url": "/projeler-app/projects",
+  "scope": "/projeler-app",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#172554",
+  "icons": [
+    {
+      "src": "/pwa/admin-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa/admin-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
