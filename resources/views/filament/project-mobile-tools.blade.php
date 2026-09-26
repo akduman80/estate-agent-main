@@ -63,11 +63,77 @@
             min-height: 2.75rem;
         }
 
+        .fi-ta-content {
+            overflow-x: visible !important;
+        }
+
+        .fi-ta table {
+            border-collapse: separate !important;
+            border-spacing: 0 .85rem !important;
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+
+        .fi-ta thead {
+            display: none !important;
+        }
+
+        .fi-ta tbody,
+        .fi-ta tr,
+        .fi-ta td {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        .fi-ta tr {
+            background: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgb(15 23 42 / .08);
+            overflow: hidden;
+            padding: .75rem;
+        }
+
+        .fi-ta td {
+            border: 0 !important;
+            padding: .25rem 0 !important;
+        }
+
+        .fi-ta td:first-child {
+            padding-bottom: .75rem !important;
+        }
+
+        .fi-ta td:first-child img {
+            aspect-ratio: 1 / 1;
+            border-radius: .9rem;
+            height: auto !important;
+            max-height: none !important;
+            object-fit: cover;
+            width: 100% !important;
+        }
+
+        .fi-ta td:nth-child(2) {
+            font-size: 1.1rem;
+            font-weight: 800;
+            line-height: 1.25;
+        }
+
+        .fi-ta-actions,
+        .fi-ta-actions .fi-ac {
+            width: 100%;
+        }
+
+        .fi-ta-actions .fi-btn,
+        .fi-ta-actions a {
+            justify-content: center;
+            width: 100%;
+        }
+
         [data-project-location-picker] {
             gap: .75rem !important;
         }
 
-        [data-project-location-picker] [x-ref="map"] {
+        [data-project-location-picker][data-expanded="false"] [x-ref="map"] {
             height: 16rem !important;
             min-height: 16rem !important;
         }

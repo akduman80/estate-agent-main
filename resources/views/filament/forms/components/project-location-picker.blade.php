@@ -19,6 +19,8 @@
             defaultLatitude: 37.0742,
             defaultLongitude: 36.2478,
         })"
+        x-bind:data-expanded="expanded ? 'true' : 'false'"
+        x-on:keydown.escape.window="expanded = false; window.setTimeout(() => map?.invalidateSize(), 150)"
         class="space-y-3"
         data-project-location-picker
     >
@@ -37,6 +39,16 @@
                 <span x-text="locating ? 'Konum alınıyor…' : 'Konumumu kullan'"></span>
             </button>
         </div>
+
+        <button
+            type="button"
+            x-on:click="toggleExpanded()"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm font-bold text-primary-700 shadow-sm transition hover:bg-primary-100 dark:border-primary-500/30 dark:bg-primary-500/10 dark:text-primary-300"
+        >
+            <x-heroicon-o-arrows-pointing-out x-show="! expanded" class="h-5 w-5" />
+            <x-heroicon-o-arrows-pointing-in x-show="expanded" class="h-5 w-5" />
+            <span x-text="expanded ? 'Haritayı küçült' : 'Haritayı tam ekran yap'"></span>
+        </button>
 
         <div
             x-ref="map"

@@ -159,13 +159,15 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\ImageColumn::make('cover_image')->label('Görsel')->disk('public'),
+            Tables\Columns\ImageColumn::make('cover_image')->label('Görsel')->disk('public')->square()->size(96),
             Tables\Columns\TextColumn::make('title')->label('Proje')->searchable()->sortable(),
             Tables\Columns\TextColumn::make('developer_name')->label('Müteahhit')->searchable(),
             Tables\Columns\TextColumn::make('status')->label('Durum')->badge(),
             Tables\Columns\IconColumn::make('is_featured')->label('Öne çıkan')->boolean(),
             Tables\Columns\IconColumn::make('is_published')->label('Yayında')->boolean(),
-        ])->actions([Tables\Actions\EditAction::make()])
+        ])
+            ->recordUrl(fn (Project $record): string => static::getUrl('edit', ['record' => $record]))
+            ->actions([Tables\Actions\EditAction::make()])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
     }
 

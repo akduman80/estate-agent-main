@@ -24,6 +24,8 @@ class ProjectsAppTest extends TestCase
             ->assertSee('/pwa/projects.webmanifest', false)
             ->assertSee('zydProjectMobileToolsLoaded', false)
             ->assertSee('padding-left: .75rem', false)
+            ->assertSee('border-spacing: 0 .85rem', false)
+            ->assertSee('overflow-x: visible', false)
             ->assertDontSee("Projeler App'ini Telefona Yükle");
     }
 
@@ -70,7 +72,9 @@ class ProjectsAppTest extends TestCase
             ->assertOk()
             ->assertSee('data-project-location-picker', false)
             ->assertSee('leaflet@1.9.4/dist/leaflet.js', false)
-            ->assertSee('window.projectLocationPicker', false);
+            ->assertSee('window.projectLocationPicker', false)
+            ->assertSee('Haritayı tam ekran yap')
+            ->assertSee('data-expanded', false);
     }
 
     private function supervisor(): User

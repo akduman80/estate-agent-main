@@ -4,6 +4,21 @@
 ]))
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        [data-project-location-picker][data-expanded="true"] {
+            background: rgb(249 250 251);
+            inset: 0;
+            overflow: auto;
+            padding: 1rem;
+            position: fixed;
+            z-index: 9999;
+        }
+
+        [data-project-location-picker][data-expanded="true"] [x-ref="map"] {
+            height: calc(100dvh - 11rem) !important;
+            min-height: 28rem !important;
+        }
+    </style>
     <script>
         window.projectLocationPicker = (config) => ({
             map: null,
@@ -12,6 +27,7 @@
             longitude: config.initialLongitude === null ? null : Number(config.initialLongitude),
             locating: false,
             locationError: '',
+            expanded: false,
 
             init() {
                 const hasLocation = Number.isFinite(this.latitude) && Number.isFinite(this.longitude);
@@ -36,6 +52,11 @@
                 this.map?.remove();
                 this.map = null;
                 this.marker = null;
+            },
+
+            toggleExpanded() {
+                this.expanded = ! this.expanded;
+                window.setTimeout(() => this.map?.invalidateSize(), 150);
             },
 
             placeMarker(latitude, longitude, updateState = true) {
