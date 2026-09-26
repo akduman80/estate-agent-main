@@ -32,6 +32,10 @@ class AdminPanelProvider extends PanelProvider
                 fn () => view('partials.pwa', ['pwaAdmin' => true]),
             )
             ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn () => view('filament.project-location-picker-assets'),
+            )
+            ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
                 fn () => view('filament.admin.typography'),
             )

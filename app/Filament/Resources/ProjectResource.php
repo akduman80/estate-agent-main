@@ -6,6 +6,8 @@ use App\Filament\Resources\ProjectResource\Pages;
 use App\Models\Project;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
@@ -41,8 +43,13 @@ class ProjectResource extends Resource
                 Forms\Components\TextInput::make('city')->label('İl'),
                 Forms\Components\TextInput::make('district')->label('İlçe'),
                 Forms\Components\TextInput::make('neighborhood')->label('Mahalle'),
-                Forms\Components\TextInput::make('latitude')->label('Enlem')->numeric(),
-                Forms\Components\TextInput::make('longitude')->label('Boylam')->numeric(),
+                Hidden::make('latitude')->required(),
+                Hidden::make('longitude')->required(),
+                ViewField::make('location_picker')
+                    ->label('Proje konumu')
+                    ->view('filament.forms.components.project-location-picker')
+                    ->dehydrated(false)
+                    ->columnSpanFull(),
                 FileUpload::make('cover_image')->label('Kapak görseli')->image()->disk('public')
                     ->directory('projects')->imageEditor()->imageCropAspectRatio('4:3')->columnSpanFull(),
                 FileUpload::make('gallery_images')
