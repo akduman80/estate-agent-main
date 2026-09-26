@@ -9,6 +9,7 @@ use App\Filament\Pages\Auth\Login;
 use App\Models\PhoneOtpCode;
 use App\Models\Setting;
 use App\Models\User;
+use Database\Seeders\UserSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -121,6 +122,59 @@ class LoginTwoFactorTest extends TestCase
         $this->assertAuthenticatedAs($user->refresh());
         $this->assertNotNull($user->email_verified_at);
         $this->assertDatabaseCount('phone_otp_codes', 0);
+    }
+
+    public function test_supervisor_role_can_login_without_phone_or_otp(): void
+    {
+        $sender = new class implements PhoneOtpSender
+        {
+            public bool $called = false;
+
+            public function send(string $phone, string $code): void
+            {
+                $this->called = true;
+            }
+        };
+        $this->app->instance(PhoneOtpSender::class, $sender);
+        $user = User::factory()->create([
+            'email' => 'supervisor@example.com',
+            'phone' => null,
+            'password' => Hash::make('GucluSifre123'),
+            'role' => UserRole::SUPERVISOR,
+            'account_status' => AccountStatus::ACTIVE,
+            'email_verified_at' => now(),
+            'two_factor_enabled' => true,
+        ]);
+
+        Filament::setCurrentPanel(Filament::getPanel('portal'));
+
+        Livewire::test(Login::class)
+            ->fillForm([
+                'email' => $user->email,
+                'password' => 'GucluSifre123',
+                'remember' => false,
+            ])
+            ->call('authenticate')
+            ->assertRedirect('/admin');
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertFalse($sender->called);
+        $this->assertDatabaseCount('phone_otp_codes', 0);
+    }
+
+    public function test_user_seeder_explicitly_disables_supervisor_otp(): void
+    {
+        User::factory()->create([
+            'email' => 'admin@admin.com',
+            'role' => UserRole::SUPERVISOR,
+            'two_factor_enabled' => true,
+        ]);
+
+        $this->seed(UserSeeder::class);
+
+        $supervisor = User::query()->where('email', 'admin@admin.com')->firstOrFail();
+        $this->assertSame(UserRole::SUPERVISOR, $supervisor->role);
+        $this->assertFalse($supervisor->two_factor_enabled);
     }
 
     public function test_user_can_enable_and_disable_two_factor_with_current_password(): void

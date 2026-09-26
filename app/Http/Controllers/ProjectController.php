@@ -4,22 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $projects = Project::query()
-            ->with('images')
+        $filters = $request->validate([
+            'city' => ['nullable', 'string', 'max:255'],
+            'district' => ['nullable', 'string', 'max:255'],
+            'neighborhood' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $publishedProjects = Project::query()->published();
+        $filterOptions = [
+            'cities' => (clone $publishedProjects)->whereNotNull('city')->distinct()->orderBy('city')->pluck('city'),
+            'districts' => (clone $publishedProjects)->whereNotNull('district')->distinct()->orderBy('district')->pluck('district'),
+            'neighborhoods' => (clone $publishedProjects)->whereNotNull('neighborhood')->distinct()->orderBy('neighborhood')->pluck('neighborhood'),
+        ];
+
+        $filteredProjects = Project::query()
             ->published()
+            ->when($filters['city'] ?? null, fn (Builder $query, string $city) => $query->where('city', $city))
+            ->when($filters['district'] ?? null, fn (Builder $query, string $district) => $query->where('district', $district))
+            ->when($filters['neighborhood'] ?? null, fn (Builder $query, string $neighborhood) => $query->where('neighborhood', $neighborhood));
+
+        $projects = (clone $filteredProjects)
+            ->with('images')
             ->orderByDesc('is_featured')
             ->latest('published_at')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
-        $mapProjects = Project::query()
+        $mapProjects = (clone $filteredProjects)
             ->with('images')
-            ->published()
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->get()
@@ -29,7 +49,14 @@ class ProjectController extends Controller
                 'summary' => $project->summary,
                 'latitude' => (float) $project->latitude,
                 'longitude' => (float) $project->longitude,
-                'image_url' => $project->cover_image ? Storage::disk('public')->url($project->cover_image) : null,
+                'image_urls' => collect([$project->cover_image])
+                    ->merge($project->images->pluck('image_path'))
+                    ->filter()
+                    ->unique()
+                    ->map(fn (string $path): string => Storage::disk('public')->url($path))
+                    ->values(),
+                'video_url' => $project->video_path ? Storage::disk('public')->url($project->video_path) : null,
+                'youtube_id' => $project->youtube_video_id,
                 'url' => route('projects.show', $project),
             ])
             ->values();
@@ -37,7 +64,8 @@ class ProjectController extends Controller
         return view('projects.index', [
             'projects' => $projects,
             'mapProjects' => $mapProjects,
-            'googleMapsKey' => config('services.google_maps.browser_key'),
+            'filterOptions' => $filterOptions,
+            'filters' => $filters,
         ]);
     }
 

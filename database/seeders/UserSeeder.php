@@ -24,6 +24,7 @@ class UserSeeder extends Seeder
                 'district' => 'Merkez',
                 'password' => Hash::make(env('SEED_ADMIN_PASSWORD', 'LocalAdmin123!')),
                 'role' => UserRole::SUPERVISOR,
+                'two_factor_enabled' => false,
                 'email_verified_at' => now(),
                 'account_status' => AccountStatus::ACTIVE,
             ]

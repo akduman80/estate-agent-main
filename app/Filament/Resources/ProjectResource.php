@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Models\Project;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -41,10 +43,71 @@ class ProjectResource extends Resource
                 Forms\Components\TextInput::make('neighborhood')->label('Mahalle'),
                 Forms\Components\TextInput::make('latitude')->label('Enlem')->numeric(),
                 Forms\Components\TextInput::make('longitude')->label('Boylam')->numeric(),
-                Forms\Components\FileUpload::make('cover_image')->label('Kapak görseli')->image()->disk('public')
+                FileUpload::make('cover_image')->label('Kapak görseli')->image()->disk('public')
                     ->directory('projects')->imageEditor()->imageCropAspectRatio('4:3')->columnSpanFull(),
+                FileUpload::make('gallery_images')
+                    ->label('Proje fotoğrafları')
+                    ->helperText('Birden fazla fotoğraf seçebilirsiniz. Sürükleyerek sıralayabilirsiniz; kapak görseli slaytta ilk sırada gösterilir.')
+                    ->multiple()
+                    ->image()
+                    ->disk('public')
+                    ->directory('projects/gallery')
+                    ->maxFiles(20)
+                    ->maxSize(15360)
+                    ->reorderable()
+                    ->imageEditor()
+                    ->dehydrated(false)
+                    ->loadStateFromRelationshipsUsing(function (FileUpload $component, Project $record): void {
+                        $component->state($record->images()->pluck('image_path')->all());
+                    })
+                    ->saveRelationshipsUsing(function (Project $record, $state): void {
+                        if (! is_array($state)) {
+                            return;
+                        }
+
+                        $record->images()->delete();
+
+                        foreach (array_values($state) as $index => $path) {
+                            $record->images()->create([
+                                'image_path' => $path,
+                                'sort_order' => $index,
+                            ]);
+                        }
+                    })
+                    ->columnSpanFull(),
                 Forms\Components\Textarea::make('summary')->label('Kısa açıklama')->rows(3)->columnSpanFull(),
                 Forms\Components\RichEditor::make('content')->label('Proje detayları')->columnSpanFull(),
+            ])->columns(2),
+            Forms\Components\Section::make('Proje videosu')->schema([
+                FileUpload::make('video_path')
+                    ->label('Video dosyası')
+                    ->helperText(fn (): string => 'En fazla '.((int) config('projects.video.max_size_kb') / 1024).' MB. Yalnızca MP4 veya WebM yükleyin. Telefonda hızlı açılması için 1080p ve kısa video önerilir.')
+                    ->disk('public')
+                    ->directory('projects/videos')
+                    ->acceptedFileTypes(config('projects.video.mime_types'))
+                    ->maxSize(config('projects.video.max_size_kb'))
+                    ->openable()
+                    ->downloadable()
+                    ->prohibited(fn (Get $get): bool => filled($get('video_url')))
+                    ->validationMessages([
+                        'prohibited' => 'Video dosyası ile YouTube bağlantısından yalnızca birini kullanın.',
+                    ]),
+                Forms\Components\TextInput::make('video_url')
+                    ->label('YouTube video bağlantısı')
+                    ->placeholder('https://www.youtube.com/watch?v=...')
+                    ->helperText('Dosya yüklemek istemiyorsanız YouTube bağlantısı ekleyin. Video dosyası ve YouTube bağlantısından yalnızca birini kullanın.')
+                    ->url()
+                    ->prohibited(fn (Get $get): bool => filled($get('video_path')))
+                    ->validationMessages([
+                        'prohibited' => 'Video dosyası ile YouTube bağlantısından yalnızca birini kullanın.',
+                    ])
+                    ->rules([
+                        fn (): \Closure => function (string $attribute, mixed $value, \Closure $fail): void {
+                            if (filled($value) && ! Project::youtubeVideoIdFromUrl((string) $value)) {
+                                $fail('Geçerli bir YouTube video bağlantısı girin.');
+                            }
+                        },
+                    ]),
             ])->columns(2),
             Forms\Components\Section::make('Yayın')->schema([
                 Forms\Components\Toggle::make('is_featured')->label('Ana sayfada öne çıkar')->default(false),

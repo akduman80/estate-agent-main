@@ -9,6 +9,52 @@ document.addEventListener('DOMContentLoaded', () => {
         button.setAttribute('aria-expanded', String(! menu?.classList.contains('hidden')));
     });
 
+    document.querySelectorAll('[data-project-card-gallery]').forEach((gallery) => {
+        const track = gallery.querySelector('[data-project-card-track]');
+        const slides = track ? [...track.children] : [];
+        const counter = gallery.querySelector('[data-project-card-counter]');
+
+        if (! track || slides.length < 2) return;
+
+        let currentIndex = 0;
+        let scrollFrame = null;
+
+        const syncVideo = () => {
+            slides.forEach((slide, index) => {
+                const video = slide.querySelector('[data-project-card-video]');
+                if (! video) return;
+
+                const active = index === currentIndex;
+                if (video.tagName === 'VIDEO' && ! active) video.pause();
+                if (video.tagName === 'IFRAME') {
+                    if (active && ! video.src) video.src = video.dataset.videoSrc;
+                    if (! active && video.src) video.removeAttribute('src');
+                }
+            });
+        };
+
+        const updateCounter = () => {
+            currentIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+            if (counter) counter.textContent = `${currentIndex + 1} / ${slides.length}`;
+            syncVideo();
+        };
+
+        const showSlide = (index) => {
+            currentIndex = (index + slides.length) % slides.length;
+            track.scrollTo({ left: track.clientWidth * currentIndex, behavior: 'smooth' });
+            if (counter) counter.textContent = `${currentIndex + 1} / ${slides.length}`;
+            syncVideo();
+        };
+
+        gallery.querySelector('[data-project-card-previous]')?.addEventListener('click', () => showSlide(currentIndex - 1));
+        gallery.querySelector('[data-project-card-next]')?.addEventListener('click', () => showSlide(currentIndex + 1));
+        track.addEventListener('scroll', () => {
+            window.cancelAnimationFrame(scrollFrame);
+            scrollFrame = window.requestAnimationFrame(updateCounter);
+        }, { passive: true });
+        syncVideo();
+    });
+
     document.querySelectorAll('[data-location-selects]').forEach((container) => {
         const citySelect = container.querySelector('[data-city-select]');
         const districtSelect = container.querySelector('[data-district-select]');

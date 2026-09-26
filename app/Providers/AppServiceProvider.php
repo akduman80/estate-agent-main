@@ -31,6 +31,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(DatabaseMailConfigurator $mailConfigurator): void
     {
+        config()->set('livewire.temporary_file_upload.rules', [
+            'required',
+            'file',
+            'max:'.config('projects.video.max_size_kb'),
+        ]);
+
         $mailConfigurator->apply();
 
         ResetPassword::createUrlUsing(fn ($user, string $token): string => route('password.reset', [

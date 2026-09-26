@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             ListingSeeder::class,
             ListingLimitSeeder::class,
             PostSeeder::class,
+            ProjectSeeder::class,
         ]);
     }
 }

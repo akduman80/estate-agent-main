@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Enums\UserRole;
 use App\Models\Setting;
+use App\Models\User;
 
 class OtpFeatureService
 {
@@ -19,6 +20,10 @@ class OtpFeatureService
 
     public function isExempt(User $user): bool
     {
+        if ($user->role === UserRole::SUPERVISOR) {
+            return true;
+        }
+
         return in_array(
             mb_strtolower(trim((string) $user->email)),
             array_map('mb_strtolower', config('security.otp.exempt_emails', [])),
