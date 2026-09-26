@@ -184,19 +184,53 @@
             field.insertAdjacentElement('afterend', button);
         });
 
-        document.querySelectorAll('input[type="file"][capture]').forEach((field) => {
-            if (field.dataset.zydCameraReady || field.disabled) return;
-            field.dataset.zydCameraReady = 'true';
+        document.querySelectorAll('.filepond--root').forEach((filePond) => {
+            if (filePond.dataset.zydCameraReady) return;
 
+            const field = filePond.querySelector('input[type="file"]');
+            if (! field || field.disabled) return;
+
+            filePond.dataset.zydCameraReady = 'true';
             const accept = field.getAttribute('accept') || '';
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'zyd-camera-button';
             button.textContent = accept.includes('video') ? 'Video çek' : 'Kamerayı aç';
-            button.addEventListener('click', () => field.click());
+            button.addEventListener('click', () => {
+                const cameraInput = document.createElement('input');
+                cameraInput.type = 'file';
+                cameraInput.accept = accept || (button.textContent === 'Video çek' ? 'video/*' : 'image/*');
+                cameraInput.capture = 'environment';
+                cameraInput.style.display = 'none';
 
-            const filePond = field.closest('.filepond--root');
-            (filePond || field).insertAdjacentElement('afterend', button);
+                cameraInput.addEventListener('change', () => {
+                    const files = Array.from(cameraInput.files || []);
+                    if (! files.length) {
+                        cameraInput.remove();
+                        return;
+                    }
+
+                    const pond = window.FilePond?.find?.(filePond);
+
+                    if (pond?.addFiles) {
+                        pond.addFiles(files);
+                    } else if (pond?.addFile && files[0]) {
+                        pond.addFile(files[0]);
+                    } else {
+                        const transfer = new DataTransfer();
+                        files.forEach((file) => transfer.items.add(file));
+                        field.files = transfer.files;
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+
+                    cameraInput.remove();
+                }, { once: true });
+
+                document.body.appendChild(cameraInput);
+                cameraInput.click();
+            });
+
+            filePond.insertAdjacentElement('afterend', button);
         });
     };
 
