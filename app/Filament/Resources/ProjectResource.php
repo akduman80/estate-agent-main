@@ -76,7 +76,7 @@ class ProjectResource extends Resource
                 FileUpload::make('cover_image')->label('Kapak görseli')->image()->disk('public')
                     ->directory('projects')->imageEditor()->imageCropAspectRatio('4:3')
                     ->helperText('Telefonda kamerayla yeni fotoğraf çekebilir veya galeriden seçebilirsiniz.')
-                    ->extraInputAttributes(['accept' => 'image/*'])
+                    ->extraInputAttributes(['accept' => 'image/*', 'capture' => 'environment'])
                     ->columnSpanFull(),
                 FileUpload::make('gallery_images')
                     ->label('Proje fotoğrafları')
@@ -89,7 +89,7 @@ class ProjectResource extends Resource
                     ->maxSize(15360)
                     ->reorderable()
                     ->imageEditor()
-                    ->extraInputAttributes(['accept' => 'image/*'])
+                    ->extraInputAttributes(['accept' => 'image/*', 'capture' => 'environment'])
                     ->dehydrated(false)
                     ->loadStateFromRelationshipsUsing(function (FileUpload $component, Project $record): void {
                         $component->state($record->images()->pluck('image_path')->all());
@@ -119,7 +119,7 @@ class ProjectResource extends Resource
                     ->disk('public')
                     ->directory('projects/videos')
                     ->acceptedFileTypes(config('projects.video.mime_types'))
-                    ->extraInputAttributes(['accept' => 'video/*'])
+                    ->extraInputAttributes(['accept' => 'video/*', 'capture' => 'environment'])
                     ->maxSize(config('projects.video.max_size_kb'))
                     ->openable()
                     ->downloadable()

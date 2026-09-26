@@ -22,6 +22,27 @@
     }
     @keyframes zyd-speech-pulse { 50% { opacity: .55; } }
 
+    .zyd-camera-button {
+        align-items: center;
+        background: rgb(17 24 39);
+        border: 0;
+        border-radius: .9rem;
+        color: white;
+        cursor: pointer;
+        display: inline-flex;
+        font-size: .95rem;
+        font-weight: 800;
+        justify-content: center;
+        margin-top: .75rem;
+        min-height: 2.85rem;
+        padding: .7rem 1rem;
+        width: 100%;
+    }
+
+    .zyd-camera-button:hover {
+        background: rgb(31 41 55);
+    }
+
     @media (max-width: 768px) {
         .fi-main {
             padding-left: .75rem !important;
@@ -103,7 +124,6 @@
     window.zydProjectMobileToolsLoaded = true;
 
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (! Recognition) return;
 
     let activeRecognition = null;
     let activeButton = null;
@@ -148,7 +168,7 @@
     };
 
     const enhanceFields = () => {
-        document.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach((field) => {
+        if (Recognition) document.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach((field) => {
             if (field.dataset.zydSpeechReady || field.disabled || field.readOnly) return;
             if (field.closest('[role="dialog"]') && ! field.closest('.fi-fo-field-wrp')) return;
             field.dataset.zydSpeechReady = 'true';
@@ -162,6 +182,21 @@
             button.textContent = '🎙️';
             button.addEventListener('click', () => startDictation(field, button));
             field.insertAdjacentElement('afterend', button);
+        });
+
+        document.querySelectorAll('input[type="file"][capture]').forEach((field) => {
+            if (field.dataset.zydCameraReady || field.disabled) return;
+            field.dataset.zydCameraReady = 'true';
+
+            const accept = field.getAttribute('accept') || '';
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'zyd-camera-button';
+            button.textContent = accept.includes('video') ? 'Video çek' : 'Kamerayı aç';
+            button.addEventListener('click', () => field.click());
+
+            const filePond = field.closest('.filepond--root');
+            (filePond || field).insertAdjacentElement('afterend', button);
         });
     };
 

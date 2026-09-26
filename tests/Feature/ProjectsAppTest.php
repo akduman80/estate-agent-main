@@ -73,6 +73,9 @@ class ProjectsAppTest extends TestCase
             ->assertSee('leaflet@1.9.4/dist/leaflet.js', false)
             ->assertSee('window.projectLocationPicker', false)
             ->assertSee('Haritayı tam ekran yap')
+            ->assertSee('Kamerayı aç')
+            ->assertSee('Video çek')
+            ->assertSee('zyd-camera-button', false)
             ->assertSee('data-expanded', false);
     }
 

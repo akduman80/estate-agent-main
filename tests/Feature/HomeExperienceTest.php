@@ -230,12 +230,18 @@ class HomeExperienceTest extends TestCase
             ->assertFormFieldExists('city', fn ($field): bool => $field instanceof Select && $field->isRequired())
             ->assertFormFieldExists('district', fn ($field): bool => $field instanceof Select && $field->isRequired())
             ->assertFormFieldExists('neighborhood', fn ($field): bool => $field instanceof Select)
+            ->assertFormFieldExists('cover_image', function ($field): bool {
+                return $field->getExtraInputAttributes()['capture'] === 'environment';
+            })
             ->assertFormFieldExists('gallery_images', function ($field): bool {
-                return $field->isMultiple() && $field->getMaxFiles() === 20;
+                return $field->isMultiple()
+                    && $field->getMaxFiles() === 20
+                    && $field->getExtraInputAttributes()['capture'] === 'environment';
             })
             ->assertFormFieldExists('video_path', function ($field): bool {
                 return $field->getMaxSize() === config('projects.video.max_size_kb')
-                    && $field->getAcceptedFileTypes() === config('projects.video.mime_types');
+                    && $field->getAcceptedFileTypes() === config('projects.video.mime_types')
+                    && $field->getExtraInputAttributes()['capture'] === 'environment';
             })
             ->assertFormFieldExists('video_url')
             ->fillForm([
