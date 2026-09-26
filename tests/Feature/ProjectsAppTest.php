@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\AccountStatus;
 use App\Enums\UserRole;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -46,6 +47,29 @@ class ProjectsAppTest extends TestCase
             ->assertOk()
             ->assertSee("Projeler App'ini Telefona Yükle")
             ->assertSee('/projeler-app/projects?install=1', false);
+    }
+
+    public function test_projects_app_edit_page_loads_the_location_picker_assets(): void
+    {
+        $supervisor = $this->supervisor();
+        $project = Project::create([
+            'title' => 'Mobil Harita Projesi',
+            'slug' => 'mobil-harita-projesi',
+            'developer_name' => 'ZYD Yapı',
+            'status' => 'construction',
+            'city' => 'Osmaniye',
+            'district' => 'Merkez',
+            'neighborhood' => 'Rahime Hatun',
+            'latitude' => 37.0742,
+            'longitude' => 36.2478,
+        ]);
+
+        $this->actingAs($supervisor)
+            ->get("/projeler-app/projects/{$project->getKey()}/edit")
+            ->assertOk()
+            ->assertSee('data-project-location-picker', false)
+            ->assertSee('leaflet@1.9.4/dist/leaflet.js', false)
+            ->assertSee('window.projectLocationPicker', false);
     }
 
     private function supervisor(): User
