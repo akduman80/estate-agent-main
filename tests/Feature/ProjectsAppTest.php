@@ -23,6 +23,7 @@ class ProjectsAppTest extends TestCase
             ->assertSee('ZYDEMLAK Projeler')
             ->assertSee('/pwa/projects.webmanifest', false)
             ->assertSee('zydProjectMobileToolsLoaded', false)
+            ->assertSee('padding-left: .75rem', false)
             ->assertDontSee("Projeler App'ini Telefona Yükle");
     }
 

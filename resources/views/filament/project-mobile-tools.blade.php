@@ -21,6 +21,57 @@
         color: rgb(194 65 12);
     }
     @keyframes zyd-speech-pulse { 50% { opacity: .55; } }
+
+    @media (max-width: 768px) {
+        .fi-main {
+            padding-left: .75rem !important;
+            padding-right: .75rem !important;
+        }
+
+        .fi-page,
+        .fi-fo-component-ctn,
+        .fi-fo-field-wrp {
+            gap: .75rem !important;
+        }
+
+        .fi-section,
+        .fi-fo-section {
+            border-radius: 1rem !important;
+            margin-left: -.25rem;
+            margin-right: -.25rem;
+        }
+
+        .fi-section-content,
+        .fi-fo-section-content {
+            padding: .85rem !important;
+        }
+
+        .fi-input-wrp,
+        .fi-select-input,
+        .fi-textarea {
+            border-radius: .9rem !important;
+        }
+
+        .fi-input,
+        .fi-select-input,
+        .fi-textarea {
+            font-size: 16px !important;
+            min-height: 2.85rem;
+        }
+
+        .fi-btn {
+            min-height: 2.75rem;
+        }
+
+        [data-project-location-picker] {
+            gap: .75rem !important;
+        }
+
+        [data-project-location-picker] [x-ref="map"] {
+            height: 16rem !important;
+            min-height: 16rem !important;
+        }
+    }
 </style>
 <script>
 (() => {

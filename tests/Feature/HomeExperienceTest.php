@@ -11,6 +11,7 @@ use App\Services\MarketDataService;
 use Database\Seeders\ProjectSeeder;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ViewField;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -226,6 +227,9 @@ class HomeExperienceTest extends TestCase
             ->assertFormFieldExists('location_picker', fn ($field): bool => $field instanceof ViewField)
             ->assertFormFieldExists('latitude', fn ($field): bool => $field instanceof Hidden && $field->isRequired())
             ->assertFormFieldExists('longitude', fn ($field): bool => $field instanceof Hidden && $field->isRequired())
+            ->assertFormFieldExists('city', fn ($field): bool => $field instanceof Select && $field->isRequired())
+            ->assertFormFieldExists('district', fn ($field): bool => $field instanceof Select && $field->isRequired())
+            ->assertFormFieldExists('neighborhood', fn ($field): bool => $field instanceof Select)
             ->assertFormFieldExists('gallery_images', function ($field): bool {
                 return $field->isMultiple() && $field->getMaxFiles() === 20;
             })
@@ -239,6 +243,9 @@ class HomeExperienceTest extends TestCase
                 'slug' => 'cok-fotografli-proje',
                 'developer_name' => 'ZYD Yapı',
                 'status' => 'construction',
+                'city' => 'Osmaniye',
+                'district' => 'Merkez',
+                'neighborhood' => 'Rahime Hatun Mahallesi',
                 'latitude' => 37.0742,
                 'longitude' => 36.2478,
                 'gallery_images' => [
@@ -271,6 +278,9 @@ class HomeExperienceTest extends TestCase
             'slug' => 'video-kaynak-testi',
             'developer_name' => 'ZYD Yapı',
             'status' => 'construction',
+            'city' => 'Osmaniye',
+            'district' => 'Merkez',
+            'neighborhood' => 'Rahime Hatun Mahallesi',
             'latitude' => 37.0742,
             'longitude' => 36.2478,
         ];

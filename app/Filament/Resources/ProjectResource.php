@@ -4,12 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Models\Project;
+use App\Services\TurkeyAddressService;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -40,9 +42,30 @@ class ProjectResource extends Resource
                     'construction' => 'Devam ediyor',
                     'completed' => 'Tamamlandı',
                 ])->default('construction')->required(),
-                Forms\Components\TextInput::make('city')->label('İl'),
-                Forms\Components\TextInput::make('district')->label('İlçe'),
-                Forms\Components\TextInput::make('neighborhood')->label('Mahalle'),
+                Forms\Components\Select::make('city')
+                    ->label('İl')
+                    ->options(TurkeyAddressService::getCities())
+                    ->searchable()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set): void {
+                        $set('district', null);
+                        $set('neighborhood', null);
+                    })
+                    ->required(),
+                Forms\Components\Select::make('district')
+                    ->label('İlçe')
+                    ->options(fn (Get $get): array => TurkeyAddressService::getDistricts($get('city')))
+                    ->searchable()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set): void {
+                        $set('neighborhood', null);
+                    })
+                    ->required(),
+                Forms\Components\Select::make('neighborhood')
+                    ->label('Mahalle / Köy')
+                    ->options(fn (Get $get): array => TurkeyAddressService::getNeighborhoods($get('city'), $get('district')))
+                    ->searchable()
+                    ->placeholder('Mahalle veya köy seçin'),
                 Hidden::make('latitude')->required(),
                 Hidden::make('longitude')->required(),
                 ViewField::make('location_picker')
