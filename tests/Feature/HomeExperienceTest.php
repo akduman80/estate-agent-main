@@ -241,6 +241,7 @@ class HomeExperienceTest extends TestCase
             ->assertFormFieldExists('video_path', function ($field): bool {
                 return $field->getMaxSize() === config('projects.video.max_size_kb')
                     && $field->getAcceptedFileTypes() === config('projects.video.mime_types')
+                    && $field->getMimeTypeMap() === config('projects.video.mime_type_map')
                     && $field->getExtraInputAttributes()['accept'] === 'video/*';
             })
             ->assertFormFieldExists('video_url')

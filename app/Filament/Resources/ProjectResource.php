@@ -119,6 +119,7 @@ class ProjectResource extends Resource
                     ->disk('public')
                     ->directory('projects/videos')
                     ->acceptedFileTypes(config('projects.video.mime_types'))
+                    ->mimeTypeMap(config('projects.video.mime_type_map'))
                     ->extraInputAttributes(['accept' => 'video/*'])
                     ->maxSize(config('projects.video.max_size_kb'))
                     ->openable()
