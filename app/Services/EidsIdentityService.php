@@ -62,12 +62,7 @@ class EidsIdentityService
 
         return [
             'payload' => $payload,
-            'user_code' => data_get($payload, 'kullaniciKodu')
-                ?: data_get($payload, 'KullaniciKodu')
-                ?: data_get($payload, 'kullaniciKod')
-                ?: data_get($payload, 'KullaniciKod')
-                ?: data_get($payload, 'userCode')
-                ?: data_get($payload, 'UserCode'),
+            'user_code' => data_get($payload, 'kullaniciKodu') ?: data_get($payload, 'KullaniciKodu'),
             'error_message' => data_get($payload, 'hataMesaji') ?: data_get($payload, 'islemSonucMesaji'),
             'error_code' => data_get($payload, 'hataKodu') ?: data_get($payload, 'islemSonucKodu'),
         ];

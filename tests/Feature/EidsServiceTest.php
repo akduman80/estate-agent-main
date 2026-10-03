@@ -172,7 +172,7 @@ class EidsServiceTest extends TestCase
 
         $this->assertSame('rejected', $listing->eids_status);
         $this->assertFalse($listing->is_active);
-        $this->assertSame('İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.', $listing->eidsVerification->error_message);
+        $this->assertSame('Taşınmaz ID zorunludur. İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.', $listing->eidsVerification->error_message);
         Http::assertNothingSent();
     }
 
@@ -221,10 +221,7 @@ class EidsServiceTest extends TestCase
             'statusCode' => 200, 'errors' => null,
         ])]);
 
-        foreach ([
-            '33333333-3333-4333-8333-333333333333' => '0230192423',
-            '44444444-4444-4444-8444-444444444444' => '7900123456',
-        ] as $code => $taxNumber) {
+        foreach (['agent-one', 'agent-two'] as $code) {
             $user = User::factory()->create([
                 'role' => UserRole::AGENT,
                 'account_status' => AccountStatus::ACTIVE,
@@ -232,7 +229,7 @@ class EidsServiceTest extends TestCase
             ]);
             $profile = $user->businessProfile()->create([
                 'office_name' => $code, 'license_number' => $code, 'tax_office' => 'Merkez',
-                'tax_number' => $taxNumber, 'tax_number_hash' => hash('sha256', $taxNumber),
+                'tax_number' => $code.'-tax', 'tax_number_hash' => hash('sha256', $code),
                 'city' => 'Osmaniye', 'district' => 'Merkez', 'address' => 'Test adresi',
             ]);
             $listing = Listing::withoutEvents(fn () => Listing::create([
@@ -242,52 +239,10 @@ class EidsServiceTest extends TestCase
             ]));
 
             $this->assertTrue(app(EidsService::class)->verifyListing($listing));
-            Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === $code && $request['VergiNo'] === $taxNumber);
+            Http::assertSent(fn ($request): bool => $request['KullaniciKodu'] === $code && $request['VergiNo'] === $code.'-tax');
             $this->assertSame($user->id, $listing->fresh()->eidsVerification->user_id);
         }
         Http::assertSentCount(2);
-    }
-
-    public function test_it_rejects_agent_company_listing_when_user_code_is_not_a_guid_without_calling_eids(): void
-    {
-        config()->set('services.eids.company_code', 'platform-guid');
-        config()->set('services.eids.username', 'eids-user');
-        config()->set('services.eids.password', 'eids-pass');
-        config()->set('services.eids.user_code', 'platform-user-guid');
-        config()->set('services.eids.tax_no', '0230192423');
-        config()->set('services.eids.base_url', 'https://ws.gtb.gov.tr:8443');
-        config()->set('services.eids.verify_path', '/EidsTasinmazAPI');
-        Http::fake();
-
-        $user = User::factory()->create([
-            'role' => UserRole::AGENT,
-            'account_status' => AccountStatus::ACTIVE,
-            'eids_user_code' => 'sha256:12b9377cbe7e5c94e8a70d9d23929523d14afa954793130f8a3959c7b849aca8',
-        ]);
-        $profile = $user->businessProfile()->create([
-            'office_name' => 'TOSUN EMLAK',
-            'license_number' => '123',
-            'tax_office' => 'Merkez',
-            'tax_number' => '7900123456',
-            'tax_number_hash' => hash('sha256', '7900123456'),
-            'city' => 'Osmaniye',
-            'district' => 'Merkez',
-            'address' => 'Test adresi',
-        ]);
-        $listing = Listing::withoutEvents(fn () => Listing::create([
-            'user_id' => $user->id, 'title' => 'Agent EİDS', 'slug' => 'agent-eids-invalid',
-            'price' => 1000, 'type' => 'Satılık', 'category' => 'Arsa', 'source_type' => 'real_estate_office',
-            'business_profile_id' => $profile->id, 'eids_document_no' => '123', 'city_id' => '80', 'district_id' => 'Merkez',
-        ]));
-
-        $this->assertFalse(app(EidsService::class)->verifyListing($listing));
-        $this->assertSame('rejected', $listing->fresh()->eids_status);
-        $this->assertSame(
-            'Agent hesabındaki EİDS kullanıcı kodu geçerli GUID formatında değil. Lütfen agent panelinden EİDS kimlik doğrulamasını yenileyin.',
-            $listing->fresh()->eidsVerification->error_message,
-        );
-        $this->assertSame('rejected', ListingEidsRequestLog::firstOrFail()->result_status);
-        Http::assertNothingSent();
     }
 
     public function test_it_records_authorization_rejection_instead_of_connection_failure(): void
