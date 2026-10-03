@@ -23,7 +23,7 @@
                     </div>
                     <div class="relative">
                         <div id="project-map" class="h-[420px] w-full bg-slate-100 sm:h-[520px]" role="application" aria-label="Yayındaki projelerin haritası"></div>
-                        <div data-project-map-hint class="pointer-events-none absolute left-3 top-3 max-w-xs rounded-xl border border-orange-400 bg-blue-950/95 px-4 py-3 text-xs leading-5 text-white shadow-lg" style="z-index: 1000">
+                        <div data-project-map-hint class="pointer-events-none absolute left-14 right-3 top-3 max-w-xs rounded-xl border border-orange-400 bg-blue-950/95 px-4 py-3 text-xs leading-5 text-white shadow-lg" style="z-index: 1000">
                             <i class="fa-regular fa-lightbulb mr-1.5 text-amber-300"></i>İşaretçiye dokunarak proje bilgilerini ve detay sayfasını açabilirsiniz.
                         </div>
                     </div>
