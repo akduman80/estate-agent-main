@@ -71,3 +71,13 @@ Kullanıcının açtığı admin oturumunda ayrı `MEDYA KABUL TESTİ 04.10.2026
 Uygulama yükleme önerisi testte İleri düğmesini örttü; öneri kapatıldıktan sonra wizard ilerledi. Bu gözlem genel bir wizard backend hatası olarak değerlendirilmez. Chrome dosya erişim izni kullanıcı tarafından açıldıktan sonra test yüklemeleri yapılabildi.
 
 Kalan kontroller: gerçek Android/iOS cihaz testi ve yetkili EİDS doğrulama/yayın akışı. Test taslağı, sahte taşınmaz değeriyle EİDS'e gönderilmemelidir.
+
+## 4 Ekim 2026 — Android ve gerçek EİDS kontrolü
+
+Kullanıcı, Android cihazındaki medya kabul testinin geçtiğini bildirdi. Bu sonuç kullanıcı tarafından gerçekleştirilen cihaz testidir; ajan tarafından bağımsız cihaz kontrolü yapılmadı. iOS cihaz testi yapılmadı.
+
+Kullanıcının sağladığı gerçek taşınmaz numarası, mevcut ve yayındaki 11 numaralı ilanla eşleşti. Canlı sunucuda uygulamanın mevcut `EidsService::verifyListing()` metodu yeni bir servis çağrısıyla çalıştırıldı; sonuç `VERIFIED` oldu. EİDS kodu değiştirilmedi.
+
+Kontrol DB transaction içinde yapılıp rollback edildi. İlanın bütün ham kolonları çağrı öncesi ve rollback sonrası karşılaştırıldı: `Original listing preserved: YES`. Yayın durumu `approved`, aktiflik `1` olarak korundu. Sorgunun DB güncellemeleri ve sorgu log satırı rollback edildi; yeni doğrulama tarihi ilanda kalıcı olarak değiştirilmedi. Harici servis çağrısı gerçekten yapıldı; rollback harici servis kaydını geri almaz.
+
+Medya kabulü, kullanıcının Android testi ve gerçek EİDS servis sorgusu tamamlandı. Canlıda yeni bir ilanın taslaktan onaya ve yayına geçişi ayrıca denenmedi; mevcut yayındaki ilan bu test için yayından kaldırılmadı. Bu son uçtan uca yayın kontrolü, uygun gerçek bir yeni ilanla normal iş akışında yapılmalıdır. iOS, 200 MB sınırında gerçek HTTP yükleme ve yedekten geri yükleme provası da doğrulanmış kapsamın dışındadır.
