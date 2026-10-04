@@ -57,3 +57,17 @@ PHP 8.3 FPM'de önceki 2M dosya/8M POST tavanları `/etc/php/8.3/fpm/conf.d/99-e
 Sunucuda özel yedek dizini: `/var/backups/estate-listing-media-20261004-105810` (0700). Eski Nginx/PHP ayarları, başarılı MySQL dump'ı (3,5 MB, 0600) ve public medya arşivi (14 MB, 0600) tutuluyor. Medya arşivi listelenerek okunabilirliği doğrulandı; veritabanı geri yükleme provası yapılmadı. Bu veri yedeği otomatik migration sonrası alındı; migration öncesi yedek olduğu iddia edilmez.
 
 Kalan kabul kontrolleri: yetkili panel oturumuyla gerçek yükleme/kaydetme/silme, gerçek Android/iOS dosya seçimi ve yetkili EİDS akışı. Canlı ilan kayıtlarına bu sunucu kontrolünde yazma/silme yapılmadı.
+
+## 4 Ekim 2026 — canlı panel medya kabul testi
+
+Kullanıcının açtığı admin oturumunda ayrı `MEDYA KABUL TESTİ 04.10.2026 — YAYINLAMAYIN` taslağı oluşturuldu (ilan ID 26). Taşınmaz ID `0` yalnızca test değeridir; onaya/yayına gönderilmedi ve EİDS çağrısı yapılmadı. Mevcut ilanlar değiştirilmedi.
+
+- Satılık Daire, Ada 12/Parsel 34 ve Kuzey/Güney cepheleri kaydedilip yeniden açılarak doğrulandı. Cepheler Kuzey/Batı olarak güncellendi ve kalıcı olduğu doğrulandı.
+- İki fotoğraf gerçek HTTP üzerinden yüklendi: 13 KB ve 8.051.497 bayt. Önizleme ve kaldırma düğmeleri yeniden açılan formda çalıştı. Bu test önceki 2 MB PHP sınırının üstündeki yüklemeyi doğrular; 15 MB/200 MB tavanlarının tamamının gerçek HTTP testi değildir.
+- 60,04 saniyelik video frontend'de anlaşılır uyarıyla reddedildi. Gerçek 60 saniyelik video kaydedildi; YouTube bağlantısı birlikte korundu.
+- Kullanıcının test medyasını kalıcı silme onayı sonrası bir fotoğraf kaldırıldı ve video değiştirildi. Yeniden açıldığında aynı ilan ID 26, kalan fotoğrafın aynı dosya yolu, yeni video ve YouTube bağlantısı doğrulandı. Eski fotoğraf/video URL'leri HTTP 404, kalan fotoğraf/yeni video HTTP 200 döndü.
+- Son fotoğraf ve yeni video da kaldırılıp kaydedildi; dosya URL'leri HTTP 404 döndü. Taslak ve test YouTube bağlantısı inceleme için bırakıldı. Mevcut ilan verileri/medyası silinmedi. Tarayıcı hata kaydında test sırasında hata görülmedi.
+
+Uygulama yükleme önerisi testte İleri düğmesini örttü; öneri kapatıldıktan sonra wizard ilerledi. Bu gözlem genel bir wizard backend hatası olarak değerlendirilmez. Chrome dosya erişim izni kullanıcı tarafından açıldıktan sonra test yüklemeleri yapılabildi.
+
+Kalan kontroller: gerçek Android/iOS cihaz testi ve yetkili EİDS doğrulama/yayın akışı. Test taslağı, sahte taşınmaz değeriyle EİDS'e gönderilmemelidir.
