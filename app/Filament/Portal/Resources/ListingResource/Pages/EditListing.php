@@ -12,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 
 class EditListing extends EditRecord
 {
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected static string $resource = ListingResource::class;
 
     protected function getHeaderActions(): array

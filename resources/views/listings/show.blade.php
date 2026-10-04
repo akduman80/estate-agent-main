@@ -1,6 +1,6 @@
 @php
     $images = $listing->images->map(fn ($image) => [
-        'url' => \Illuminate\Support\Facades\Storage::url($image->image_path),
+        'url' => \App\Services\ListingMediaService::publicUrl($image->image_path),
         'alt' => $image->alt_text ?: $listing->title,
     ])->values();
 
@@ -35,14 +35,15 @@
         ['Isıtma', $listing->heating_type, 'fa-temperature-half'],
         ['Eşya Durumu', $listing->furniture_status, 'fa-couch'],
         ['Kullanım Durumu', $listing->usage_status, 'fa-key'],
-        ['Cephe', $listing->facade, 'fa-compass'],
+        ['Cephe', implode(' / ', $listing->selected_facades), 'fa-compass'],
         ['Site Adı', $listing->site_name, 'fa-city'],
         ['İmar Durumu', $listing->zoning_status, 'fa-map'],
         ['Tapu Durumu', $listing->deed_status, 'fa-file-signature'],
         ['Krediye Uygunluk', $listing->credit_eligibility, 'fa-landmark'],
         ['Kimden', $listing->from_who, 'fa-user-tag'],
         ['Takas', $listing->swap_option, 'fa-right-left'],
-        ['Ada / Parsel', collect([$listing->block_number, $listing->parcel_number])->filter()->join(' / ') ?: null, 'fa-border-all'],
+        ['Ada', $listing->block_number, 'fa-border-all'],
+        ['Parsel', $listing->parcel_number, 'fa-border-all'],
         ['Aidat', $listing->dues_price ? \App\Support\ListingDecimal::format($listing->dues_price).' '.$currency : null, 'fa-receipt'],
         ['Depozito', $listing->deposit_price ? \App\Support\ListingDecimal::format($listing->deposit_price).' '.$currency : null, 'fa-wallet'],
     ])->filter(fn ($feature) => filled($feature[1]));
@@ -137,6 +138,16 @@
                         <h2 class="mb-5 text-xl font-extrabold text-blue-950">İlan açıklaması</h2>
                         <div class="listing-description prose max-w-none text-sm leading-7 text-slate-600">{!! \App\Support\ListingDescriptionHtml::render($listing->description) !!}</div>
                     </section>
+
+                    @if($listing->video_path)
+                        <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+                            <h2 class="mb-5 text-xl font-extrabold text-blue-950">İlan videosu</h2>
+                            <video controls playsinline preload="metadata" class="aspect-video w-full rounded-xl bg-slate-950">
+                                <source src="{{ \App\Services\ListingMediaService::publicUrl($listing->video_path) }}">
+                                Tarayıcınız video oynatmayı desteklemiyor.
+                            </video>
+                        </section>
+                    @endif
 
                     @if($youtubeId || $listing->video_url)
                         <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">

@@ -1,0 +1,47 @@
+# İlan ve medya düzenlemesi — uygulama ve dağıtım notları
+
+4 Ekim 2026. Önceki analiz: [ilan-medya-analiz-ve-yol-haritasi.md](ilan-medya-analiz-ve-yol-haritasi.md).
+
+## Uygulanan değişiklikler
+
+- Mevcut Ada/Parsel kolonları Satılık Daire, Müstakil Ev, Ev ve mevcut toplu Konut kategorisinde kullanılabilir. Kategori ayarları değiştirilmedi. Arsa/Tarla davranışı ve EİDS alan kilitleri korundu. Detayda iki değer ayrı gösterilir; `0` boş sayılmaz.
+- Cephe multiple seçime geçirildi. Nullable `facades` JSON alanı kullanılır; null ise eski `facade` tekli değeri okunur. Boş dizi, bütün cephelerin kaldırıldığını ifade eder. Eski özel cephe değerleri seçeneklerden kaybolmaz. Eski kolon/veri silinmez.
+- Fotoğraf önizleme URL’si yerel public disk için panelle aynı origin’i kullanır. Sabit APP_URL üzerinden farklı host/port/HTTPS’e giden önizleme isteği önlenir. Önizleme ağ hatası/timeout görünür hata ile sonlanır; upload hatasında state güncelleme kilidi açılır. Vendor kodu değiştirilmedi.
+- Fotoğraf kayıtları farklarına göre senkronize edilir. Kalan satırların kimlikleri korunur; yalnızca çıkarılanlar silinir. Kapak/sıra güncellenir. Dosya temizliği başarılı transaction commit’inden sonra yapılır; paylaşılan dosyalar ve seed/default görseller korunur. Eksik fiziksel dosya, ilgisiz bir kayıtta DB satırının kendiliğinden silinmesine yol açmaz.
+- Ayrı, tek dosyalı `video_path` alanı eklendi. MP4/H.264 ve WebM/VP8/VP9 desteklenir. Süre sunucuda ffprobe ile doğrulanır. 60 saniye kabul edilir, 60,04 saniye reddedilir. Süre okunamıyorsa dosya kabul edilmez. Tarayıcıda erken süre/boyut uyarısı vardır. Silme/değiştirme, kayıt başarıyla tamamlanana kadar eski videoyu diskten kaldırmaz.
+- YouTube `video_url` alanı ve mevcut gösterimi korunur. Dosya videosuyla birlikte kaydedilebilir; video eklemek linki silmez.
+- Mevcut fotoğraf limitleri: 30 adet, dosya başına 15360 KB. Video boyutu mevcut proje yükleme tavanını varsayılan olarak kullanır: 204800 KB. İlan tavanı `LISTING_VIDEO_MAX_SIZE_KB` ile değiştirilebilir. Frontend kontrollerine ek backend kontrolleri vardır.
+- Yeni kayıt ve düzenleme aynı aktif şemayı kullanır; admin ve portal kapsamındadır. Medya path’lerinin başka ilana ait kayıtlar üzerinden enjekte edilmesi reddedilir.
+
+## Fotoğraf hatasının doğrulanan nedeni
+
+İzole testte panel `127.0.0.1:8097` üzerinden açılırken public disk URL’si sabit `estate-agent.test` adresini kullanıyordu. Yüklü Filament önizleme loader’ı bu URL’ye yaptığı fetch başarısız olunca `TypeError: Failed to fetch` üretiyor; hata callback’i çağrılmadığı için “Loading” ve Abort durumu kalıyordu. Önizleme/silme yönetimi bu nedenle kullanılamıyordu.
+
+Aynı testte düzenlemeden sonra önizleme ve Remove düğmesi açıldı. Hem oluşturma hem düzenlemede çoklu fotoğraf eklendi, bir fotoğraf kaldırıldı, kalan medya kaydedildi ve yeniden açıldı. Production’da aynı nedenin geçerli olduğu ayrıca canlı ağ kayıtlarıyla doğrulanmalıdır.
+
+## Veritabanı ve geri dönüş
+
+Migration: `2026_10_04_000002_add_listing_facades_and_video_path.php`.
+
+Yalnızca nullable `facades` ve `video_path` eklenir. Eski kolonlar veya tablolar düşürülmez; backfill zorunlu değildir. `down()` yeni veriyi korumak için kolonları bırakır; tekrar `up()` çalışması idempotenttir. Uygulama rollback’i sonrası yeniden dağıtımda kolon çakışması olmaz.
+
+Yerel MySQL’de ilgili tablolar JSON olarak özel storage altında yedeklendi; yeni migration tek dosya yolu verilerek uygulandı. Önceki ve sonraki bütün eski alanlar karşılaştırıldı: **13 ilan ve 10 görsel satırı birebir korundu.** Yedek dizini: `storage/app/private/backups/`; yedek dosyası izinleri 0600. Production DB’ye işlem yapılmadı.
+
+## Dağıtımdan önce sunucu kontrolü
+
+1. Production DB ve medya yedeği alınmalı; diğer pending migration’lar da varsa kapsamı ayrı kontrol edilmeli.
+2. `ffprobe` PHP servis kullanıcısı tarafından çalıştırılabilmeli. PATH sorunlarını önlemek için ortamda `LISTING_FFPROBE_BINARY=/usr/bin/ffprobe` gibi gerçek mutlak yol tanımlanması önerilir. Araç yoksa sistem süre kontrolünü atlamaz; video kaydını anlaşılır hata ile reddeder. Kod sunucuda yazılım kurmaz.
+3. MP4/WebM örnekleri staging’de PHP üzerinden doğrulanmalı. MOV/HEVC dosyaları desteklenen formata dönüştürülmeden kabul edilmez; yeni bir transcoding altyapısı eklenmedi.
+4. Video boyut tavanı, PHP-FPM `upload_max_filesize`/`post_max_size`, web sunucusu/proxy body limiti, geçici Livewire tavanı ve timeout’larla uyumlu olmalı. İlan limiti global proje limitinin üstüne çıkarılırsa geçici upload ayrıca sınırlar; global ayarlar bu değişiklikte değiştirilmedi. 200 MB mevcut uygulama tavanıdır, production kapasitesinin doğrulandığı anlamına gelmez.
+5. Yeni migration, kodla birlikte uygulanmalı. Standart deploy akışında migration ve cache yenileme tamamlandıktan sonra panel/detail kontrol edilmeli. JS bağımsız public asset’tir, Vite build gerektirmez; Blade dosya mtime’ı ile cache sürümü verir.
+6. Yetkili staging’de EİDS gerçek bağlantı ve yayın akışı ayrıca kontrol edilmeli. Controller/service/route/middleware/token/verification koduna müdahale edilmedi; bu dosyaların HEAD’e göre farkı boş doğrulandı.
+
+## Doğrulama kapsamı
+
+- Son tek süreçli tam test çalışması: **132 test, 958 assertion başarılı** (34,34 saniye). PHP biçim kontrolü, JavaScript sözdizimi kontrolü ve `git diff --check` başarılı.
+- `ListingMediaWorkflowTest`: iki panelde Satılık Daire/Müstakil Ev oluşturma ve aynı ID ile düzenleme; toplu Konut ayarı; eski/özel/null/boş cephe; mevcut görsel kimlikleri; ekleme/silme; son görseli kaldırma; 30/31 adet ve 15 MB sınırı; başka ilana ait dosya reddi; resmî alan kilitleri; gerçek 60 ve 60,04 saniyelik fixture; desteklenmeyen codec; eksik ffprobe; video değiştirme/silme; hatalı yüklemede eski video; rollback/shared file temizliği; detayda video ve YouTube; migration geri dönüşü ve yeniden uygulanması.
+- Mevcut tüm test paketi, EİDS regresyonları ve proje videosu davranışı da kontrol edilir. HTTP mock kullanan EİDS testleri gerçek servis bağlantısı garantisi değildir.
+- Tarayıcı: izole SQLite veri tabanıyla yeni Satılık Daire oluşturma, iki cephe seçimi, Ada/Parsel, çoklu fotoğraf/tek fotoğraf kaldırma, 60 saniyelik video kaydı, daha uzun videoya uyarı, YouTube’un birlikte saklanması ve aynı ilanı düzenleme doğrulandı.
+- 390×844 mobil görünümde document genişliği ve scroll genişliği ikisi de 390: yatay taşma yok. Bu kontrol gerçek Android/iOS cihaz testi değildir; gerçek telefon dosya seçicisi ve codec davranışı dağıtım kabulünde ayrıca kontrol edilmeli.
+
+Canlı sunucuya dağıtım, gerçek EİDS çağrısı ve gerçek telefon testi bu çalışma sırasında yapılmadı.

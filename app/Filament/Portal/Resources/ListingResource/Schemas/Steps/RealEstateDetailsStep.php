@@ -52,7 +52,7 @@ class RealEstateDetailsStep
 
                 // --- 1. KONUT / EV DETAYLARI (Daire, Müstakil Ev vb. Seçilince Çıkar) ---
                 Grid::make(['default' => 1, 'md' => 3])
-                    ->visible(fn (Get $get) => in_array($get('category'), ['Daire', 'Müstakil Ev', 'İşyeri']))
+                    ->visible(fn (Get $get) => in_array($get('category'), ['Konut', 'Daire', 'Müstakil Ev', 'Ev', 'İşyeri']))
                     ->schema([
                         Select::make('room_count')
                             ->label('Oda Sayısı')
@@ -84,11 +84,17 @@ class RealEstateDetailsStep
                                 'Boş', 'Kiracılı', 'Mülk Sahibi', 'Yapım Aşamasında',
                             ])),
 
-                        Select::make('facade')
+                        Select::make('facades')
                             ->label('Cephe')
-                            ->options(static::getDynamicOptions('options_facade', [
+                            ->multiple()
+                            ->rules(['array'])
+                            ->options(fn (?Listing $record): array => static::getDynamicOptions('options_facade', [
                                 'Kuzey', 'Güney', 'Doğu', 'Batı',
-                            ])),
+                            ]) + array_combine($record?->selected_facades ?? [], $record?->selected_facades ?? []))
+                            ->in(fn (Select $component): array => array_keys($component->getOptions()))
+                            ->afterStateHydrated(function (Select $component, $state, ?Listing $record): void {
+                                $component->state(is_array($state) ? $state : ($record?->selected_facades ?? []));
+                            }),
 
                         TextInput::make('floor_number')
                             ->label('Bulunduğu Kat')
@@ -131,11 +137,19 @@ class RealEstateDetailsStep
                                 'Tarla', 'Konut İmarlı', 'Ticari İmarlı', 'Sanayi İmarlı', 'Bağ & Bahçe', 'Zeytinlik',
                             ])),
 
-                        TextInput::make('block_number')->label('Ada No')->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified'),
-                        TextInput::make('parcel_number')->label('Parsel No')->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified'),
                         TextInput::make('sheet_number')->label('Pafta No'),
                         TextInput::make('kaks_emsal')->label('Kaks (Emsal)')->placeholder('Örn: 0.20 / 0.40'),
                         TextInput::make('gabari')->label('Gabari')->placeholder('Örn: Serbest / 6.50 m'),
+                    ]),
+
+                Grid::make(['default' => 1, 'md' => 2])
+                    ->visible(fn (Get $get): bool => in_array($get('category'), ['Arsa', 'Tarla'], true)
+                        || ($get('type') === 'Satılık' && in_array($get('category'), ['Konut', 'Daire', 'Müstakil Ev', 'Ev'], true)))
+                    ->schema([
+                        TextInput::make('block_number')->label('Ada No')->maxLength(255)
+                            ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified'),
+                        TextInput::make('parcel_number')->label('Parsel No')->maxLength(255)
+                            ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified'),
                     ]),
 
                 // --- DİĞER ORTAK AYARLAR ---

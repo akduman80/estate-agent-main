@@ -14,6 +14,8 @@ use Illuminate\Validation\ValidationException;
 
 class CreateListing extends CreateRecord
 {
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected static string $resource = ListingResource::class;
 
     public function mount(): void

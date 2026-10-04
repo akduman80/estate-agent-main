@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\ListingDecimalCast;
+use App\Observers\ListingMediaObserver;
 use App\Observers\ListingObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[ObservedBy([ListingObserver::class])]
+#[ObservedBy([ListingObserver::class, ListingMediaObserver::class])]
 class Listing extends Model
 {
     protected $fillable = [
@@ -51,6 +52,7 @@ class Listing extends Model
         'district_id',
         'neighborhood_id',
         'video_url',
+        'video_path',
         'is_active',
         'is_featured',
         'error_message',
@@ -67,6 +69,7 @@ class Listing extends Model
         'dues_price',
         'usage_status',
         'facade',
+        'facades',
         'site_name',
         'subcategory',
     ];
@@ -86,7 +89,13 @@ class Listing extends Model
             'published_at' => 'datetime',
             'publication_terms_accepted_at' => 'datetime',
             'immutable_snapshot' => 'array',
+            'facades' => 'array',
         ];
+    }
+
+    public function getSelectedFacadesAttribute(): array
+    {
+        return $this->facades ?? (filled($this->facade) ? [$this->facade] : []);
     }
 
     public function user(): BelongsTo

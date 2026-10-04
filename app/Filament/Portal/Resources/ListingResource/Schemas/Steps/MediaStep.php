@@ -2,52 +2,102 @@
 
 namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 
-use Filament\Forms\Components\Wizard;
+use App\Filament\Forms\Components\ListingMediaUpload;
+use App\Models\Listing;
+use App\Rules\ListingVideo;
+use App\Services\ListingMediaService;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
-use App\Models\Listing;
+use Filament\Forms\Components\View;
+use Filament\Forms\Components\Wizard;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class MediaStep
 {
     public static function make(): Wizard\Step
     {
         return Wizard\Step::make('Görsel ve Video')
-                          ->icon('heroicon-o-photo')
-                          ->description('Fotoğraflar ve tanıtım videosu')
-                          ->schema([
-                              FileUpload::make('uploaded_images')
-                                        ->label('İlan Fotoğrafları')
-                                        ->multiple()
-                                        ->image()
-                                        ->directory('listings')
-                                        ->maxFiles(30)
-                                        ->maxSize(15360)
-                                        ->helperText('En fazla 30 fotoğraf yükleyebilirsiniz. İlk sıradaki fotoğraf kapak görseli olarak kullanılır.')
-                                        ->reorderable()
-                                        ->dehydrated(false)
-                                        ->loadStateFromRelationshipsUsing(function (FileUpload $component, Listing $record) {
-                                            $images = $record->images()->pluck('image_path')->toArray();
-                                            $component->state($images);
-                                        })
-                                        ->saveRelationshipsUsing(function (Listing $record, $state) {
-                                            if (is_array($state)) {
-                                                $record->images()->delete();
+            ->icon('heroicon-o-photo')
+            ->description('Fotoğraflar ve tanıtım videosu')
+            ->schema([
+                View::make('filament.listing-media-tools'),
+                ListingMediaUpload::make('uploaded_images')
+                    ->label('İlan Fotoğrafları')
+                    ->multiple()
+                    ->image()
+                    ->disk('public')
+                    ->directory(fn (): string => 'listings/images/'.auth()->id())
+                    ->maxFiles(config('listings.photos.max_files'))
+                    ->maxSize(config('listings.photos.max_size_kb'))
+                    ->maxParallelUploads(2)
+                    ->helperText('En fazla 30 fotoğraf, fotoğraf başına 15 MB. İlk fotoğraf kapak görselidir.')
+                    ->extraAlpineAttributes([
+                        'x-init' => '$el.addEventListener("FilePond:init", () => window.zydListingMedia.setup($data.pond, $data))',
+                    ])
+                    ->getUploadedFileUsing(fn (string $file): ?array => static::fileInformation($file))
+                    ->fetchFileInformation(false)
+                    ->reorderable()
+                    ->dehydrated(false)
+                    ->loadStateFromRelationshipsUsing(function (FileUpload $component, Listing $record): void {
+                        $component->state($record->images()->pluck('image_path')->all());
+                    })
+                    ->saveRelationshipsUsing(function (Listing $record, $state): void {
+                        if (is_array($state)) {
+                            app(ListingMediaService::class)->syncImages($record, $state);
+                        }
+                    })
+                    ->columnSpanFull(),
+                ListingMediaUpload::make('video_path')
+                    ->label('Video dosyası')
+                    ->maxFiles(1)
+                    ->disk('public')
+                    ->directory(fn (): string => 'listings/videos/'.auth()->id())
+                    ->acceptedFileTypes(config('listings.video.mime_types'))
+                    ->mimeTypeMap(['mp4' => 'video/mp4', 'webm' => 'video/webm'])
+                    ->extraInputAttributes(['accept' => 'video/mp4,video/webm,.mp4,.webm'])
+                    ->maxSize(config('listings.video.max_size_kb'))
+                    ->rules([new ListingVideo])
+                    ->getUploadedFileUsing(fn (string $file): ?array => static::fileInformation($file))
+                    ->fetchFileInformation(false)
+                    ->extraAlpineAttributes([
+                        'x-init' => '$el.addEventListener("FilePond:init", () => window.zydListingMedia.setup($data.pond, $data, '.json_encode([
+                            'maxSeconds' => config('listings.video.max_duration_seconds'),
+                            'maxBytes' => config('listings.video.max_size_kb') * 1024,
+                        ]).'))',
+                    ])
+                    ->helperText(fn (): string => 'En fazla 60 saniye ve '.(config('listings.video.max_size_kb') / 1024).' MB. MP4 (H.264) veya WebM (VP8/VP9). YouTube bağlantısını da kullanabilirsiniz.')
+                    ->openable()
+                    ->dehydrateStateUsing(function ($state, ?Listing $record): ?string {
+                        $path = array_values($state ?? [])[0] ?? null;
+                        if ($path && $path !== $record?->video_path && (
+                            ! str_starts_with($path, 'listings/videos/'.auth()->id().'/')
+                            || str_contains($path, '..')
+                            || ! Storage::disk('public')->exists($path)
+                            || Listing::query()->where('video_path', $path)->exists()
+                        )) {
+                            throw ValidationException::withMessages(['data.video_path' => 'Video yüklemesi doğrulanamadı. Videoyu tekrar seçin.']);
+                        }
 
-                                                foreach (array_values($state) as $index => $path) {
-                                                    $record->images()->create([
-                                                        'image_path' => $path,
-                                                        'is_main'    => $index === 0,
-                                                        'sort_order' => $index,
-                                                    ]);
-                                                }
-                                            }
-                                        })
-                                        ->columnSpanFull(),
+                        return $path;
+                    }),
+                TextInput::make('video_url')
+                    ->label('YouTube Video Linki')
+                    ->placeholder('https://www.youtube.com/watch?v=...')
+                    ->url(),
+            ]);
+    }
 
-                              TextInput::make('video_url')
-                                       ->label('YouTube Video Linki')
-                                       ->placeholder('https://www.youtube.com/watch?v=...')
-                                       ->url(),
-                          ]);
+    private static function fileInformation(string $file): ?array
+    {
+        $disk = Storage::disk('public');
+        $exists = $disk->exists($file);
+
+        return [
+            'name' => basename($file),
+            'size' => $exists ? $disk->size($file) : 0,
+            'type' => $exists ? $disk->mimeType($file) : 'application/octet-stream',
+            'url' => ListingMediaService::publicUrl($file),
+        ];
     }
 }
