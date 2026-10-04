@@ -26,8 +26,8 @@
 
     $currency = $listing->currency === 'TRY' || ! $listing->currency ? 'TL' : $listing->currency;
     $features = collect([
-        ['Brüt Alan', $listing->square_meters ? number_format($listing->square_meters, 0, ',', '.').' m²' : null, 'fa-ruler-combined'],
-        ['Net Alan', $listing->net_square_meters ? number_format($listing->net_square_meters, 0, ',', '.').' m²' : null, 'fa-vector-square'],
+        ['Brüt Alan', $listing->square_meters ? \App\Support\ListingDecimal::format($listing->square_meters).' m²' : null, 'fa-ruler-combined'],
+        ['Net Alan', $listing->net_square_meters ? \App\Support\ListingDecimal::format($listing->net_square_meters).' m²' : null, 'fa-vector-square'],
         ['Oda Sayısı', $listing->room_count, 'fa-door-open'],
         ['Bulunduğu Kat', $listing->floor_number, 'fa-building'],
         ['Kat Sayısı', $listing->total_floors, 'fa-layer-group'],
@@ -43,8 +43,8 @@
         ['Kimden', $listing->from_who, 'fa-user-tag'],
         ['Takas', $listing->swap_option, 'fa-right-left'],
         ['Ada / Parsel', collect([$listing->block_number, $listing->parcel_number])->filter()->join(' / ') ?: null, 'fa-border-all'],
-        ['Aidat', $listing->dues_price ? number_format($listing->dues_price, 0, ',', '.').' '.$currency : null, 'fa-receipt'],
-        ['Depozito', $listing->deposit_price ? number_format($listing->deposit_price, 0, ',', '.').' '.$currency : null, 'fa-wallet'],
+        ['Aidat', $listing->dues_price ? \App\Support\ListingDecimal::format($listing->dues_price).' '.$currency : null, 'fa-receipt'],
+        ['Depozito', $listing->deposit_price ? \App\Support\ListingDecimal::format($listing->deposit_price).' '.$currency : null, 'fa-wallet'],
     ])->filter(fn ($feature) => filled($feature[1]));
 
     $youtubeId = null;
@@ -87,7 +87,7 @@
                     @endif
                 </div>
                 <div class="shrink-0 lg:text-right">
-                    <div class="text-3xl font-extrabold text-orange-400">{{ number_format($listing->price, 0, ',', '.') }} {{ $currency }}</div>
+                    <div class="text-3xl font-extrabold text-orange-400">{{ \App\Support\ListingDecimal::format($listing->price) }} {{ $currency }}</div>
                     <p class="mt-1 text-xs text-slate-400">İlan No: {{ str_pad((string) $listing->getKey(), 8, '0', STR_PAD_LEFT) }}</p>
                 </div>
             </div>

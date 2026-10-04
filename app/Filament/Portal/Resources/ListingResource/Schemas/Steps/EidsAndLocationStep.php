@@ -36,9 +36,12 @@ class EidsAndLocationStep
             TextInput::make('eids_document_no')
                 ->label('Tapu Taşınmaz ID')
                 ->placeholder('Örn: 94536593')
-                ->numeric()
+                ->type('text')
+                ->inputMode('numeric')
+                ->regex('/\A[0-9]+\z/')
+                ->maxLength(255)
+                ->validationMessages(['regex' => 'Taşınmaz ID yalnızca rakamlardan oluşmalıdır.'])
                 ->helperText('EİDS kontrolü “İlanı Onaya Gönder” seçildiğinde yapılır.')
-                ->live(onBlur: true)
                 ->required(),
 
             Placeholder::make('eids_status_summary')

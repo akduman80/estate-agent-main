@@ -8,6 +8,7 @@ use App\Models\AgentConsultant;
 use App\Models\Listing;
 use App\Models\Setting;
 use App\Models\User;
+use App\Rules\ListingDecimalPrecision;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
@@ -93,6 +94,7 @@ class BasicInfoStep
                         TextInput::make('price')
                             ->label('Fiyat (TL)')
                             ->numeric()
+                            ->rules([new ListingDecimalPrecision])
                             ->required()
                             ->suffix('TL'),
                     ]),

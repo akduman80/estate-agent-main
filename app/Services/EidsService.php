@@ -136,7 +136,11 @@ class EidsService
             'FirmaKod' => $this->settings->companyCode(),
             'KullaniciKodu' => $userCode,
             'VergiNo' => $taxNumber,
-            'TasinmazId' => is_numeric($listing->eids_document_no) ? (float) $listing->eids_document_no : $listing->eids_document_no,
+            // Keep the numeric API payload for ordinary IDs without any float conversion.
+            // Leading zeros and IDs outside PHP's integer range remain exact strings.
+            'TasinmazId' => filter_var($listing->eids_document_no, FILTER_VALIDATE_INT) !== false
+                ? (int) $listing->eids_document_no
+                : $listing->eids_document_no,
             'IlanNo' => (string) $listing->id,
         ];
     }

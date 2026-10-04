@@ -24,11 +24,11 @@
             <div class="dot-hr"></div>
 
             <span class="pull-left">
-                <b>Alan :</b> {{ $listing->square_meters ? number_format($listing->square_meters, 0, ',', '.') . 'm²' : 'N/A' }}
+                <b>Alan :</b> {{ $listing->square_meters ? \App\Support\ListingDecimal::format($listing->square_meters) . 'm²' : 'N/A' }}
             </span>
 
             <span class="proerty-price pull-right">
-                ₺ {{ number_format($listing->price, 0, ',', '.') }}
+                ₺ {{ \App\Support\ListingDecimal::format($listing->price) }}
             </span>
 
             <!-- Liste Görünümünde Açılan Detay Açıklaması -->

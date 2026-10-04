@@ -9,6 +9,7 @@ use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\MediaStep;
 use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\RealEstateDetailsStep;
 use App\Models\Listing;
 use App\Models\Setting;
+use App\Rules\ListingDecimalPrecision;
 use App\Services\TurkeyAddressService;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -74,6 +75,7 @@ class ListingFormSchema
                         TextInput::make('price')
                             ->label('Fiyat (TL)')
                             ->numeric()
+                            ->rules([new ListingDecimalPrecision])
                             ->required()
                             ->suffix('TL'),
                     ]),
@@ -106,6 +108,7 @@ class ListingFormSchema
                         TextInput::make('square_meters')
                             ->label('m² (Alan)')
                             ->numeric()
+                            ->rules([new ListingDecimalPrecision])
                             ->suffix('m²'),
 
                         Select::make('deed_status')
@@ -168,6 +171,11 @@ class ListingFormSchema
                 TextInput::make('eids_document_no')
                     ->label('Taşınmaz Numarası / EİDS Belge No')
                     ->placeholder('Örn: 94536593')
+                    ->type('text')
+                    ->inputMode('numeric')
+                    ->regex('/\A[0-9]+\z/')
+                    ->maxLength(255)
+                    ->validationMessages(['regex' => 'Taşınmaz ID yalnızca rakamlardan oluşmalıdır.'])
                     ->required(),
 
                 Grid::make(['default' => 1, 'md' => 3])

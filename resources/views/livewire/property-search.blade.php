@@ -139,7 +139,7 @@
                                             <h5><a href="{{ route('listings.show', $listing->slug) }}">{{ Str::limit($listing->title, 30) }}</a></h5>
                                             <div class="dot-hr"></div>
                                             <span class="pull-left"><b>Alan :</b> {{ $listing->square_meters }}m² </span>
-                                            <span class="proerty-price pull-right">₺{{ number_format($listing->price, 0, ',', '.') }}</span>
+                                            <span class="proerty-price pull-right">₺{{ \App\Support\ListingDecimal::format($listing->price) }}</span>
                                             <div class="property-icon">
                                                 <i class="fa fa-map-marker"></i> {{ $listing->city_name }} / {{ $listing->district_name }}
                                             </div>

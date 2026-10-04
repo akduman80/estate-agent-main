@@ -60,6 +60,7 @@ class EidsServiceTest extends TestCase
 
         $this->assertTrue($result);
         $listing->refresh()->load('eidsVerification');
+        $this->assertSame('94536593', $listing->eids_document_no);
         $this->assertSame('verified', $listing->eids_status);
         $this->assertTrue($listing->is_active);
         $this->assertSame('Osmaniye', $listing->eidsVerification->city);
@@ -96,7 +97,7 @@ class EidsServiceTest extends TestCase
             && $request['FirmaKod'] === '11111111-1111-1111-1111-111111111111'
             && $request['KullaniciKodu'] === '22222222-2222-2222-2222-222222222222'
             && $request['VergiNo'] === '0230192423'
-            && $request['TasinmazId'] === 94536593.0
+            && $request['TasinmazId'] === 94536593
             && $request['IlanNo'] === (string) $listing->id);
     }
 

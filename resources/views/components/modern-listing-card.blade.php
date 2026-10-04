@@ -14,10 +14,10 @@
         @endif
     </a>
     <div class="flex flex-1 flex-col p-4">
-        <div class="mb-1 text-lg font-bold text-orange-600">{{ number_format($listing->price, 0, ',', '.') }} {{ $listing->currency === 'TRY' || ! $listing->currency ? 'TL' : $listing->currency }}</div>
+        <div class="mb-1 text-lg font-bold text-orange-600">{{ \App\Support\ListingDecimal::format($listing->price) }} {{ $listing->currency === 'TRY' || ! $listing->currency ? 'TL' : $listing->currency }}</div>
         <h2 class="line-clamp-2 text-sm font-semibold leading-5 text-slate-800 transition group-hover:text-orange-600"><a href="{{ route('listings.show', $listing->slug) }}">{{ $listing->title }}</a></h2>
         <div class="mt-auto flex items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs text-slate-500">
-            <span><i class="fa-solid fa-ruler-combined mr-1 text-orange-500"></i>{{ $listing->square_meters ? number_format($listing->square_meters, 0, ',', '.').' m²' : '-' }}</span>
+            <span><i class="fa-solid fa-ruler-combined mr-1 text-orange-500"></i>{{ $listing->square_meters ? \App\Support\ListingDecimal::format($listing->square_meters).' m²' : '-' }}</span>
             <span class="truncate"><i class="fa-regular fa-building mr-1 text-orange-500"></i>{{ collect([$listing->room_count, $listing->category])->filter()->join(' · ') }}</span>
         </div>
     </div>

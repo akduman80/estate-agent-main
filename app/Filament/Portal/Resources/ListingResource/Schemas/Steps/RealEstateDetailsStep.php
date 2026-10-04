@@ -4,6 +4,7 @@ namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 
 use App\Models\Listing;
 use App\Models\Setting;
+use App\Rules\ListingDecimalPrecision;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -24,12 +25,14 @@ class RealEstateDetailsStep
                         TextInput::make('square_meters')
                             ->label('m² (Alan)')
                             ->numeric()
+                            ->rules([new ListingDecimalPrecision])
                             ->required()
                             ->suffix('m²'),
 
                         TextInput::make('net_square_meters')
                             ->label('Net m²')
                             ->numeric()
+                            ->rules([new ListingDecimalPrecision])
                             ->suffix('m²'),
 
                         Select::make('deed_status')
@@ -108,11 +111,13 @@ class RealEstateDetailsStep
                         TextInput::make('deposit_price')
                             ->label('Depozito (TL)')
                             ->numeric()
+                            ->rules([new ListingDecimalPrecision])
                             ->suffix('TL'),
 
                         TextInput::make('dues_price')
                             ->label('Aidat (TL)')
                             ->numeric()
+                            ->rules([new ListingDecimalPrecision])
                             ->suffix('TL'),
                     ]),
 

@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Filament\Portal\Resources\ListingResource;
 use App\Models\Listing;
 use App\Models\SiteVisit;
+use App\Support\ListingDecimal;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -37,7 +38,7 @@ class RecentListings extends BaseWidget
                     ->description(fn (Listing $record): string => collect([$record->city_name, $record->district_name])->filter()->join(' / ')),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Fiyat')
-                    ->money('TRY')
+                    ->formatStateUsing(fn ($state): string => ListingDecimal::format($state).' TL')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('eids_status')
                     ->label('EİDS')

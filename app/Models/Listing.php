@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\ListingDecimalCast;
 use App\Observers\ListingObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -73,6 +74,12 @@ class Listing extends Model
     protected function casts(): array
     {
         return [
+            'eids_document_no' => 'string',
+            'price' => ListingDecimalCast::class,
+            'square_meters' => ListingDecimalCast::class,
+            'net_square_meters' => ListingDecimalCast::class,
+            'deposit_price' => ListingDecimalCast::class,
+            'dues_price' => ListingDecimalCast::class,
             'is_active' => 'boolean',
             'submitted_at' => 'datetime',
             'approved_at' => 'datetime',

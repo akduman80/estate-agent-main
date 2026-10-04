@@ -10,6 +10,7 @@ use App\Models\SiteVisit;
 use App\Models\User;
 use App\Services\ListingPublicationService;
 use App\Services\ListingQuotaService;
+use App\Support\ListingDecimal;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -50,7 +51,7 @@ class ListingResource extends Resource
                     ->extraCellAttributes(['style' => 'max-width: 320px; overflow-wrap: anywhere;']),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Fiyat')
-                    ->money('TRY')
+                    ->formatStateUsing(fn ($state): string => ListingDecimal::format($state).' TL')
                     ->sortable()
                     ->width('130px')
                     ->grow(false),
