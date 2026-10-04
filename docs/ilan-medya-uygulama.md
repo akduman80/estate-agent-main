@@ -45,3 +45,15 @@ Yerel MySQL’de ilgili tablolar JSON olarak özel storage altında yedeklendi; 
 - 390×844 mobil görünümde document genişliği ve scroll genişliği ikisi de 390: yatay taşma yok. Bu kontrol gerçek Android/iOS cihaz testi değildir; gerçek telefon dosya seçicisi ve codec davranışı dağıtım kabulünde ayrıca kontrol edilmeli.
 
 Canlı sunucuya dağıtım, gerçek EİDS çağrısı ve gerçek telefon testi bu çalışma sırasında yapılmadı.
+
+## 4 Ekim 2026 — canlı sunucu doğrulaması
+
+Sonraki kontrolde `/var/www/estate-agent` üzerinde `5fd23d2` sürümünün otomatik dağıtıldığı ve yeni migration'ın 17. batch'te uygulandığı doğrulandı. `facades` ve `video_path` kolonları mevcut. Yeni JavaScript dosyasının canlı ve yerel SHA-256 değerleri aynı.
+
+Sunucuda eksik olan ffprobe, Ubuntu'nun resmi deposundan ffmpeg paketiyle kuruldu. `www-data` kullanıcısıyla gerçek uygulama kuralı çalıştırıldı: 60 saniyelik fixture kabul edildi, 60,04 saniyelik fixture reddedildi. Bu kontrol CLI üzerinden servis kullanıcısıyla yapıldı; oturumlu HTTP yükleme testi yerine geçmez.
+
+PHP 8.3 FPM'de önceki 2M dosya/8M POST tavanları `/etc/php/8.3/fpm/conf.d/99-estate-media.ini` ile 200M dosya/210M POST ve 300 saniye input süresi olarak düzenlendi. Nginx'in ilgili site bloğuna 210M body tavanı ve 300 saniye body timeout eklendi. Yapılandırma testleri başarılı; iki servis reload sonrası aktif. Ana sayfa ve portal giriş sayfası HTTP 200 döndü. 200 MB sınırında gerçek HTTP upload henüz denenmedi.
+
+Sunucuda özel yedek dizini: `/var/backups/estate-listing-media-20261004-105810` (0700). Eski Nginx/PHP ayarları, başarılı MySQL dump'ı (3,5 MB, 0600) ve public medya arşivi (14 MB, 0600) tutuluyor. Medya arşivi listelenerek okunabilirliği doğrulandı; veritabanı geri yükleme provası yapılmadı. Bu veri yedeği otomatik migration sonrası alındı; migration öncesi yedek olduğu iddia edilmez.
+
+Kalan kabul kontrolleri: yetkili panel oturumuyla gerçek yükleme/kaydetme/silme, gerçek Android/iOS dosya seçimi ve yetkili EİDS akışı. Canlı ilan kayıtlarına bu sunucu kontrolünde yazma/silme yapılmadı.
