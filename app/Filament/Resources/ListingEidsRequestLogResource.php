@@ -47,7 +47,7 @@ class ListingEidsRequestLogResource extends Resource
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable(),
                 TextColumn::make('operation')->label('İşlem')
-                    ->getStateUsing(fn (ListingEidsRequestLog $record): string => array_key_exists('yetkiKodu', $record->request_payload ?? []) ? 'Kullanıcı Kodu Alma' : 'İlan Yetki Sorgusu'),
+                    ->getStateUsing(fn (ListingEidsRequestLog $record): string => data_get($record->response_payload, 'stage') === 'callback_session_check' ? 'EİDS Dönüş / Oturum Hatası' : (array_key_exists('yetkiKodu', $record->request_payload ?? []) ? 'Kullanıcı Kodu Alma' : 'İlan Yetki Sorgusu')),
                 TextColumn::make('owner_name')->label('Hesap')->searchable()->placeholder('-'),
                 TextColumn::make('business_office_name')->label('Emlak İşletmesi')->searchable()->placeholder('-')->toggleable(),
                 TextColumn::make('listing.title')

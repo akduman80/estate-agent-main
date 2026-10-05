@@ -62,6 +62,10 @@
 
         <p>{{ $message }}</p>
 
+        @if (!empty($retryUrl))
+            <p><a href="{{ $retryUrl }}" style="color: #72e0a2">Hesabıma giriş yap ve EİDS doğrulamasını yeniden başlat</a></p>
+        @endif
+
         @if ($envLine)
             <code>{{ $envLine }}</code>
         @endif

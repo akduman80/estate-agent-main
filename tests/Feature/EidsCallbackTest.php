@@ -134,6 +134,13 @@ class EidsCallbackTest extends TestCase
 
         $response->assertStatus(409);
         $response->assertSee('EİDS işlemi başlatılan oturumla eşleşmedi.');
+        $response->assertSee('Hesabıma giriş yap ve EİDS doğrulamasını yeniden başlat');
+        $log = ListingEidsRequestLog::query()->sole();
+        $this->assertSame('error', $log->result_status);
+        $this->assertSame('callback_session_check', $log->response_payload['stage']);
+        $this->assertSame('AUTH-CODE-789', $log->request_payload['yetkiKodu']);
+        $this->assertNull($log->response_status);
+        $this->assertNull($log->owner_user_id);
         $this->assertNull(Setting::getSecret('eids_user_code'));
         Http::assertNothingSent();
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\UserRole;
+use App\Models\ListingEidsRequestLog;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\EidsIdentityService;
@@ -73,11 +74,28 @@ class EidsCallbackController extends Controller
         }
 
         if (! $accountUser && ! $isPlatformFlow) {
+            ListingEidsRequestLog::create([
+                'endpoint' => $request->url(),
+                'method' => 'GET',
+                'request_payload' => ['yetkiKodu' => $authorizationCode, 'durum' => $status],
+                'result_status' => 'error',
+                'error_message' => 'EİDS callback oturumu bulunamadı. Kullanıcı kodu servisine istek gönderilmedi.',
+                'attempted_at' => now(),
+                'response_payload' => [
+                    'stage' => 'callback_session_check',
+                    'callback_host' => $request->getHost(),
+                    'configured_callback_host' => parse_url($eidsSettings->callbackUrl() ?? '', PHP_URL_HOST),
+                    'session_cookie_present' => $request->cookies->has(config('session.cookie')),
+                    'authenticated' => false,
+                ],
+            ]);
+
             return response()->view('eids.callback', [
                 'status' => 'error',
                 'message' => 'EİDS işlemi başlatılan oturumla eşleşmedi. Lütfen hesabınızla giriş yapıp EİDS doğrulamasını tekrar başlatın.',
                 'userCode' => null,
                 'envLine' => null,
+                'retryUrl' => route('account.eids.start'),
             ], 409);
         }
 
