@@ -98,7 +98,7 @@ class EidsCallbackController extends Controller
         }
 
         try {
-            $result = $eidsIdentityService->requestUserCode($authorizationCode, $gsmNumber, $taxNumber, $accountUser === null);
+            $result = $eidsIdentityService->requestUserCode($authorizationCode, $gsmNumber, $taxNumber, $accountUser === null, $accountUser);
         } catch (Throwable $exception) {
             Log::warning('EİDS kullanıcı kodu sorgusu başarısız.', [
                 'message' => $exception->getMessage(),

@@ -2,8 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
+use App\Models\ListingEidsRequestLog;
+use App\Models\User;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Throwable;
 
 class EidsIdentityService
 {
@@ -24,19 +28,59 @@ class EidsIdentityService
         ?string $gsmNo = null,
         ?string $taxNumber = null,
         bool $usePlatformTaxNumber = true,
+        ?User $accountUser = null,
     ): array {
-        $response = Http::withBasicAuth($this->settings->username(), $this->settings->password())
-            ->acceptJson()
-            ->asJson()
-            ->timeout($this->settings->timeout())
-            ->post($this->userCodeUrl(), [
-                'yetkiKodu' => $authorizationCode,
-                'vergiNo' => $usePlatformTaxNumber ? ($taxNumber ?? $this->settings->platformTaxNumber()) : $taxNumber,
-                'gsmNo' => $gsmNo ?: $this->settings->platformGsmNumber(),
-            ])
-            ->throw();
+        $startedAt = microtime(true);
+        $attemptedAt = now();
+        $endpoint = $this->userCodeUrl();
+        $payload = [
+            'yetkiKodu' => $authorizationCode,
+            'vergiNo' => $usePlatformTaxNumber ? ($taxNumber ?? $this->settings->platformTaxNumber()) : $taxNumber,
+            'gsmNo' => $gsmNo ?: $this->settings->platformGsmNumber(),
+        ];
+        $response = null;
+        $result = null;
+        $errorMessage = null;
+        try {
+            $response = Http::withBasicAuth($this->settings->username(), $this->settings->password())
+                ->acceptJson()
+                ->asJson()
+                ->timeout($this->settings->timeout())
+                ->post($endpoint, $payload);
+            $response->throw();
 
-        return $this->normalizeUserCodeResponse($response);
+            $result = $this->normalizeUserCodeResponse($response);
+
+            return $result;
+        } catch (Throwable $exception) {
+            $errorMessage = $exception->getMessage();
+            throw $exception;
+        } finally {
+            $accountUser?->loadMissing('businessProfile');
+            ListingEidsRequestLog::create([
+                'owner_user_id' => $accountUser?->id,
+                'owner_name' => $accountUser?->name,
+                'owner_role' => $accountUser?->role?->value,
+                'business_profile_id' => $accountUser?->businessProfile?->id,
+                'business_office_name' => $accountUser?->businessProfile?->office_name,
+                'authorization_subject_type' => filled($payload['vergiNo']) ? 'company' : 'person',
+                'eids_identity_context' => $accountUser === null ? 'zydemlak_platform_company' : ($accountUser->role === UserRole::AGENT ? 'agent_company' : 'user_account'),
+                'eids_user_code_source' => $accountUser === null ? 'settings.eids_user_code' : 'users.eids_user_code',
+                'eids_user_code_hash' => filled($result['user_code'] ?? null) ? hash('sha256', $result['user_code']) : null,
+                'tax_number_last4' => filled($payload['vergiNo']) ? substr($payload['vergiNo'], -4) : null,
+                'sent_tax_number' => filled($payload['vergiNo']),
+                'sent_user_code' => false,
+                'endpoint' => $endpoint,
+                'method' => 'POST',
+                'request_payload' => $payload,
+                'response_status' => $response?->status(),
+                'response_payload' => $response ? ($response->json() ?? ['body' => $response->body()]) : null,
+                'result_status' => $errorMessage !== null ? 'error' : (filled($result['user_code'] ?? null) ? 'verified' : 'rejected'),
+                'error_message' => $errorMessage ?? (blank($result['user_code'] ?? null) ? ($result['error_message'] ?? 'EİDS kullanıcı kodu boş döndü.') : null),
+                'duration_ms' => (int) round((microtime(true) - $startedAt) * 1000),
+                'attempted_at' => $attemptedAt,
+            ]);
+        }
     }
 
     public function isConfiguredForSso(): bool

@@ -46,6 +46,10 @@ class ListingEidsRequestLogResource extends Resource
                     ->label('Sorgu Zamanı')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable(),
+                TextColumn::make('operation')->label('İşlem')
+                    ->getStateUsing(fn (ListingEidsRequestLog $record): string => array_key_exists('yetkiKodu', $record->request_payload ?? []) ? 'Kullanıcı Kodu Alma' : 'İlan Yetki Sorgusu'),
+                TextColumn::make('owner_name')->label('Hesap')->searchable()->placeholder('-'),
+                TextColumn::make('business_office_name')->label('Emlak İşletmesi')->searchable()->placeholder('-')->toggleable(),
                 TextColumn::make('listing.title')
                     ->label('İlan')
                     ->searchable()
@@ -200,8 +204,8 @@ class ListingEidsRequestLogResource extends Resource
                                 'missing' => 'Eksik',
                                 default => $state ?: '-',
                             }),
-                        TextEntry::make('owner_name')->label('İlan Sahibi')->placeholder('-'),
-                        TextEntry::make('owner_role')->label('İlan Sahibi Rolü')->placeholder('-'),
+                        TextEntry::make('owner_name')->label('Hesap Sahibi')->placeholder('-'),
+                        TextEntry::make('owner_role')->label('Hesap Rolü')->placeholder('-'),
                         TextEntry::make('listing_source_type')->label('İlan Kaynağı')->placeholder('-'),
                         TextEntry::make('business_office_name')->label('Emlak İşletmesi')->placeholder('-'),
                         TextEntry::make('tax_number_last4')->label('Vergi No Son 4')->placeholder('-'),

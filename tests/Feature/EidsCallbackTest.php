@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\AccountStatus;
 use App\Enums\UserRole;
+use App\Models\ListingEidsRequestLog;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -107,6 +108,15 @@ class EidsCallbackTest extends TestCase
         $response->assertSee('EİDS kimlik doğrulamanız hesabınıza güvenli biçimde kaydedildi.');
         $this->assertSame('agent-user-guid', $agent->fresh()->eids_user_code);
         $this->assertNotNull($agent->fresh()->eids_identity_verified_at);
+        $log = ListingEidsRequestLog::query()->sole();
+        $this->assertSame($agent->id, $log->owner_user_id);
+        $this->assertNull($log->listing_id);
+        $this->assertSame('agent_company', $log->eids_identity_context);
+        $this->assertSame('ZİYADE EMLAK', $log->business_office_name);
+        $this->assertSame(['yetkiKodu' => 'AUTH-CODE-456', 'vergiNo' => '0230192423', 'gsmNo' => '05303607769'], $log->request_payload);
+        $this->assertSame('agent-user-guid', $log->response_payload['kullaniciKodu']);
+        $this->assertSame(200, $log->response_status);
+        $this->assertSame('verified', $log->result_status);
         $this->assertNull(Setting::getSecret('eids_user_code'));
 
         Http::assertSent(fn ($request) => $request['yetkiKodu'] === 'AUTH-CODE-456'
