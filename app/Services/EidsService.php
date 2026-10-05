@@ -35,6 +35,14 @@ class EidsService
             return false;
         }
 
+        if (data_get($requestPayload, 'KullaniciKodu') === '00000000-0000-0000-0000-000000000000') {
+            $message = 'EİDS kullanıcı kodu geçersiz (boş GUID). İlan sahibinin EİDS kimlik doğrulamasını yeniden tamamlayın. Şirket hesabında belirtilen firmayı temsil yetkisi bulunmalıdır.';
+            $this->markAsRejected($listing, [$message]);
+            $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', $message, null, $startedAt, $attemptedAt);
+
+            return false;
+        }
+
         if (blank($listing->eids_document_no) || blank(data_get($requestPayload, 'KullaniciKodu'))) {
             $this->markAsRejected($listing, ['Taşınmaz ID zorunludur. İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.']);
             $this->logRequest($listing, $endpoint, $requestPayload, 'rejected', 'Taşınmaz ID zorunludur. İlan sahibinin panelinden EİDS kimlik doğrulamasını tamamlayın.', null, $startedAt, $attemptedAt);

@@ -95,7 +95,7 @@ class EidsCallbackTest extends TestCase
 
         Http::fake([
             'ws.gtb.gov.tr:8443/EidsApi/Kullanici/GetKullaniciKodu' => Http::response([
-                'kullaniciKodu' => 'agent-user-guid',
+                'kullaniciKodu' => '33333333-3333-3333-3333-333333333333',
                 'hataMesaji' => null,
                 'hataKodu' => null,
             ], 200),
@@ -106,7 +106,7 @@ class EidsCallbackTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('EİDS kimlik doğrulamanız hesabınıza güvenli biçimde kaydedildi.');
-        $this->assertSame('agent-user-guid', $agent->fresh()->eids_user_code);
+        $this->assertSame('33333333-3333-3333-3333-333333333333', $agent->fresh()->eids_user_code);
         $this->assertNotNull($agent->fresh()->eids_identity_verified_at);
         $log = ListingEidsRequestLog::query()->sole();
         $this->assertSame($agent->id, $log->owner_user_id);
@@ -114,7 +114,7 @@ class EidsCallbackTest extends TestCase
         $this->assertSame('agent_company', $log->eids_identity_context);
         $this->assertSame('ZİYADE EMLAK', $log->business_office_name);
         $this->assertSame(['yetkiKodu' => 'AUTH-CODE-456', 'vergiNo' => '0230192423', 'gsmNo' => '05303607769'], $log->request_payload);
-        $this->assertSame('agent-user-guid', $log->response_payload['kullaniciKodu']);
+        $this->assertSame('33333333-3333-3333-3333-333333333333', $log->response_payload['kullaniciKodu']);
         $this->assertSame(200, $log->response_status);
         $this->assertSame('verified', $log->result_status);
         $this->assertNull(Setting::getSecret('eids_user_code'));
@@ -122,6 +122,76 @@ class EidsCallbackTest extends TestCase
         Http::assertSent(fn ($request) => $request['yetkiKodu'] === 'AUTH-CODE-456'
             && $request['vergiNo'] === '0230192423'
             && $request['gsmNo'] === '05303607769');
+    }
+
+    public function test_identity_errors_and_invalid_codes_are_not_saved_as_verified(): void
+    {
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        Setting::putSecret('eids_user_code', '22222222-2222-2222-2222-222222222222');
+        $agent = User::factory()->create([
+            'role' => UserRole::AGENT,
+            'phone' => '05303607769',
+        ]);
+        $payloads = [
+            ['kullaniciKodu' => '00000000-0000-0000-0000-000000000000', 'hataKodu' => 'TB-0003', 'hataMesaji' => 'Belirtilen firmayı temsil yetkisi bulunmamaktadır!'],
+            ['kullaniciKodu' => '00000000-0000-0000-0000-000000000000'],
+            ['kullaniciKodu' => 'not-a-guid'],
+            ['kullaniciKodu' => '33333333-3333-3333-3333-333333333333', 'hataKodu' => 'TB-0003'],
+            ['kullaniciKodu' => '33333333-3333-3333-3333-333333333333', 'hataMesaji' => 'Temsil yetkisi yok'],
+        ];
+        $sequence = Http::sequence();
+        foreach ($payloads as $payload) {
+            $sequence->push($payload, 200);
+        }
+        Http::fake(['*' => $sequence]);
+        foreach ($payloads as $payload) {
+            $this->actingAs($agent)->get('/eids/callback?yetkiKodu=AUTH&durum=Basarili')->assertStatus(422);
+            $this->assertNull($agent->fresh()->eids_user_code);
+            $this->assertNull($agent->fresh()->eids_identity_verified_at);
+            $log = ListingEidsRequestLog::query()->latest('id')->firstOrFail();
+            $this->assertSame('rejected', $log->result_status);
+            $this->assertSame($payload, $log->response_payload);
+            $this->assertNotNull($log->error_message);
+            $this->assertSame('22222222-2222-2222-2222-222222222222', Setting::getSecret('eids_user_code'));
+        }
+    }
+
+    public function test_failed_renewal_preserves_existing_valid_account_and_platform_codes(): void
+    {
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.gsm_no', '905303607769');
+        $existingCode = '22222222-2222-2222-2222-222222222222';
+        Setting::putSecret('eids_user_code', $existingCode);
+        $verifiedAt = now()->startOfSecond();
+        $user = User::factory()->create([
+            'role' => UserRole::SUPERVISOR, 'phone' => '05303607769',
+            'eids_user_code' => $existingCode, 'eids_identity_verified_at' => $verifiedAt,
+        ]);
+        Http::fake(['*' => Http::response([
+            'kullaniciKodu' => '00000000-0000-0000-0000-000000000000',
+            'hataKodu' => 'TB-0003', 'hataMesaji' => 'Belirtilen firmayı temsil yetkisi bulunmamaktadır!',
+        ], 200)]);
+        $this->actingAs($user)->get('/eids/callback?yetkiKodu=AUTH')->assertStatus(422)->assertSee('TB-0003');
+        $this->assertSame($existingCode, $user->fresh()->eids_user_code);
+        $this->assertTrue($verifiedAt->equalTo($user->fresh()->eids_identity_verified_at));
+        $this->withSession(['eids_platform_identity' => true])->get('/eids/callback?yetkiKodu=AUTH')->assertStatus(422);
+        $this->assertSame($existingCode, Setting::getSecret('eids_user_code'));
+    }
+
+    public function test_individual_identity_flow_uses_no_platform_tax_number(): void
+    {
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.tax_no', '0230192423');
+        $code = '44444444-4444-4444-4444-444444444444';
+        $user = User::factory()->create(['role' => UserRole::INDIVIDUAL, 'phone' => '05303607769']);
+        Http::fake(['*' => Http::response(['KullaniciKodu' => $code, 'HataKodu' => null, 'HataMesaji' => null], 200)]);
+        $this->actingAs($user)->get('/eids/callback?yetkiKodu=AUTH')->assertOk();
+        $this->assertSame($code, $user->fresh()->eids_user_code);
+        Http::assertSent(fn ($request) => $request['vergiNo'] === null && $request['gsmNo'] === $user->phone);
+        $this->assertNull(Setting::getSecret('eids_user_code'));
     }
 
     public function test_callback_without_matching_flow_does_not_store_platform_code(): void

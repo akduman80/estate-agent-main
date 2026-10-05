@@ -101,6 +101,31 @@ class EidsServiceTest extends TestCase
             && $request['IlanNo'] === (string) $listing->id);
     }
 
+    public function test_previously_saved_empty_guid_is_rejected_before_contacting_eids(): void
+    {
+        config()->set('services.eids.company_code', 'platform-guid');
+        config()->set('services.eids.username', 'eids-user');
+        config()->set('services.eids.password', 'eids-pass');
+        config()->set('services.eids.user_code', 'valid-platform-code');
+        Http::fake();
+        $user = User::factory()->create([
+            'role' => UserRole::AGENT,
+            'eids_user_code' => '00000000-0000-0000-0000-000000000000',
+            'eids_identity_verified_at' => now(),
+        ]);
+        $listing = Listing::withoutEvents(fn () => Listing::create([
+            'user_id' => $user->id, 'title' => 'Geçersiz kod', 'slug' => 'gecersiz-kod',
+            'price' => 1000, 'type' => 'Satılık', 'category' => 'Arsa', 'source_type' => 'real_estate_office',
+            'eids_document_no' => '123', 'city_id' => '80', 'district_id' => 'Merkez',
+        ]));
+        $this->assertFalse(app(EidsService::class)->verifyListing($listing));
+        $this->assertSame('rejected', $listing->fresh()->eids_status);
+        $this->assertStringContainsString('boş GUID', $listing->fresh()->eidsVerification->error_message);
+        $this->assertSame('rejected', ListingEidsRequestLog::query()->sole()->result_status);
+        $this->assertNull(ListingEidsRequestLog::query()->sole()->response_status);
+        Http::assertNothingSent();
+    }
+
     public function test_it_logs_the_message_when_eids_returns_a_message_instead_of_errors(): void
     {
         config()->set('services.eids.company_code', '11111111-1111-1111-1111-111111111111');

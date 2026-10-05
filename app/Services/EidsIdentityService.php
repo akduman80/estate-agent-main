@@ -7,6 +7,7 @@ use App\Models\ListingEidsRequestLog;
 use App\Models\User;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Throwable;
 
 class EidsIdentityService
@@ -103,12 +104,26 @@ class EidsIdentityService
     private function normalizeUserCodeResponse(Response $response): array
     {
         $payload = $response->json() ?? [];
+        $userCode = data_get($payload, 'kullaniciKodu') ?: data_get($payload, 'KullaniciKodu');
+        $errorCode = data_get($payload, 'hataKodu') ?: data_get($payload, 'HataKodu');
+        $errorMessage = data_get($payload, 'hataMesaji') ?: data_get($payload, 'HataMesaji');
+        $hasError = filled($errorMessage) || (filled($errorCode) && (string) $errorCode !== '0');
+        $validCode = is_string($userCode) && Str::isUuid($userCode)
+            && $userCode !== '00000000-0000-0000-0000-000000000000';
+
+        if ($hasError || ! $validCode) {
+            $userCode = null;
+            $errorMessage = $errorMessage ?: 'EİDS geçerli bir kullanıcı kodu döndürmedi. Kimlik doğrulamasını yeniden başlatın.';
+            if (filled($errorCode)) {
+                $errorMessage .= ' ('.$errorCode.')';
+            }
+        }
 
         return [
             'payload' => $payload,
-            'user_code' => data_get($payload, 'kullaniciKodu') ?: data_get($payload, 'KullaniciKodu'),
-            'error_message' => data_get($payload, 'hataMesaji') ?: data_get($payload, 'islemSonucMesaji'),
-            'error_code' => data_get($payload, 'hataKodu') ?: data_get($payload, 'islemSonucKodu'),
+            'user_code' => $userCode,
+            'error_message' => $errorMessage ?: data_get($payload, 'islemSonucMesaji'),
+            'error_code' => $errorCode ?: data_get($payload, 'islemSonucKodu'),
         ];
     }
 }
