@@ -135,7 +135,7 @@
                     <div class="flex items-center">
                         <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-20 w-auto max-w-52 rounded bg-white object-contain">
                     </div>
-                    <p class="mt-4 text-xs leading-6 text-slate-400">Osmaniye'nin emlak ilan ve haber sitesi. Güvenli, şeffaf ve profesyonel gayrimenkul hizmetleri.</p>
+                    <p class="mt-4 text-xs leading-6 text-slate-400">Osmaniye'nin Emlak İlan ve Haber Sitesi. Güvenli, Şeffaf Ve Profesyonel Gayrimenkul Hizmetleri.</p>
                 </div>
                 <div>
                     <h2 class="mb-4 border-l-2 border-orange-500 pl-2 text-sm font-bold text-white">Hızlı Menü</h2>
