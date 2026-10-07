@@ -29,25 +29,27 @@
                     </article>
                 @endif
                 <article class="home-overview-card home-rayic">
-    <h2 class="home-tool-title">Arsa Rayiç Değeri Sorgulama</h2>
+    <h2 class="home-tool-title">Arsa Rayiç Değeri</h2>
     <div class="home-rayic-body">
         <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
         <p class="home-rayic-location">Osmaniye / Merkez</p>
-        <p>Mahalle, cadde/sokak ve yıl seçerek arsa metrekare birim değerini e-Devlet üzerinden sorgulayın.</p>
+        <p>Osmaniye / Merkez arsa rayiç sorgulama</p>
     </div>
     <a class="home-tool-button" href="https://www.turkiye.gov.tr/osmaniye-belediyesi-arsa-rayic-degeri-sorgulama" target="_blank" rel="noopener noreferrer">
-        e-Devlet’te Sorgula <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        Rayiç Sorgula <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
         <span class="sr-only">(Yeni sekmede açılır)</span>
     </a>
-    <p class="home-tool-link-note">Yeni sekmede açılır.</p>
-    <details class="home-notice-toggle"><summary>Bilgilendirme: Resmî rayiç için Osmaniye Belediyesinden teyit alın.</summary><p class="home-tool-notice">Bu sorgulama Osmaniye ili, Merkez ilçesi kapsamındadır. Gösterilen bilgiler bilgilendirme amaçlıdır ve resmî belge yerine geçmez. Güncel ve taşınmazınıza esas alınacak rayiç değerini Osmaniye Belediyesinden teyit ediniz.</p></details>
+
+    <details class="home-notice-toggle"><summary>Belediye teyidi gerekir.</summary><p class="home-tool-notice">Bu sorgulama Osmaniye ili, Merkez ilçesi kapsamındadır. Gösterilen bilgiler bilgilendirme amaçlıdır ve resmî belge yerine geçmez. Güncel ve taşınmazınıza esas alınacak rayiç değerini Osmaniye Belediyesinden teyit ediniz.</p></details>
 </article>
 
 <article class="home-overview-card home-capital-gain">
-    <h2 class="home-tool-title">Gayrimenkul Değer Artışı Hesapla</h2>
-    <p class="home-tool-link-note">Satışınızın tahmini vergi tutarını hesaplayın.</p>
-    <details class="home-calculator-toggle">
-        <summary class="home-tool-button">Hesaplamayı Aç / Kapat</summary>
+    <h2 class="home-tool-title">Değer Artışı Kazancı</h2>
+    <p class="home-tool-link-note">Gayrimenkul satışınızın tahmini vergisi</p>
+    <button class="home-tool-button" type="button" data-capital-gain-open aria-haspopup="dialog" aria-controls="capital-gain-dialog" disabled>Değer Artışı Hesapla</button>
+    <dialog id="capital-gain-dialog" class="home-gain-dialog" aria-labelledby="capital-gain-dialog-title">
+        <div class="home-gain-dialog-header"><h2 id="capital-gain-dialog-title">Değer Artışı Kazancı Hesaplama</h2><button type="button" data-capital-gain-close aria-label="Hesaplama penceresini kapat">✕</button></div>
+        <p class="home-tool-link-note">2025–2026 satışları için. Yİ-ÜFE verisi: Eylül 2026.</p>
     <form data-capital-gain-form>
         <div class="home-tool-fields">
             <label>Alış Tarihi<input name="purchase_date" type="date" required></label>
@@ -61,9 +63,9 @@
         <noscript>Hesaplama için tarayıcınızda JavaScript etkin olmalıdır.</noscript>
         <div data-capital-gain-result role="status" aria-live="polite" hidden></div>
     </form>
-    </details>
-    <p class="home-tool-link-note">2025–2026 satışları için. Yİ-ÜFE verisi: Eylül 2026.</p>
-    <details class="home-notice-toggle"><summary>Sonuç kesin değildir. Vergi dairenizden teyit alın.</summary><p class="home-tool-notice">Hesaplama sonucu bilgilendirme amaçlıdır; kesin vergi tutarı veya resmî değerlendirme niteliği taşımaz. Durumunuza ilişkin doğru bilgi için bağlı bulunduğunuz vergi dairesiyle iletişime geçiniz.</p></details>
+    <p class="home-tool-notice">Sonuç bilgilendirme amaçlıdır; kesin vergi tutarı değildir. Bağlı bulunduğunuz vergi dairesinden teyit alınız.</p>
+    </dialog>
+    <details class="home-notice-toggle"><summary>Sonuç kesin değildir; vergi dairenize danışın.</summary><p class="home-tool-notice">Hesaplama sonucu bilgilendirme amaçlıdır; kesin vergi tutarı veya resmî değerlendirme niteliği taşımaz. Durumunuza ilişkin doğru bilgi için bağlı bulunduğunuz vergi dairesiyle iletişime geçiniz.</p></details>
 </article>
                 @if(!empty($marketData))
                     <article class="home-overview-card home-rates">
@@ -110,20 +112,40 @@
     @if($activePoll)<x-active-poll :poll="$activePoll" />@endif
     @push('scripts')
     <style>
-    .home-overview.home-tools-overview { align-items: start; }
-    .home-tools-overview .home-overview-card { min-height: 0; }
-    .home-tools-overview .home-tool-title { margin-bottom: .6rem; }
-    .home-tools-overview .home-rayic-body { gap: .35rem; margin-bottom: .6rem; }
+
+    .home-overview.home-tools-overview { align-items: stretch; }
+    .home-tools-overview .home-overview-card { min-height: 215px; padding: 1rem; }
+    .home-tools-overview .home-tool-title { font-size: .95rem; line-height: 1.4; margin-bottom: .6rem; }
+    .home-tools-overview .home-rayic-body { gap: .3rem; margin-bottom: .6rem; flex: 1; justify-content: center; }
     .home-tools-overview .home-rayic-body > i { display: none; }
     .home-tools-overview .home-rayic-body p { font-size: .78rem; line-height: 1.4; }
-    .home-tools-overview .home-calculator-toggle { margin-top: .7rem; }
-    .home-tools-overview .home-calculator-toggle > summary { list-style: none; }
-    .home-tools-overview .home-calculator-toggle > summary::-webkit-details-marker { display: none; }
-    .home-tools-overview .home-calculator-toggle form { margin-top: .8rem; }
+    .home-tools-overview .home-capital-gain > .home-tool-link-note { flex: 1; display: flex; align-items: center; justify-content: center; font-size: .8rem; margin: .2rem 0 .8rem; }
+    .home-tools-overview .home-tool-button { min-height: 44px; font-size: .85rem; }
+    .home-tools-overview .home-tool-button:disabled { cursor: wait; opacity: .65; }
     .home-tools-overview .home-notice-toggle { margin-top: .6rem; border-top: 1px solid #e2e8f0; padding-top: .5rem; color: #475569; }
-    .home-tools-overview .home-notice-toggle > summary { cursor: pointer; font-size: .75rem; line-height: 1.4; }
+    .home-tools-overview .home-notice-toggle > summary { cursor: pointer; font-size: .7rem; line-height: 1.4; }
     .home-tools-overview .home-notice-toggle .home-tool-notice { border: 0; padding-top: 0; }
+    .home-tools-overview .home-rates [data-market-item] { flex-direction: row; align-items: center; justify-content: space-between; padding: .6rem 0; gap: .35rem; }
+    .home-tools-overview .home-rates [data-market-item] strong { font-size: .85rem; }
+    .home-tools-overview .home-rates [data-market-item] span { font-size: .72rem; }
     .home-tools-overview .home-rent > div:last-child { padding-top: .6rem; }
+    .home-tools-overview .home-gain-dialog { position: fixed; inset: 0; margin: auto; width: min(560px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); overflow-y: auto; border: 0; border-radius: 1rem; padding: 1.25rem; background: white; color: #172554; box-shadow: 0 24px 80px rgb(15 23 42 / .3); }
+    .home-tools-overview .home-gain-dialog::backdrop { background: rgb(15 23 42 / .55); }
+    .home-tools-overview .home-gain-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .6rem; }
+    .home-tools-overview .home-gain-dialog-header h2 { font-size: 1rem; font-weight: 800; }
+    .home-tools-overview .home-gain-dialog-header button { flex-shrink: 0; width: 44px; height: 44px; border-radius: .6rem; background: #f1f5f9; cursor: pointer; }
+    .home-tools-overview .home-gain-dialog form { margin-top: .8rem; }
+    @media (min-width: 1024px) {
+        .home-overview.home-tools-overview { grid-template-columns: minmax(150px, .8fr) minmax(0, 1.25fr) minmax(0, 1.25fr) minmax(220px, 1fr); gap: .85rem; }
+    }
+    @media (max-width: 1023px) {
+        .home-tools-overview .home-overview-card { min-height: 160px; }
+        .home-tools-overview .home-rates [data-market-item] { flex-wrap: wrap; }
+    }
+    @media (max-width: 480px) {
+        .home-tools-overview .home-gain-dialog .home-tool-notice { font-size: .75rem; line-height: 1.5; }
+        .home-tools-overview .home-gain-dialog .home-tool-link-note { font-size: .75rem; }
+    }
     </style>
     <script>
 (() => {
@@ -184,6 +206,27 @@
         return { cost, gain, base, tax: tax(base, tariff), exemption: tariff.exemption, indexed, a, b, year: sale.getUTCFullYear() };
     }
     function init() {
+        const dialog = document.getElementById('capital-gain-dialog');
+        const opener = document.querySelector('[data-capital-gain-open]');
+        if (dialog && opener && typeof dialog.showModal === 'function' && !dialog.dataset.initialized) {
+            dialog.dataset.initialized = '1';
+            opener.disabled = false;
+            let priorOverflow = '';
+            opener.addEventListener('click', () => {
+                priorOverflow = document.body.style.overflow;
+                dialog.showModal();
+                document.body.style.overflow = 'hidden';
+            });
+            dialog.querySelector('[data-capital-gain-close]')?.addEventListener('click', () => dialog.close());
+            dialog.addEventListener('close', () => {
+                document.body.style.overflow = priorOverflow;
+                opener.focus();
+            });
+            dialog.addEventListener('click', event => {
+                const bounds = dialog.getBoundingClientRect();
+                if (event.target === dialog && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) dialog.close();
+            });
+        }
         document.querySelectorAll('[data-capital-gain-form]').forEach(form => {
             const result = form.querySelector('[data-capital-gain-result]');
             const button = form.querySelector('button[type="submit"]');
