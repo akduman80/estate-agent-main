@@ -253,3 +253,48 @@
     .home-eids > span:not(.sr-only) { margin-top: 0; }
     .home-rent:only-of-type, .home-rates:only-of-type { grid-column: 1 / -1; }
 }
+
+/* Only the new homepage tools row. Existing EIDS styles stay untouched. */
+.home-overview.home-tools-overview { grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+.home-tools-overview .home-rent { order: 1; }
+.home-tools-overview .home-rayic { order: 3; }
+.home-tools-overview .home-capital-gain { order: 4; }
+.home-tools-overview .home-rates { order: 2; }
+.home-tool-title { color: #172554; font-size: .95rem; font-weight: 800; line-height: 1.4; margin-bottom: 1rem; }
+.home-rayic-body { display: flex; flex-direction: column; align-items: center; gap: .7rem; text-align: center; color: #475569; font-size: .85rem; line-height: 1.5; margin-bottom: 1rem; }
+.home-rayic-body > i { color: #f97316; font-size: 2rem; }
+.home-rayic-location { color: #c2410c; background: #fff7ed; padding: .35rem .8rem; border-radius: 999px; font-weight: 700; }
+.home-tool-button { display: flex; justify-content: center; align-items: center; gap: .5rem; min-height: 44px; width: 100%; border-radius: .65rem; border: 0; background: #ea580c; color: white; font-size: .9rem; font-weight: 700; padding: .65rem; cursor: pointer; }
+.home-tool-button:hover { background: #c2410c; }
+.home-tool-button:focus-visible { outline: 3px solid #172554; outline-offset: 3px; }
+.home-tool-link-note { text-align: center; color: #64748b; font-size: .75rem; margin-top: .4rem; }
+.home-tool-notice { border-top: 1px solid #e2e8f0; padding-top: .7rem; margin-top: .8rem; color: #475569; font-size: .75rem; line-height: 1.5; }
+.home-tools-overview .home-rates [data-market-item] { display: flex; flex-direction: column; align-items: flex-start; gap: .25rem; }
+.home-tools-overview .home-rates [data-market-item] strong { font-size: 1rem; white-space: nowrap; }
+.home-tools-overview .home-rates [data-market-item] span { font-size: .75rem; }
+@media (min-width: 360px) and (max-width: 1023px) {
+    .home-overview.home-tools-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .home-tools-overview .home-rayic, .home-tools-overview .home-capital-gain { grid-column: 1 / -1; }
+}
+@media (min-width: 1024px) {
+    .home-overview.home-tools-overview { grid-template-columns: minmax(150px, .65fr) minmax(0, 1.35fr) minmax(0, 1.45fr) minmax(165px, .7fr); }
+    .home-tools-overview .home-rayic { order: 2; }
+    .home-tools-overview .home-capital-gain { order: 3; }
+    .home-tools-overview .home-rates { order: 4; }
+}
+@media (max-width: 480px) {
+    .home-tools-overview .home-tool-title { font-size: .95rem; line-height: 1.4; }
+    .home-tools-overview .home-tool-notice { font-size: .75rem; line-height: 1.5; }
+    .home-tools-overview .home-rayic-body p { font-size: .85rem; }
+    .home-tools-overview .home-rates [data-market-item] strong { font-size: .85rem; }
+    .home-tools-overview .home-rates [data-market-item] span { font-size: .72rem; }
+}
+.home-tools-overview .home-tool-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin-bottom: .8rem; }
+.home-tools-overview .home-tool-fields label { display: flex; flex-direction: column; gap: .3rem; min-width: 0; color: #334155; font-size: .75rem; font-weight: 600; }
+.home-tools-overview .home-tool-fields .home-tool-full { grid-column: 1 / -1; }
+.home-tools-overview .home-tool-fields input,
+.home-tools-overview .home-tool-fields select { width: 100%; min-width: 0; min-height: 44px; border: 1px solid #cbd5e1; border-radius: .5rem; background: #f8fafc; color: #0f172a; padding: .5rem; font: inherit; font-size: 16px; }
+.home-tools-overview .home-tool-fields input:focus,
+.home-tools-overview .home-tool-fields select:focus { outline: 2px solid #ea580c; outline-offset: 1px; }
+.home-tools-overview [data-capital-gain-result]:not([hidden]) { margin-top: .8rem; border-radius: .6rem; background: #fff7ed; color: #172554; padding: .8rem; font-size: .85rem; line-height: 1.6; overflow-wrap: anywhere; }
+.home-tools-overview [data-capital-gain-result] p { font-size: .85rem; line-height: 1.6; }
