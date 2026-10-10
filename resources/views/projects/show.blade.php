@@ -79,6 +79,7 @@
                 @if($project->location)<p class="mt-3 text-sm text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-orange-500"></i>{{ $project->location }}</p>@endif
                 @if($project->summary)<p class="mt-6 text-lg font-semibold leading-8 text-slate-700">{{ $project->summary }}</p>@endif
                 @if($project->content)<div class="article-content mt-6 text-slate-700">{!! $project->content !!}</div>@endif
+                @include('partials.mobile-selected-details', ['item' => $project])
             </div>
         </div>
     </main>

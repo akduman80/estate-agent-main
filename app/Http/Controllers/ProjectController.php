@@ -38,28 +38,7 @@ class ProjectController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        $mapProjects = (clone $filteredProjects)
-            ->with('images')
-            ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->get()
-            ->map(fn (Project $project): array => [
-                'title' => $project->title,
-                'location' => $project->location,
-                'summary' => $project->summary,
-                'latitude' => (float) $project->latitude,
-                'longitude' => (float) $project->longitude,
-                'image_urls' => collect([$project->cover_image])
-                    ->merge($project->images->pluck('image_path'))
-                    ->filter()
-                    ->unique()
-                    ->map(fn (string $path): string => Storage::disk('public')->url($path))
-                    ->values(),
-                'video_url' => $project->video_path ? Storage::disk('public')->url($project->video_path) : null,
-                'youtube_id' => $project->youtube_video_id,
-                'url' => route('projects.show', $project),
-            ])
-            ->values();
+        $mapProjects = collect(\App\Services\SharedMapRecords::records());
 
         return view('projects.index', [
             'projects' => $projects,

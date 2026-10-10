@@ -70,7 +70,7 @@ class ProjectsAppTest extends TestCase
             ->get("/projeler-app/projects/{$project->getKey()}/edit")
             ->assertOk()
             ->assertSee('data-project-location-picker', false)
-            ->assertSee('leaflet@1.9.4/dist/leaflet.js', false)
+            ->assertSee('zyd-map/zyd-project-map.js', false)
             ->assertSee('window.projectLocationPicker', false)
             ->assertSee('Haritayı tam ekran yap')
             ->assertSee('Kamerayı aç')

@@ -1,3 +1,4 @@
+@include('filament.project-location-picker-assets')
 @php
     $statePath = $getStatePath();
     $parentStatePath = \Illuminate\Support\Str::beforeLast($statePath, '.');
@@ -27,7 +28,7 @@
         <div class="flex flex-col gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-950 dark:text-white">Haritadan konum seçin</p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Haritaya dokunun veya seçili pini sürükleyin. Koordinatlar otomatik kaydedilir.</p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Haritaya dokunarak konumu seçin. Koordinatlar otomatik kaydedilir.</p>
             </div>
             <button
                 type="button"
@@ -54,7 +55,7 @@
         <div
             x-ref="map"
             class="w-full overflow-hidden rounded-xl border border-gray-300 bg-gray-100 shadow-sm dark:border-white/10"
-            style="height: clamp(20rem, 45vw, 28rem); min-height: 20rem; width: 100%;"
+            style="min-height: 20rem; width: 100%;"
             role="application"
             aria-label="Proje konumu seçme haritası"
         ></div>

@@ -33,6 +33,7 @@ Route::get('/haberler', BlogList::class)->name('blogs.index');
 Route::get('/haberler/{post:slug}', [BlogController::class, 'show'])->name('blogs.show');
 
 Route::get('/projeler', [ProjectController::class, 'index'])->name('projects.index');
+Route::get('/harita', fn () => view('shared-map', ['mapRecords' => \App\Services\SharedMapRecords::records()]))->name('shared-map');
 Route::get('/projeler/{project:slug}', [ProjectController::class, 'show'])->name('projects.show');
 
 Route::get('/iletisim', ContactController::class)->name('contact');
@@ -85,6 +86,21 @@ Route::get('/sozlesmeler/{document:slug}', [LegalDocumentController::class, 'sho
 
 Route::post('/github-deploy-webhook', GitHubDeployController::class);
 
-Route::post('/api/v1/projects/publish', MobileProjectPublishController::class)
+Route::post('/api/v1/projects/publish', fn () => response()->json([
+    'message' => 'Eski doğrudan yayın bağlantısı kapatıldı. Yeni uygulamada Siteye taslak gönder bağlantısını kullanın.',
+], 410))
     ->middleware('throttle:30,1')
     ->name('api.projects.publish');
+
+Route::middleware([\App\Http\Middleware\MobileDraftAuthentication::class, 'throttle:30,1'])
+    ->group(function (): void {
+        Route::post('/api/v1/mobile-drafts', [\App\Http\Controllers\MobileDraftController::class, 'store']);
+        Route::get('/api/v1/mobile-drafts', [\App\Http\Controllers\MobileDraftController::class, 'index']);
+    });
+
+Route::get('/mobile-draft-media/{import}/{index}', function (\App\Models\MobileDraftImport $import, int $index) {
+    abort_unless(auth()->id() === $import->user_id || auth()->user()?->role === \App\Enums\UserRole::SUPERVISOR, 403);
+    $file = $import->media[$index] ?? null;
+    abort_unless($file && \Illuminate\Support\Facades\Storage::disk($file['disk'])->exists($file['path']), 404);
+    return \Illuminate\Support\Facades\Storage::disk($file['disk'])->download($file['path']);
+})->middleware('auth')->name('mobile-draft-media');

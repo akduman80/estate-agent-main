@@ -13,6 +13,8 @@ class Project extends Model
     protected function casts(): array
     {
         return [
+            'extra_fields' => 'array',
+            'mobile_video_paths' => 'array',
             'is_featured' => 'boolean',
             'is_published' => 'boolean',
             'published_at' => 'datetime',

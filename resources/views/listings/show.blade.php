@@ -214,6 +214,7 @@
                 </section>
             @endif
         </div>
+        @include('partials.mobile-selected-details', ['item' => $listing])
     </main>
 
     @push('scripts')

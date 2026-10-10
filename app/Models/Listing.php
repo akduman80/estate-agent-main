@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Listing extends Model
 {
     protected $fillable = [
+        'latitude', 'longitude', 'mapped_address', 'extra_fields', 'mobile_video_paths',
         'user_id',
         'created_by_id',
         'business_profile_id',
@@ -77,6 +78,7 @@ class Listing extends Model
     protected function casts(): array
     {
         return [
+            'latitude' => 'decimal:7', 'longitude' => 'decimal:7', 'extra_fields' => 'array', 'mobile_video_paths' => 'array',
             'eids_document_no' => 'string',
             'price' => ListingDecimalCast::class,
             'square_meters' => ListingDecimalCast::class,

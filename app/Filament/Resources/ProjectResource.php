@@ -111,6 +111,12 @@ class ProjectResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('summary')->label('Kısa açıklama')->rows(3)->columnSpanFull(),
                 Forms\Components\RichEditor::make('content')->label('Proje detayları')->columnSpanFull(),
+                Forms\Components\Repeater::make('extra_fields')->label('Ek bilgiler')->defaultItems(0)
+                    ->schema([
+                        Forms\Components\Hidden::make('_mobileKey'),
+                        Forms\Components\TextInput::make('ad')->label('Bilgi adı')->required()->maxLength(100),
+                        Forms\Components\Textarea::make('deger')->label('Değer')->required()->maxLength(2000),
+                    ])->columns(2)->columnSpanFull(),
             ])->columns(2),
             Forms\Components\Section::make('Proje videosu')->schema([
                 FileUpload::make('video_path')
