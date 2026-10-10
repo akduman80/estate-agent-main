@@ -59,10 +59,10 @@ class MobileDraftTransferTest extends TestCase
         $this->owner();
         $r = $this->record();
         $first = $this->send($r)->assertOk();
-        $this->send($r)->assertOk()->assertJsonPath('id', $first->json('id'));
+        $second = $this->send($r, $first->json('revision'))->assertOk()->assertJsonPath('id', $first->json('id'));
         unset($r['tasinmazNo'], $r['ekBilgiler']);
         $r['detay'] = 'Güncel açıklama';
-        $this->send($r, $first->json('revision'))->assertOk()->assertJsonPath('id', $first->json('id'));
+        $second = $this->send($r, $first->json('revision'))->assertOk()->assertJsonPath('id', $first->json('id'));
         $this->assertDatabaseCount('listings', 1);
         $this->assertDatabaseCount('mobile_draft_imports', 1);
         $this->assertSame('', Listing::first()->eids_document_no);
@@ -88,7 +88,7 @@ class MobileDraftTransferTest extends TestCase
         $this->assertSame('', $l->eids_document_no);
         $this->assertArrayNotHasKey('adSoyad', MobileDraftImport::first()->payload);
     }
-    public function test_existing_legacy_project_is_reused_and_update_waits_for_web_review(): void
+    public function test_existing_legacy_project_is_reused_and_updated_directly(): void
     {
         $user = $this->owner(); $r = $this->record('proje');
         $p = Project::create(['title' => 'Eski proje', 'slug' => 'eski', 'developer_name' => 'Eski firma',
@@ -97,13 +97,29 @@ class MobileDraftTransferTest extends TestCase
         $this->assertDatabaseCount('projects', 1);
         $import = MobileDraftImport::first();
         $this->assertEquals($p->id, $import->project_id);
-        $this->assertTrue($import->pending_update);
-        $this->assertSame('Eski proje', $p->fresh()->title);
-        $this->actingAs($user);
-        app(\App\Http\Controllers\MobileDraftController::class)->applyUpdate($import);
+        $this->assertFalse($import->pending_update);
         $this->assertTrue($p->fresh()->is_published);
         $this->assertSame('Seçili isim', $p->fresh()->developer_name);
         $this->assertDatabaseCount('projects', 1);
+    }
+    public function test_project_publishes_and_repeated_transfer_replaces_selected_media(): void
+    {
+        Storage::fake('public'); Storage::fake('local'); $this->owner();
+        $r = $this->record('proje');
+        $first = $this->send($r, null, ['photos' => [UploadedFile::fake()->image('selected.jpg')]])
+            ->assertOk()->assertJsonPath('status', 'published');
+        $p = Project::firstOrFail();
+        $this->assertTrue($p->is_published);
+        $this->assertNotNull($p->published_at);
+        $old = $p->images()->firstOrFail()->image_path;
+        $second = $this->send($r, $first->json('revision'))->assertOk()->assertJsonPath('id', $first->json('id'));
+        $r['detay'] = 'Yeni proje açıklaması';
+        $this->send($r, $second->json('revision'))->assertOk()->assertJsonPath('status', 'published');
+        $this->assertDatabaseCount('projects', 1);
+        $this->assertFalse(MobileDraftImport::first()->pending_update);
+        $this->assertSame('Yeni proje açıklaması', $p->fresh()->content);
+        $this->assertCount(0, $p->fresh()->images);
+        Storage::disk('public')->assertMissing($old);
     }
     public function test_unauthorized_access_is_rejected_and_eids_flags_cannot_be_injected(): void
     {
@@ -156,12 +172,14 @@ class MobileDraftTransferTest extends TestCase
         $this->send($this->record())->assertUnauthorized();
         $this->assertDatabaseCount('listings', 0);
     }
-    public function test_public_shared_map_does_not_expose_draft_listings_or_projects(): void
+    public function test_public_shared_map_shows_directly_published_projects_but_not_draft_listings(): void
     {
         $this->owner(); $this->send($this->record('proje'))->assertOk();
         $this->send($this->record())->assertOk();
-        $this->assertSame([], \App\Services\SharedMapRecords::records());
+        $this->assertCount(1, \App\Services\SharedMapRecords::records());
+        $this->assertSame('proje', \App\Services\SharedMapRecords::records()[0]['kind']);
         $this->assertCount(2, \App\Services\SharedMapRecords::records(true));
         $this->get('/harita')->assertOk()->assertSee('zyd-map/zyd-project-map.js', false);
     }
 }
+

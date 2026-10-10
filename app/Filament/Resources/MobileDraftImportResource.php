@@ -30,7 +30,7 @@ class MobileDraftImportResource extends Resource
             Tables\Columns\TextColumn::make('updated_at')->label('Aktarım zamanı')->dateTime()->sortable(),
         ])->defaultSort('updated_at', 'desc')->actions([
             Tables\Actions\Action::make('uygula')->label('Seçimleri mevcut kayda uygula')->requiresConfirmation()
-                ->visible(fn (MobileDraftImport $record) => $record->pending_update || collect($record->media)->contains('disk', 'local'))
+                ->visible(fn (MobileDraftImport $record) => $record->pending_update || ($record->kind === 'ilan' && collect($record->media)->contains('disk', 'local')))
                 ->modalDescription('Yeni kayıt açılmaz. EİDS kilitli alanları değiştirilemez; sitenin mevcut kuralları uygulanır.')
                 ->action(function (MobileDraftImport $record): void {
                     try {

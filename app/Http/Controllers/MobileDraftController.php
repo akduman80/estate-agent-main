@@ -103,14 +103,16 @@ class MobileDraftController extends Controller
                         }
                         if ($target) $target = $target->newQuery()->whereKey($target->id)->lockForUpdate()->firstOrFail();
                         if ($import && $import->request_hash === $requestHash
+                            && ($record['kind'] === 'ilan' || ($target instanceof Project && $target->is_published))
                             && $import->target_updated_at === $this->targetVersion($target)) {
                             return ['id' => $import->id, 'revision' => $this->revision($import, $target),
-                                'status' => 'draft', 'message' => 'Bu seçimler daha önce aynı kayda aktarıldı. Yeni kayıt oluşturulmadı.'];
+                                'status' => $target instanceof Project ? 'published' : 'draft', 'message' => $target instanceof Project
+                                    ? 'Proje zaten aynı kayıtta yayınlandı. Yeni proje oluşturulmadı.'
+                                    : 'Bu seçimler daha önce aynı kayda aktarıldı. Yeni kayıt oluşturulmadı.'];
                         }
                         // Preserve already published/verified records and edits made on the website.
-                        $stageUpdate = $target && (($target instanceof Listing && ($target->eids_status !== 'pending'
-                            || $target->publication_status !== 'draft' || $target->published_at))
-                            || ($target instanceof Project && $target->is_published));
+                        $stageUpdate = $target instanceof Listing && ($target->eids_status !== 'pending'
+                            || $target->publication_status !== 'draft' || $target->published_at);
                         if ($import && ($input['expected_revision'] ?? '') !== $this->revision($import, $target)) {
                             abort(409, 'Sitede değişiklik var. Önce site değişikliklerini alın.');
                         }
@@ -146,7 +148,7 @@ class MobileDraftController extends Controller
                                 $target->images()->create(['image_path' => $path, 'sort_order' => $index]);
                             }
                         }
-                        if (! $stageUpdate) {
+                        if (! $stageUpdate && $target instanceof Listing) {
                             $target->mobile_video_paths = [];
                             $target->video_path = null;
                             $target->video_url = null;
@@ -160,16 +162,24 @@ class MobileDraftController extends Controller
                             'project_id' => $target instanceof Project ? $target->id : null,
                             'payload' => $record, 'media' => $stored, 'pending_update' => (bool) $stageUpdate,
                             'request_hash' => $requestHash, 'target_updated_at' => $this->targetVersion($target),
-                            'remote_revision' => (string) Str::uuid()])->save();
+                            'remote_revision' => (string) Str::uuid()]);
+                        if ($target instanceof Project) {
+                            $this->attachReviewedVideos($target, $import, $stored);
+                            $target->forceFill(['is_published' => true, 'published_at' => now()])->save();
+                            $target->refresh();
+                            $import->target_updated_at = $this->targetVersion($target);
+                        }
+                        $import->save();
                         DB::afterCommit(function () use ($oldMedia): void {
                             foreach ($oldMedia as $file) {
                                 $this->deleteUnused($file);
                             }
                         });
                         return ['id' => $import->id, 'revision' => $this->revision($import, $target),
-                            'status' => 'draft', 'message' => $stageUpdate
+                            'status' => $target instanceof Project ? 'published' : 'draft', 'message' => $target instanceof Project
+                                ? 'Proje seçtiğiniz bilgilerle sitede yayınlandı. Güncellemeler aynı projeye uygulanır.' : ($stageUpdate
                                 ? 'Mevcut kayıt için güncelleme taslağı aktarıldı. Yeni ilan/proje oluşturulmadı. Web panelinden uygulayın.'
-                                : 'Siteye taslak aktarıldı. Yayınlanmadı. EİDS ve yayın işlemleri web panelinden yapılır.'];
+                                : 'Siteye taslak aktarıldı. Yayınlanmadı. EİDS ve yayın işlemleri web panelinden yapılır.')];
                     });
                 });
         } catch (\Throwable $error) {
@@ -343,7 +353,7 @@ class MobileDraftController extends Controller
         });
     }
 
-    private function attachReviewedVideos($target, MobileDraftImport $import): void
+    private function attachReviewedVideos($target, MobileDraftImport $import, ?array &$createdFiles = null): void
     {
         $files = collect($import->media)->where('disk', 'local')->map(function ($file) {
             return new \Illuminate\Http\UploadedFile(Storage::disk('local')->path($file['path']), basename($file['path']), null, null, true);
@@ -355,7 +365,11 @@ class MobileDraftController extends Controller
         }
         $paths = [];
         try {
-            foreach ($files as $file) $paths[] = $file->store($target instanceof Listing ? 'listings/videos/mobile' : 'projects/videos/mobile', 'public');
+            foreach ($files as $file) {
+                $path = $file->store($target instanceof Listing ? 'listings/videos/mobile' : 'projects/videos/mobile', 'public');
+                $paths[] = $path;
+                if ($createdFiles !== null) $createdFiles[] = ['disk' => 'public', 'path' => $path];
+            }
             $old = array_unique(array_filter(array_merge($target->mobile_video_paths ?? [], [$target->video_path])));
             $target->mobile_video_paths = $paths;
             $target->video_path = $paths[0] ?? null;
