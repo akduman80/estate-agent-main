@@ -25,6 +25,7 @@ class AdvertisementResource extends Resource
                 Forms\Components\TextInput::make('label')->label('Reklam adı')->required()->maxLength(255),
                 Forms\Components\Select::make('placement')->label('Ekran kenarı')->options(['left' => 'Sol', 'right' => 'Sağ'])->required()->default('left'),
                 Forms\Components\FileUpload::make('image_path')->label('Reklam görseli')->image()->disk('public')->visibility('public')->directory('site/ads')->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->maxSize(8192)->imageEditor()->imageCropAspectRatio('2:5')->required()->helperText('Dikey görsel önerilir; görseli 2:5 oranında kırpabilirsiniz.'),
+                Forms\Components\FileUpload::make('horizontal_image_path')->label('Yatay reklam görseli (isteğe bağlı)')->image()->disk('public')->visibility('public')->directory('site/ads')->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->maxSize(8192)->imageEditor()->imageCropAspectRatio('5:2')->helperText('Footer üzerindeki yatay alanda görünmesi için bu görseli ekleyin. 5:2 oranında kırpılır; bu görsel boşsa reklam yatay alanda gösterilmez.'),
                 Forms\Components\TextInput::make('target_url')->label('Tıklanınca açılacak bağlantı')->url()->maxLength(2048),
             ])->columns(2),
             Forms\Components\Section::make('Yayın ve dönüş ayarları')->description('Reklam tarih aralığında yayınlanır. Daha kısa saniye değeri aynı kenardaki diğer reklamlara göre daha sık gösterim sağlar.')->schema([
