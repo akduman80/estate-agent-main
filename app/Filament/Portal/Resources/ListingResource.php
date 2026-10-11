@@ -29,9 +29,7 @@ class ListingResource extends Resource
 
     protected static ?string $pluralModelLabel = 'İlanlar';
 
-    protected static ?string $navigationLabel = 'Benim İlanlarım';
-
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationLabel = 'İlanlar';
 
     protected static ?string $breadcrumb = 'İlanlar';
 

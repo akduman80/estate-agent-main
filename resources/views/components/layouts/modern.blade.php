@@ -8,8 +8,6 @@
     <meta name="description" content="{{ $description ?? 'Osmaniye emlak ilanları ve güncel gayrimenkul haberleri.' }}">
 
     @php
-        $showMyListings = auth()->check() && auth()->user()->role !== \App\Enums\UserRole::EDITOR;
-        $myListingsUrl = url(auth()->user()?->role === \App\Enums\UserRole::SUPERVISOR ? '/admin/listings' : '/portal/listings');
         $sitePhone = \App\Models\Setting::get('site_phone', '0530 360 77 69');
         $siteEmail = \App\Models\Setting::get('site_email', 'info@zydemlak.com');
         $logoUrl = app(\App\Services\SiteLogoService::class)->url('fe-assets/assets/img/zydemlak-logo-transparent.png');
@@ -68,11 +66,6 @@
                         </div>
                     </details>
                 @endif
-                @if($showMyListings)
-                    <a href="{{ $myListingsUrl }}" class="hidden items-center gap-2 whitespace-nowrap rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-bold text-orange-700 transition hover:bg-orange-100 min-[481px]:flex">
-                        <i class="fa-solid fa-list" aria-hidden="true"></i><span>Benim İlanlarım</span>
-                    </a>
-                @endif
                 @auth
                     <a href="{{ auth()->user()->role?->getRedirectPath() ?? '/portal' }}" class="hidden items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:flex">
                         <i class="fa-solid fa-gauge-high"></i><span>Panelim</span>
@@ -96,10 +89,7 @@
 
         <div class="phone-actions px-3 pb-3">
             <a href="{{ url('/portal/listings/create') }}" class="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-500 font-extrabold text-white shadow-sm"><i class="fa-solid fa-circle-plus"></i>Ücretsiz İlan Ver</a>
-            <div class="mt-2 grid {{ auth()->check() && ! $showMyListings ? 'grid-cols-1' : 'grid-cols-2' }} gap-2">
-                @if($showMyListings)
-                    <a href="{{ $myListingsUrl }}" class="flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 font-bold text-orange-700"><i class="fa-solid fa-list" aria-hidden="true"></i>Benim İlanlarım</a>
-                @endif
+            <div class="mt-2 grid {{ auth()->check() ? 'grid-cols-1' : 'grid-cols-2' }} gap-2">
                 @guest<a href="{{ route('register') }}" class="flex h-11 items-center justify-center gap-2 rounded-xl border border-blue-300 bg-blue-950 font-bold text-white"><i class="fa-solid fa-user-plus"></i>Ücretsiz Üye Ol</a>@endguest
                 <a href="{{ auth()->check() ? (auth()->user()->role?->getRedirectPath() ?? '/portal') : route('login') }}" class="flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-blue-950 bg-amber-300 font-bold text-blue-950">
                     <i class="fa-solid {{ auth()->check() ? 'fa-user' : 'fa-right-to-bracket' }}"></i>{{ auth()->check() ? 'Hesabım' : 'Giriş Yap' }}
