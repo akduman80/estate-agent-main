@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique(); // Örn: 'site_logo', 'home_sliders', 'phone', 'eids_text'
+            $table->string('key')->unique(); // Örn: 'site_logo', 'phone', 'eids_text'
             $table->json('value')->nullable(); // Tüm karmaşık yapıları ve görselleri tutabilmek için JSON
             $table->timestamps();
         });

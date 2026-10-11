@@ -197,16 +197,6 @@
     $(document).ready(function() {
         $("#preloader").hide();
 
-        if ($.fn.owlCarousel && $("#bg-slider").length) {
-            $("#bg-slider").owlCarousel({
-                navigation: false,
-                slideSpeed: 300,
-                paginationSpeed: 400,
-                singleItem: true,
-                autoPlay: 5000
-            });
-        }
-
         // --- LISTE / KART GEÇİŞİ ---
         $('#btn-list-view').on('click', function(e) {
             e.preventDefault();
