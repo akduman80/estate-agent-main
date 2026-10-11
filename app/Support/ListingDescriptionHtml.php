@@ -50,6 +50,7 @@ class ListingDescriptionHtml
         }
 
         self::cleanChildren($body);
+        self::separateAlignedHighlights($body);
 
         $output = '';
 
@@ -58,6 +59,42 @@ class ListingDescriptionHtml
         }
 
         return $output;
+    }
+
+    private static function separateAlignedHighlights(DOMNode $node): void
+    {
+        foreach (iterator_to_array($node->childNodes) as $child) {
+            if (! $child instanceof DOMElement) {
+                continue;
+            }
+
+            self::separateAlignedHighlights($child);
+
+            if ($child->tagName !== 'span') {
+                continue;
+            }
+
+            $style = $child->getAttribute('style');
+
+            if (! preg_match('/(?:^|;\s*)text-align: (left|center|right)(?:;|$)/', $style)) {
+                continue;
+            }
+
+            // This also repairs saved descriptions that combined alignment and highlight.
+            if (preg_match('/(?:^|;\s*)background-color: (#[0-9a-f]{6})(?:;|$)/', $style, $matches)) {
+                $highlight = $child->ownerDocument->createElement('span');
+                $highlight->setAttribute('style', 'background-color: '.$matches[1]);
+
+                while ($child->firstChild) {
+                    $highlight->appendChild($child->firstChild);
+                }
+
+                $child->appendChild($highlight);
+                $style = preg_replace('/(?:^|;\s*)background-color: #[0-9a-f]{6}(?=;|$)/', '', $style);
+            }
+
+            $child->setAttribute('style', trim($style, '; ').'; display: block');
+        }
     }
 
     private static function cleanChildren(DOMNode $node): void

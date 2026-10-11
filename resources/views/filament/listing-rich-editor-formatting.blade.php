@@ -345,6 +345,24 @@
             if (! window.Trix || window.__listingRichEditorFormattingConfigured) return;
 
             window.__listingRichEditorFormattingConfigured = true;
+
+            // Trix combines text styles on one span. Keep alignment on an outer
+            // block so the inline highlight only covers the text itself.
+            const pieceView = window.Trix.views.PieceView.prototype;
+            const createElement = pieceView.createElement;
+            pieceView.createElement = function () {
+                const element = createElement.call(this);
+                const alignment = this.attributes.listingTextAlign;
+
+                if (! element || ! alignment) return element;
+
+                element.style.removeProperty('text-align');
+                const wrapper = document.createElement('span');
+                wrapper.style.textAlign = alignment;
+                wrapper.append(element);
+
+                return wrapper;
+            };
             window.Trix.config.textAttributes.listingFontFamily = {
                 inheritable: true,
                 styleProperty: 'fontFamily',
