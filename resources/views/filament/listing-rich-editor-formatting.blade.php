@@ -300,6 +300,8 @@
 
 <script>
     (() => {
+        if (window.__sharedRichEditorFormattingInstalled) return;
+        window.__sharedRichEditorFormattingInstalled = true;
         const commonFonts = [
             'Arial',
             'Arial Black',
@@ -725,7 +727,7 @@
         };
 
         const addToolbarControls = (editor) => {
-            if (! editor.matches('[data-listing-description-editor="true"]')) return;
+            if (! editor.matches('trix-editor')) return;
 
             const toolbar = document.getElementById(editor.getAttribute('toolbar'));
 
@@ -820,11 +822,22 @@
         };
 
         const addControlsToExistingEditors = () => {
-            document.querySelectorAll('trix-editor[data-listing-description-editor="true"]').forEach(addToolbarControls);
+            document.querySelectorAll('.fi-fo-rich-editor trix-editor').forEach(addToolbarControls);
         };
 
         document.addEventListener('trix-before-initialize', configureTrix);
         document.addEventListener('trix-initialize', (event) => addToolbarControls(event.target));
+
+        // Forms, wizard steps and action modals can mount editors after page load.
+        let scanScheduled = false;
+        new MutationObserver(() => {
+            if (scanScheduled) return;
+            scanScheduled = true;
+            requestAnimationFrame(() => {
+                scanScheduled = false;
+                addControlsToExistingEditors();
+            });
+        }).observe(document.body, { childList: true, subtree: true });
 
         configureTrix();
         addControlsToExistingEditors();

@@ -7,7 +7,7 @@ use App\Enums\BusinessApprovalStatus;
 use App\Filament\Resources\BusinessProfileResource\Pages;
 use App\Mail\AccountDecisionMail;
 use App\Models\BusinessProfile;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -37,8 +37,8 @@ class BusinessProfileResource extends Resource
             TextInput::make('city')->label('İl')->disabled(),
             TextInput::make('district')->label('İlçe')->disabled(),
             TextInput::make('neighborhood')->label('Mahalle / Köy')->disabled(),
-            Textarea::make('address')->label('Adres')->disabled()->columnSpanFull(),
-            Textarea::make('review_note')->label('İnceleme Notu')->columnSpanFull(),
+            RichEditor::make('address')->label('Adres')->disabled()->columnSpanFull(),
+            RichEditor::make('review_note')->label('İnceleme Notu')->columnSpanFull(),
         ]);
     }
 
@@ -66,7 +66,7 @@ class BusinessProfileResource extends Resource
                     Notification::make()->success()->title('İşletme onaylandı')->send();
                 }),
             Tables\Actions\Action::make('reject')->label('Reddet')->color('danger')->icon('heroicon-o-x-circle')
-                ->form([Textarea::make('note')->label('Ret gerekçesi')->required()])
+                ->form([RichEditor::make('note')->label('Ret gerekçesi')->required()])
                 ->visible(fn (BusinessProfile $record): bool => $record->approval_status === BusinessApprovalStatus::PENDING)
                 ->action(function (BusinessProfile $record, array $data): void {
                     $record->update(['approval_status' => BusinessApprovalStatus::REJECTED, 'review_note' => $data['note'], 'reviewed_by' => auth()->id(), 'reviewed_at' => now()]);

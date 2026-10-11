@@ -6,7 +6,7 @@
         <dt>Taşınmaz numarası</dt><dd>{{ data_get($record->payload, 'tasinmazNo') }}</dd>
         <dt>Telefon</dt><dd>{{ data_get($record->payload, 'telefon') }}</dd>
         @foreach($record->payload['ekBilgiler'] ?? [] as $field)
-            <dt>{{ $field['ad'] }}</dt><dd>{{ $field['deger'] }}</dd>
+            <dt>{{ $field['ad'] }}</dt><dd>{!! \App\Support\RichContentHtml::render($field['deger']) !!}</dd>
         @endforeach
     </dl>
     <p>Aktarılan bütün bilgiler:</p>

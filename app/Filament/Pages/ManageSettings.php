@@ -251,7 +251,7 @@ class ManageSettings extends Page
                                     ->helperText('PNG, JPG veya WEBP (en fazla 5 MB). Logo yüklenince otomatik kaydedilir ve açık renkli arka planı sitede kaldırılır.'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_phone')->label('Telefon Numarası'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_email')->label('E-posta Adresi'), // [cite: 15]
-                                Forms\Components\Textarea::make('eids_text')->label('EİDS / Onaylı Taşınmaz Metni')->rows(2)->columnSpanFull(), // [cite: 15]
+                                Forms\Components\RichEditor::make('eids_text')->label('EİDS / Onaylı Taşınmaz Metni')->columnSpanFull(), // [cite: 15]
                             ]),
 
                         Forms\Components\Tabs\Tab::make('İletişim Sayfası')
@@ -267,10 +267,9 @@ class ManageSettings extends Page
                                     ->default('Zyd Emlak')
                                     ->required(),
 
-                                Forms\Components\Textarea::make('site_address')
+                                Forms\Components\RichEditor::make('site_address')
                                     ->label('Adres')
                                     ->default('Istanbul, Turkiye')
-                                    ->rows(3)
                                     ->columnSpanFull(),
 
                                 Forms\Components\TextInput::make('contact_map_query')
@@ -279,16 +278,14 @@ class ManageSettings extends Page
                                     ->helperText('Boş bırakılırsa adres bilgisiyle harita oluşturulur.')
                                     ->columnSpanFull(),
 
-                                Forms\Components\Textarea::make('contact_phone_text')
+                                Forms\Components\RichEditor::make('contact_phone_text')
                                     ->label('Telefon Açıklaması')
                                     ->default('İlanlar, randevu ve danışmanlık talepleriniz için bize ulaşabilirsiniz.')
-                                    ->rows(2)
                                     ->columnSpanFull(),
 
-                                Forms\Components\Textarea::make('contact_email_text')
+                                Forms\Components\RichEditor::make('contact_email_text')
                                     ->label('E-posta Açıklaması')
                                     ->default('Mesajınızı e-posta ile iletebilir veya aşağıdaki iletişim formunu kullanabilirsiniz.')
-                                    ->rows(2)
                                     ->columnSpanFull(),
 
                                 Forms\Components\TextInput::make('contact_form_title')

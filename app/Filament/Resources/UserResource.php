@@ -182,15 +182,13 @@ class UserResource extends Resource
                             ->default(BusinessApprovalStatus::APPROVED->value)
                             ->required(),
                     ]),
-                    Forms\Components\Textarea::make('business_address')
+                    Forms\Components\RichEditor::make('business_address')
                         ->label('Açık iş yeri adresi')
                         ->required()
-                        ->rows(3)
                         ->maxLength(1000)
                         ->columnSpanFull(),
-                    Forms\Components\Textarea::make('business_review_note')
+                    Forms\Components\RichEditor::make('business_review_note')
                         ->label('Supervisor inceleme notu')
-                        ->rows(2)
                         ->maxLength(2000)
                         ->columnSpanFull(),
                 ]),

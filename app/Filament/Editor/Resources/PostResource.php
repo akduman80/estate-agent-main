@@ -9,7 +9,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -63,9 +62,8 @@ class PostResource extends Resource
                             ->default(false),
                     ]),
 
-                Textarea::make('summary')
+                RichEditor::make('summary')
                     ->label('Kısa Özet')
-                    ->rows(2)
                     ->columnSpanFull(),
 
                 RichEditor::make('content')

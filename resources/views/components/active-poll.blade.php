@@ -21,7 +21,7 @@
             </div>
 
             <div class="poll-options bg-white p-7 text-slate-800 sm:p-9">
-                <h3 class="text-lg font-extrabold leading-7 text-blue-950">{{ $poll->question }}</h3>
+                <div class="text-lg font-extrabold leading-7 text-blue-950">{!! \App\Support\RichContentHtml::render($poll->question) !!}</div>
 
                 @if(session('poll_status'))
                     <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-semibold text-emerald-800"><i class="fa-solid fa-circle-check mr-2"></i>{{ session('poll_status') }}</div>

@@ -8,7 +8,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -37,10 +37,9 @@ class PollResource extends Resource
                 ->required()
                 ->maxLength(255)
                 ->columnSpanFull(),
-            Textarea::make('question')
+            RichEditor::make('question')
                 ->label('Soru')
                 ->required()
-                ->rows(3)
                 ->columnSpanFull(),
             Grid::make(['default' => 1, 'md' => 2])->schema([
                 Select::make('status')
@@ -85,7 +84,7 @@ class PollResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')->label('Başlık')->searchable()->limit(45),
-                Tables\Columns\TextColumn::make('question')->label('Soru')->limit(60),
+                Tables\Columns\TextColumn::make('question')->label('Soru')->formatStateUsing(fn ($state) => strip_tags($state ?? ''))->limit(60),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Durum')
                     ->badge()

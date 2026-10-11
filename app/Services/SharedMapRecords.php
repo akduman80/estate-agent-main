@@ -20,7 +20,7 @@ class SharedMapRecords
             'videos' => collect([$p->video_path])->merge($p->mobile_video_paths ?? [])->filter()->unique()->map(fn ($path) => \Illuminate\Support\Facades\Storage::disk('public')->url($path))->values()->all(),
             'youtube_id' => $p->youtube_video_id,
         ])->merge($listings->whereNotNull('latitude')->whereNotNull('longitude')->get()->map(fn ($l) => [
-            'id' => 'ilan-'.$l->id, 'kind' => 'ilan', 'title' => $l->title, 'location' => $l->mapped_address,
+            'id' => 'ilan-'.$l->id, 'kind' => 'ilan', 'title' => $l->title, 'location' => strip_tags($l->mapped_address ?? ''),
             'latitude' => (float) $l->latitude, 'longitude' => (float) $l->longitude,
             'url' => $admin ? '/portal/listings/'.$l->id.'/edit' : route('listings.show', $l),
             'photos' => $l->images->pluck('image_path')->filter()->map(fn ($path) => \Illuminate\Support\Facades\Storage::disk('public')->url($path))->values()->all(),

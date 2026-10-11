@@ -3,7 +3,7 @@
     <h2 class="mb-3 font-bold text-blue-950">Ek bilgiler</h2>
     <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         @foreach($item->extra_fields as $field)
-            <div><dt class="text-sm font-bold">{{ $field['ad'] }}</dt><dd class="whitespace-pre-wrap text-sm">{{ $field['deger'] }}</dd></div>
+            <div><dt class="text-sm font-bold">{{ $field['ad'] }}</dt><dd class="whitespace-pre-wrap text-sm">{!! \App\Support\RichContentHtml::render($field['deger']) !!}</dd></div>
         @endforeach
     </dl>
 </section>

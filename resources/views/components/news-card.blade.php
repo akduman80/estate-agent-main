@@ -16,7 +16,7 @@
         <div class="flex flex-1 flex-col p-5">
             <div class="mb-3 text-[10px] text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>{{ $date }}</div>
             <h2 class="line-clamp-2 text-base font-bold leading-6 text-blue-950 transition group-hover:text-orange-600">{{ $post->title }}</h2>
-            <p class="mt-3 line-clamp-3 text-xs leading-5 text-slate-500">{{ $post->summary ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 145) }}</p>
+            <p class="mt-3 line-clamp-3 text-xs leading-5 text-slate-500">{{ strip_tags($post->summary ?? '') ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 145) }}</p>
             <div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4 text-xs font-bold text-orange-600">
                 <span>Haberi Oku</span><i class="fa-solid fa-arrow-right"></i>
             </div>

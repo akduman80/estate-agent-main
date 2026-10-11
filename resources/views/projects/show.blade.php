@@ -12,7 +12,7 @@
     $slideCount = $gallery->count() + (($videoUrl || $youtubeId) ? 1 : 0);
     $statusLabel = match ($project->status) { 'planning' => 'Planlanıyor', 'completed' => 'Tamamlandı', default => 'Devam Ediyor' };
 @endphp
-<x-layouts.modern :title="$project->title.' | ZYDEMLAK'" :description="$project->summary">
+<x-layouts.modern :title="$project->title.' | ZYDEMLAK'" :description="strip_tags($project->summary ?? '')">
     <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
             <section data-project-slider class="relative bg-slate-950" aria-label="{{ $project->title }} fotoğraf galerisi" tabindex="0">
@@ -77,8 +77,8 @@
                 <h1 class="mt-2 text-3xl font-extrabold text-blue-950">{{ $project->title }}</h1>
                 <p class="mt-2 font-semibold text-slate-600">{{ $project->developer_name }}</p>
                 @if($project->location)<p class="mt-3 text-sm text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-orange-500"></i>{{ $project->location }}</p>@endif
-                @if($project->summary)<p class="mt-6 text-lg font-semibold leading-8 text-slate-700">{{ $project->summary }}</p>@endif
-                @if($project->content)<div class="article-content mt-6 text-slate-700">{!! $project->content !!}</div>@endif
+                @if($project->summary)<div class="mt-6 text-lg font-semibold leading-8 text-slate-700">{!! \App\Support\RichContentHtml::render($project->summary) !!}</div>@endif
+                @if($project->content)<div class="article-content mt-6 text-slate-700">{!! \App\Support\RichContentHtml::render($project->content) !!}</div>@endif
                 @include('partials.mobile-selected-details', ['item' => $project])
             </div>
         </div>

@@ -1,4 +1,4 @@
-<x-layouts.modern :title="$post->title.' | ZYDEMLAK'" :description="$post->summary ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 155)">
+<x-layouts.modern :title="$post->title.' | ZYDEMLAK'" :description="strip_tags($post->summary ?? '') ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 155)">
     @php
         $imageUrl = $post->cover_image ? \Illuminate\Support\Facades\Storage::url($post->cover_image) : asset('fe-assets/assets/img/blog2.jpg');
         $publishedDate = ($post->published_at ?? $post->created_at)?->locale('tr')->translatedFormat('d F Y');
@@ -9,7 +9,7 @@
     @push('head')
         <meta property="og:type" content="article">
         <meta property="og:title" content="{{ $post->title }}">
-        <meta property="og:description" content="{{ $post->summary ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 155) }}">
+        <meta property="og:description" content="{{ strip_tags($post->summary ?? '') ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 155) }}">
         <meta property="og:image" content="{{ $imageUrl }}">
         <meta property="og:url" content="{{ route('blogs.show', $post->slug) }}">
     @endpush
@@ -43,9 +43,9 @@
 
                     <div class="article-content p-6 text-[15px] text-slate-700 md:p-8">
                         @if($post->summary)
-                            <p class="article-lead">{{ $post->summary }}</p>
+                            <div class="article-lead">{!! \App\Support\RichContentHtml::render($post->summary) !!}</div>
                         @endif
-                        {!! $post->content !!}
+                        {!! \App\Support\RichContentHtml::render($post->content) !!}
 
                         <div class="mt-8 border-t border-slate-100 pt-6">
                             <div class="flex flex-wrap items-center gap-2">

@@ -31,11 +31,11 @@ class ListingFormSchema
                 \Filament\Forms\Components\Hidden::make('latitude')->rules(['nullable', 'numeric', 'between:-90,90']),
                 \Filament\Forms\Components\Hidden::make('longitude')->rules(['nullable', 'numeric', 'between:-180,180']),
                 \Filament\Forms\Components\ViewField::make('location_picker')->view('filament.forms.components.project-location-picker'),
-                \Filament\Forms\Components\Textarea::make('mapped_address')->label('Harita adresi')->maxLength(1000),
+                \Filament\Forms\Components\RichEditor::make('mapped_address')->label('Harita adresi')->maxLength(1000),
                 \Filament\Forms\Components\Repeater::make('extra_fields')->label('Ek bilgiler')->defaultItems(0)->schema([
                     \Filament\Forms\Components\Hidden::make('_mobileKey'),
                     \Filament\Forms\Components\TextInput::make('ad')->label('Bilgi adı')->required()->maxLength(100),
-                    \Filament\Forms\Components\Textarea::make('deger')->label('Değer')->required()->maxLength(2000),
+                    \Filament\Forms\Components\RichEditor::make('deger')->label('Değer')->required()->maxLength(2000),
                 ])->columns(2),
             ])->collapsed(),
             Wizard::make([
