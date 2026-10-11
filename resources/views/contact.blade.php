@@ -61,7 +61,7 @@
                             <label class="block"><span class="text-xs font-bold text-slate-700">E-posta</span><input type="email" name="email" required class="mt-1.5 w-full rounded-xl border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500"></label>
                         </div>
                         <label class="block"><span class="text-xs font-bold text-slate-700">Konu</span><input type="text" name="konu" required class="mt-1.5 w-full rounded-xl border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500"></label>
-                        <x-rich-textarea name="mesaj" label="Mesaj" required :plain-submit="true" />
+                        <label class="block"><span class="text-xs font-bold text-slate-700">Mesaj <b class="text-red-500">*</b></span><textarea name="mesaj" rows="5" required class="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500">{{ old('mesaj') }}</textarea></label>
                         <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white shadow transition hover:bg-orange-600"><i class="fa-solid fa-envelope"></i>{{ $submitText }}</button>
                     </form>
                 </div>
