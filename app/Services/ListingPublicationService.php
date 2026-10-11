@@ -31,7 +31,7 @@ class ListingPublicationService
         if ($owner?->account_status !== AccountStatus::ACTIVE || ! $owner?->email_verified_at) {
             $errors['account'] = 'Aktif ve e-postası doğrulanmış bir hesap gereklidir.';
         }
-        if ($owner?->role !== UserRole::SUPERVISOR && ! $owner?->eids_identity_verified_at) {
+        if (! $listing->eids_exempt && $owner?->role !== UserRole::SUPERVISOR && ! $owner?->eids_identity_verified_at) {
             $errors['eids_identity'] = 'Önce EİDS kimlik doğrulamasını tamamlayın.';
         }
         if ($owner?->role === UserRole::AGENT
@@ -39,12 +39,12 @@ class ListingPublicationService
             $errors['business'] = 'Emlak işletmesi yönetici tarafından onaylanmamış.';
         }
         // EİDS kontrolü yayınlama anında yapılır; kullanıcı ayrıca bir sekmeden sorgu başlatmaz.
-        if ($listing->eids_status !== 'verified' && ! $this->eidsService->verifyListing($listing)) {
+        if (! $listing->eids_exempt && $listing->eids_status !== 'verified' && ! $this->eidsService->verifyListing($listing)) {
             $listing->refresh()->load('eidsVerification');
             $listing->forceFill(['publication_status' => 'draft', 'is_active' => false])->saveQuietly();
             $errors['eids'] = $listing->eidsVerification?->error_message ?: 'İlanın EİDS taşınmaz/yetki doğrulaması tamamlanmamış.';
         }
-        if ($listing->eidsVerification?->expires_at?->isPast()) {
+        if (! $listing->eids_exempt && $listing->eidsVerification?->expires_at?->isPast()) {
             $listing->forceFill(['publication_status' => 'draft', 'is_active' => false])->saveQuietly();
             $errors['eids'] = 'EİDS ilan yetkisinin süresi dolmuş.';
         }
@@ -67,11 +67,11 @@ class ListingPublicationService
     {
         abort_unless($approver->role === UserRole::SUPERVISOR, 403);
 
-        if ($listing->publication_status !== 'pending_approval' || $listing->eids_status !== 'verified') {
+        if ($listing->publication_status !== 'pending_approval' || (! $listing->eids_exempt && $listing->eids_status !== 'verified')) {
             throw ValidationException::withMessages(['listing' => 'Yalnızca EİDS doğrulaması tamamlanmış ve onay bekleyen ilan yayınlanabilir.']);
         }
 
-        if ($listing->eidsVerification?->expires_at?->isPast()) {
+        if (! $listing->eids_exempt && $listing->eidsVerification?->expires_at?->isPast()) {
             throw ValidationException::withMessages(['listing' => 'EİDS yetki süresi dolmuş.']);
         }
 
@@ -119,6 +119,7 @@ class ListingPublicationService
             'neighborhood' => $verification?->neighborhood ?: $listing->neighborhood_id,
             'block' => $verification?->block ?: $listing->block_number,
             'parcel' => $verification?->parcel ?: $listing->parcel_number,
+            'eids_exempt' => (bool) $listing->eids_exempt,
             'category' => $listing->category,
             'type' => $listing->type,
             'source_type' => $listing->source_type,

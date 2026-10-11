@@ -73,6 +73,7 @@ class ManageSettings extends Page
             'options_from_who' => ['Emlak Ofisinden', 'Sahibinden', 'İnşaat Firmasından'],
             'options_credit_eligibility' => ['Evet', 'Hayır', 'Bilinmiyor'],
             'options_swap_option' => ['Evet', 'Hayır'],
+            'eids_exempt_listing_types' => [],
         ];
     }
 
@@ -674,7 +675,17 @@ class ManageSettings extends Page
                             ->schema([
                                 Forms\Components\TagsInput::make('options_type')
                                     ->label('İlan Tipi Seçenekleri')
-                                    ->default($defaults['options_type']),
+                                    ->default($defaults['options_type'])
+                                    ->live(),
+
+                                Forms\Components\Select::make('eids_exempt_listing_types')
+                                    ->label('EİDS gerektirmeyen ilan tipleri (tapusuz)')
+                                    ->multiple()
+                                    ->options(fn (Forms\Get $get): array => collect($get('options_type') ?? [])
+                                        ->merge($get('eids_exempt_listing_types') ?? [])
+                                        ->filter()->unique()->mapWithKeys(fn ($type): array => [$type => $type])->all())
+                                    ->default($defaults['eids_exempt_listing_types'])
+                                    ->helperText('Seçilen tiplerde Tapu Taşınmaz ID ve EİDS onayı aranmaz; yönetici onayı devam eder. Mevcut ilanların muafiyeti korunur. Bir tipin adını değiştirirseniz yeni adı da bu alanda seçin.'),
 
                                 Forms\Components\TagsInput::make('options_category')
                                     ->label('Gayrimenkul Türü Seçenekleri')

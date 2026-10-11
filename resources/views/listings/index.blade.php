@@ -36,7 +36,7 @@
                 </div>
                 <div class="flex shrink-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur">
                     <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/20 text-xl text-emerald-300"><i class="fa-solid fa-shield-check"></i></span>
-                    <div><strong class="block text-lg">{{ number_format($listings->total(), 0, ',', '.') }}</strong><span class="text-xs text-slate-300">EİDS doğrulamalı ilan</span></div>
+                    <div><strong class="block text-lg">{{ number_format($listings->total(), 0, ',', '.') }}</strong><span class="text-xs text-slate-300">Yayındaki ilan</span></div>
                 </div>
             </div>
         </section>

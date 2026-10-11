@@ -53,6 +53,14 @@ class ListingObserver
         }
     }
 
+    public function saving(Listing $listing): void
+    {
+        // Muafiyet formdan alınmaz; sadece yeni kayıt veya ilan tipi değişiminde hesaplanır.
+        $listing->eids_exempt = ! $listing->exists || $listing->isDirty('type')
+            ? Listing::isEidsExemptType($listing->type)
+            : (bool) $listing->getOriginal('eids_exempt');
+    }
+
     public function updating(Listing $listing): void
     {
         if ($listing->getOriginal('eids_status') === 'verified') {

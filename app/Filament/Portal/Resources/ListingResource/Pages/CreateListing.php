@@ -85,6 +85,8 @@ class CreateListing extends CreateRecord
         return Notification::make()
             ->warning()
             ->title('İlan taslak olarak kaydedildi')
-            ->body('EİDS sorgusunu tamamlayıp ilanı yönetici onayına gönderebilirsiniz.');
+            ->body($this->record?->eids_exempt
+                ? 'Tapusuz ilan için EİDS onayı gerekmiyor. İlanı yönetici onayına gönderebilirsiniz.'
+                : 'EİDS sorgusunu tamamlayıp ilanı yönetici onayına gönderebilirsiniz.');
     }
 }

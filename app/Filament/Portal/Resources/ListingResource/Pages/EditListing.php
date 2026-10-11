@@ -80,6 +80,11 @@ class EditListing extends EditRecord
 
     protected function getSavedNotification(): ?Notification
     {
+        if ($this->record?->eids_exempt) {
+            return Notification::make()->success()->title('İlan kaydedildi')
+                ->body('Tapusuz ilan için EİDS onayı gerekmiyor. İlanı yönetici onayına gönderebilirsiniz.');
+        }
+
         if ($this->record?->eids_status === 'verified') {
             return Notification::make()
                 ->success()

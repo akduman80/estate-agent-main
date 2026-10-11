@@ -90,12 +90,12 @@ class ListingResource extends Resource
                     ->badge()
                     ->width('120px')
                     ->grow(false)
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state, Listing $record): string => $record->eids_exempt ? 'Muaf (Tapusuz)' : match ($state) {
                         'verified' => 'Doğrulandı',
                         'rejected' => 'Reddedildi',
                         default => 'Beklemede',
                     })
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn (string $state, Listing $record): string => $record->eids_exempt ? 'info' : match ($state) {
                         'verified' => 'success',
                         'rejected' => 'danger',
                         default => 'warning',

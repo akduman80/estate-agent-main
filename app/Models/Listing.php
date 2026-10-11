@@ -86,6 +86,7 @@ class Listing extends Model
             'deposit_price' => ListingDecimalCast::class,
             'dues_price' => ListingDecimalCast::class,
             'is_active' => 'boolean',
+            'eids_exempt' => 'boolean',
             'submitted_at' => 'datetime',
             'approved_at' => 'datetime',
             'published_at' => 'datetime',
@@ -144,6 +145,20 @@ class Listing extends Model
         return $this->hasMany(ListingEidsRequestLog::class);
     }
 
+    public static function isEidsExemptType(?string $type): bool
+    {
+        $types = Setting::get('eids_exempt_listing_types', []);
+
+        return is_array($types) && in_array($type, $types, true);
+    }
+
+    public static function formIsEidsExempt(?string $type, ?self $record): bool
+    {
+        return $record && $record->type === $type
+            ? (bool) $record->eids_exempt
+            : static::isEidsExemptType($type);
+    }
+
     public function getIsVerifiedAttribute(): bool
     {
         return $this->eids_status === 'verified';
@@ -153,13 +168,18 @@ class Listing extends Model
     {
         return $query
             ->where('is_active', true)
-            ->where('eids_status', 'verified')
             ->where('publication_status', 'approved')
             ->where(function (Builder $query): void {
-                $query->whereDoesntHave('eidsVerification')
-                    ->orWhereHas('eidsVerification', fn (Builder $verification) => $verification
-                        ->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now()));
+                $query->where('eids_exempt', true)
+                    ->orWhere(function (Builder $query): void {
+                        $query->where('eids_status', 'verified')
+                            ->where(function (Builder $query): void {
+                                $query->whereDoesntHave('eidsVerification')
+                                    ->orWhereHas('eidsVerification', fn (Builder $verification) => $verification
+                                        ->whereNull('expires_at')
+                                        ->orWhere('expires_at', '>', now()));
+                            });
+                    });
             });
     }
 

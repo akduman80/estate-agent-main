@@ -80,7 +80,7 @@
                     <div class="mb-3 flex flex-wrap items-center gap-2 text-xs font-bold">
                         <span class="rounded bg-orange-500 px-2.5 py-1">{{ $listing->type }}</span>
                         <span class="rounded border border-white/25 bg-white/10 px-2.5 py-1">{{ $listing->source_label }}</span>
-                        <span class="rounded bg-emerald-500/20 px-2.5 py-1 text-emerald-200"><i class="fa-solid fa-shield-check mr-1"></i>EİDS Doğrulandı</span>
+                        <span class="rounded bg-emerald-500/20 px-2.5 py-1 text-emerald-200"><i class="fa-solid fa-shield-check mr-1"></i>{{ $listing->eids_exempt ? 'Tapusuz İlan' : 'EİDS Doğrulandı' }}</span>
                     </div>
                     <h1 class="max-w-4xl text-2xl font-extrabold leading-tight sm:text-3xl">{{ $listing->title }}</h1>
                     @if($location)
@@ -191,7 +191,7 @@
                     <section class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900">
                         <div class="flex gap-3">
                             <i class="fa-solid fa-shield-check mt-0.5 text-xl text-emerald-600"></i>
-                            <div><strong class="block">EİDS doğrulamalı ilan</strong><span class="mt-1 block text-xs leading-5 text-emerald-700">Bu ilanın yetki ve taşınmaz bilgileri yayınlanmadan önce doğrulanmıştır.</span></div>
+                            <div><strong class="block">{{ $listing->eids_exempt ? 'Tapusuz ilan' : 'EİDS doğrulamalı ilan' }}</strong><span class="mt-1 block text-xs leading-5 text-emerald-700">{{ $listing->eids_exempt ? 'Bu ilan tapusuz olduğu için EİDS doğrulaması uygulanmadan yönetici onayıyla yayınlanmıştır.' : 'Bu ilanın yetki ve taşınmaz bilgileri yayınlanmadan önce doğrulanmıştır.' }}</span></div>
                         </div>
                     </section>
                 </aside>
