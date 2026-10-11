@@ -174,3 +174,57 @@ document.addEventListener('DOMContentLoaded', () => {
         render(currentCount);
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const adContainer = document.querySelector('.home-edge-ads');
+    if (adContainer) {
+        adContainer.querySelectorAll('[data-ad-slot]').forEach(slot => {
+            const ads = [...slot.querySelectorAll('a[data-ad-interval]')];
+            if (ads.length < 2) return;
+            let current = ads.findIndex(ad => !ad.hidden);
+            window.setInterval(() => {
+                const weights = ads.map(ad => 1 / Math.max(10, Number(ad.dataset.adInterval) || 60));
+                const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+                let choice = Math.random() * totalWeight;
+                let next = 0;
+                for (let index = 0; index < weights.length; index++) {
+                    choice -= weights[index];
+                    if (choice <= 0) { next = index; break; }
+                }
+                ads[current].hidden = true;
+                current = next;
+                ads[current].hidden = false;
+            }, 10000);
+        });
+    }
+    const horizontalContainer = document.querySelector('[data-horizontal-ad-rotation]');
+    if (horizontalContainer) {
+        const slots = [...horizontalContainer.querySelectorAll('[data-horizontal-ad-slot]')];
+        const choices = [...(slots[0]?.querySelectorAll('[data-horizontal-choice]') || [])];
+        const chooseWeighted = candidates => {
+            const weights = candidates.map(ad => 1 / Math.max(10, Number(ad.dataset.adInterval) || 60));
+            const total = weights.reduce((sum, weight) => sum + weight, 0);
+            let ticket = Math.random() * total;
+            for (let index = 0; index < weights.length; index++) {
+                ticket -= weights[index];
+                if (ticket <= 0) return candidates[index];
+            }
+            return candidates[candidates.length - 1];
+        };
+        if (choices.length > 1) {
+            window.setInterval(() => {
+                const visibleSlots = window.matchMedia('(max-width: 767px)').matches ? slots.slice(0, 1) : slots;
+                if (choices.length <= visibleSlots.length) return;
+                const remaining = [...choices];
+                visibleSlots.forEach(slot => {
+                    const selected = chooseWeighted(remaining);
+                    if (!selected) return;
+                    slot.querySelectorAll('[data-horizontal-choice]').forEach(ad => {
+                        ad.hidden = ad.dataset.adId !== selected.dataset.adId;
+                    });
+                    remaining.splice(remaining.indexOf(selected), 1);
+                });
+            }, 10000);
+        }
+    }
+});

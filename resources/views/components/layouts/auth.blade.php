@@ -24,5 +24,7 @@
             {{ $slot }}
         </div>
     </main>
+    @include('partials.site-advertisements')
+
 </body>
 </html>

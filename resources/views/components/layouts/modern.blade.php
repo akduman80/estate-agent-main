@@ -128,6 +128,8 @@
 
     {{ $slot }}
 
+    @include('partials.site-advertisements')
+
     <footer class="site-footer mt-auto border-t border-slate-800 bg-blue-950 text-blue-100">
         <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
