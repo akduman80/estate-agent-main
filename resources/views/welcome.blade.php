@@ -3,6 +3,7 @@
         $typeOptions = \App\Models\Setting::get('options_type', ['Satılık', 'Kiralık']);
         $cities = \App\Services\TurkeyAddressService::getCities();
         $rentRateNumber = is_numeric(str_replace(',', '.', (string) $rentRate)) ? (float) str_replace(',', '.', (string) $rentRate) : null;
+        $adLogoUrl = app(\App\Services\SiteLogoService::class)->url('fe-assets/assets/img/zydemlak-logo-transparent.png');
     @endphp
 
     <div class="home-dashboard">
@@ -17,7 +18,12 @@
                             </a>
                         @endforeach
                     @else
-                        <span>Buraya reklam verebilirsiniz</span>
+                        <div class="home-edge-ad-empty">
+                            <img src="{{ $adLogoUrl }}" alt="ZYDEMLAK logosu" loading="lazy">
+                            <strong>ZYDEMLAK.COM</strong>
+                            <span>Markanız burada öne çıksın.</span>
+                            <a href="{{ route('contact') }}">Reklam için iletişim</a>
+                        </div>
                     @endif
                 </aside>
             @endforeach
@@ -130,16 +136,20 @@
     <style>
 
     .home-edge-ads { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
-    .home-edge-ad { position: absolute; top: 50%; width: clamp(100px, 11vw, 180px); height: min(450px, 62vh); transform: translateY(-50%); overflow: hidden; border: 1px dashed #cbd5e1; border-radius: 1rem; background: rgb(248 250 252 / .94); box-shadow: 0 8px 30px rgb(15 23 42 / .08); pointer-events: auto; }
-    .home-edge-ad-left { left: max(12px, calc((100vw - 1280px) / 2 - 196px)); }
-    .home-edge-ad-right { right: max(12px, calc((100vw - 1280px) / 2 - 196px)); }
+    .home-edge-ad { position: absolute; top: 50%; width: 150px; height: min(430px, 58vh); transform: translateY(-50%); overflow: hidden; border: 1px solid #dbe5f2; border-radius: 1.25rem; background: #fff; box-shadow: 0 16px 40px rgb(15 23 42 / .14); pointer-events: auto; }
+    .home-edge-ad-left { left: calc((100vw - 1280px) / 2 - 174px); }
+    .home-edge-ad-right { right: calc((100vw - 1280px) / 2 - 174px); }
     .home-edge-ad img, .home-edge-ad a { display: block; width: 100%; height: 100%; }
     .home-edge-ad a[hidden] { display: none; }
     .home-edge-ad img { object-fit: cover; }
-    .home-edge-ad-empty { display: grid; place-items: center; padding: .75rem; color: #64748b; text-align: center; }
-    .home-edge-ad-empty span { font-size: .8rem; font-weight: 700; line-height: 1.5; }
-    @media (max-width: 1535px) { .home-edge-ad-left { left: 12px; } .home-edge-ad-right { right: 12px; } }
-    @media (max-width: 1279px) { .home-edge-ads { display: none; } }
+    .home-edge-ad-empty { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: .9rem; padding: 1rem .8rem; color: #172554; text-align: center; background: radial-gradient(ellipse at top, #fff7ed 0, #fff 55%); }
+    .home-edge-ad-empty::before { position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: linear-gradient(90deg, #f97316, #fb923c, #172554); content: ''; }
+    .home-edge-ad-empty img { display: block; width: 100px; height: 70px; object-fit: contain; }
+    .home-edge-ad-empty strong { color: #172554; font-size: 1rem; font-weight: 900; letter-spacing: -.035em; }
+    .home-edge-ad-empty span { color: #475569; font-size: .88rem; font-weight: 700; line-height: 1.45; }
+    .home-edge-ad-empty a { display: grid; min-height: 44px; place-items: center; height: auto; border-radius: .75rem; background: #f97316; color: white; font-size: .76rem; font-weight: 800; text-decoration: none; box-shadow: 0 6px 16px rgb(249 115 22 / .25); }
+    .home-edge-ad-empty a:hover { background: #ea580c; }
+    @media (max-width: 1679px) { .home-edge-ads { display: none; } }
 
     .home-overview.home-tools-overview { align-items: stretch; }
     .home-tools-overview .home-overview-card { min-height: 215px; padding: 1rem; }
