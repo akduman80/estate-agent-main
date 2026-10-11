@@ -85,6 +85,9 @@
                         @endif
 
                         @auth
+                            @if(auth()->user()->role !== \App\Enums\UserRole::EDITOR)
+                                <li><a href="{{ url(auth()->user()->role === \App\Enums\UserRole::SUPERVISOR ? '/admin/listings' : '/portal/listings') }}"><i class="fa fa-list"></i> Benim İlanlarım</a></li>
+                            @endif
                             <li>
                                 <a href="{{ auth()->user()->role->getRedirectPath() }}" class="btn btn-primary btn-sm padding-5">
                                     <i class="fa fa-dashboard"></i> Panelim
