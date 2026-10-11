@@ -171,6 +171,7 @@
     .listing-rich-editor-formatting__color {
         align-items: center;
         display: flex;
+        flex-wrap: wrap;
         gap: .25rem;
     }
 
@@ -186,6 +187,42 @@
         flex: 1;
         max-width: none;
         width: auto;
+    }
+
+    .listing-rich-editor-formatting__palette {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: .2rem;
+        width: 100%;
+        margin-top: .35rem;
+    }
+
+    .listing-rich-editor-formatting__swatch {
+        aspect-ratio: 1;
+        border: 1px solid rgb(148 163 184 / .45);
+        border-radius: .2rem;
+        cursor: pointer;
+        min-width: 0;
+    }
+
+    .listing-rich-editor-formatting__swatch:hover,
+    .listing-rich-editor-formatting__swatch:focus-visible,
+    .listing-rich-editor-formatting__swatch[aria-pressed="true"] {
+        outline: 2px solid rgb(245 158 11);
+        outline-offset: 1px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .dark .listing-rich-editor-formatting-dropdown__summary {
+        background: rgb(31 41 55);
+        border-color: rgb(75 85 99);
+        color: rgb(243 244 246);
+    }
+
+    .listing-rich-editor-formatting {
+        max-height: calc(100dvh - 2rem);
+        overflow-y: auto;
     }
 
     .listing-rich-editor-formatting__align {
@@ -281,6 +318,28 @@
             'Montserrat',
             'Open Sans',
         ];
+
+        // Columns are color families; rows run from dark to light.
+        const colorFamilies = [
+            ['Kırmızı', '7f1d1d b91c1c dc2626 ef4444 f87171 fca5a5 fee2e2'],
+            ['Turuncu', '7c2d12 c2410c ea580c f97316 fb923c fdba74 ffedd5'],
+            ['Kehribar', '78350f b45309 d97706 f59e0b fbbf24 fcd34d fef3c7'],
+            ['Sarı', '713f12 a16207 ca8a04 eab308 facc15 fde047 fef9c3'],
+            ['Limon', '365314 4d7c0f 65a30d 84cc16 a3e635 bef264 ecfccb'],
+            ['Yeşil', '14532d 15803d 16a34a 22c55e 4ade80 86efac dcfce7'],
+            ['Zümrüt', '064e3b 047857 059669 10b981 34d399 6ee7b7 d1fae5'],
+            ['Turkuaz', '134e4a 0f766e 0d9488 14b8a6 2dd4bf 5eead4 ccfbf1'],
+            ['Camgöbeği', '164e63 0e7490 0891b2 06b6d4 22d3ee 67e8f9 cffafe'],
+            ['Mavi', '1e3a8a 1d4ed8 2563eb 3b82f6 60a5fa 93c5fd dbeafe'],
+            ['Mor', '4c1d95 6d28d9 7c3aed 8b5cf6 a78bfa c4b5fd ede9fe'],
+            ['Gri', '000000 1f2937 4b5563 6b7280 9ca3af d1d5db ffffff'],
+        ].map(([name, colors]) => [name, colors.split(' ').map((color) => '#' + color)]);
+
+        const updateColorSwatches = (wrapper, color) => {
+            wrapper.querySelectorAll('[data-listing-color-value]').forEach((button) => {
+                button.setAttribute('aria-pressed', button.dataset.listingColorValue === color ? 'true' : 'false');
+            });
+        };
 
         const configureTrix = () => {
             if (! window.Trix || window.__listingRichEditorFormattingConfigured) return;
@@ -501,6 +560,7 @@
 
                 picker.value = color;
                 text.value = color;
+                updateColorSwatches(wrapper, color);
                 applyAttribute(editor, attribute, color);
             };
 
@@ -508,7 +568,30 @@
             text.addEventListener('change', () => apply(text.value));
 
             wrapper.dataset[marker] = 'true';
-            wrapper.append(picker, text);
+            const palette = document.createElement('span');
+            palette.className = 'listing-rich-editor-formatting__palette';
+            palette.setAttribute('role', 'group');
+            palette.setAttribute('aria-label', labelText + ' paleti');
+
+            for (let shade = 0; shade < 7; shade++) {
+                colorFamilies.forEach(([name, colors]) => {
+                    const color = colors[shade];
+                    const swatch = document.createElement('button');
+                    swatch.type = 'button';
+                    swatch.className = 'listing-rich-editor-formatting__swatch';
+                    swatch.dataset.listingColorValue = color;
+                    swatch.style.backgroundColor = color;
+                    swatch.title = name + ' ' + color;
+                    swatch.setAttribute('aria-label', labelText + ': ' + swatch.title);
+                    // Keep the editor selection while choosing a color.
+                    swatch.addEventListener('mousedown', (event) => event.preventDefault());
+                    swatch.addEventListener('click', () => apply(color));
+                    palette.append(swatch);
+                });
+            }
+
+            wrapper.append(picker, text, palette);
+            updateColorSwatches(wrapper, defaultColor);
 
             return createField(labelText, wrapper);
         };
@@ -619,6 +702,7 @@
 
                 controls.querySelector(`${selector} input[type="color"]`).value = value;
                 controls.querySelector(`${selector} input[type="text"]`).value = value;
+                updateColorSwatches(controls.querySelector(selector), value);
             });
         };
 
@@ -629,12 +713,14 @@
 
             if (! toolbar || toolbar.querySelector('[data-listing-formatting-controls]')) return;
 
+            // Livewire must preserve the controls added by JavaScript on form refresh.
+            toolbar.setAttribute('wire:ignore', '');
             toolbar.dataset.listingFormattingToolbar = 'true';
             toolbar.closest('.fi-fo-rich-editor')?.classList.add('listing-rich-editor-formatting-host');
 
             const dropdown = document.createElement('details');
             dropdown.className = 'listing-rich-editor-formatting-dropdown';
-            dropdown.dataset.trixButtonGroup = 'listing-formatting-tools';
+            dropdown.dataset.listingFormattingDropdown = 'true';
 
             const summary = document.createElement('summary');
             summary.className = 'listing-rich-editor-formatting-dropdown__summary';
@@ -652,7 +738,8 @@
                 const left = Math.min(Math.max(16, summaryRect.left), window.innerWidth - panelWidth - 16);
 
                 panel.style.left = `${left}px`;
-                panel.style.top = `${summaryRect.bottom + 8}px`;
+                const top = Math.max(16, Math.min(summaryRect.bottom + 8, window.innerHeight - panel.offsetHeight - 16));
+                panel.style.top = `${top}px`;
                 panel.style.width = `${panelWidth}px`;
                 panel.style.minWidth = `${panelWidth}px`;
                 panel.style.maxWidth = `${panelWidth}px`;
