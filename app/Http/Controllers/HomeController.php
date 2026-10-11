@@ -7,6 +7,7 @@ use App\Models\Poll;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\Setting;
+use App\Models\Advertisement;
 use App\Services\MarketDataService;
 use Illuminate\Contracts\View\View;
 
@@ -35,6 +36,10 @@ class HomeController extends Controller
             'rentPeriod' => Setting::get('rent_increase_period'),
             'rentUpdatedAt' => Setting::get('rent_increase_updated_at'),
             'preferredListingCount' => auth()->user()?->featured_listing_count ?? 3,
+            'edgeAds' => Advertisement::query()->where('is_active', true)
+                ->where(fn ($query) => $query->whereNull('starts_at')->orWhere('starts_at', '<=', now()))
+                ->where(fn ($query) => $query->whereNull('ends_at')->orWhere('ends_at', '>=', now()))
+                ->orderBy('placement')->get(),
         ]);
     }
 }
