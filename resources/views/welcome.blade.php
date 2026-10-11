@@ -131,6 +131,23 @@
         </main>
     </div>
 
+    @if($horizontalAds->isNotEmpty())
+        @php $horizontalAdSlots = $horizontalAds->take(2); @endphp
+        <section class="home-horizontal-ad-band" aria-label="Reklamlar">
+            <div class="home-horizontal-ad-grid {{ $horizontalAdSlots->count() === 1 ? 'home-horizontal-ad-grid-single' : '' }}" data-horizontal-ad-rotation>
+                @foreach($horizontalAdSlots as $initialAd)
+                    <div class="home-horizontal-ad-slot" data-horizontal-ad-slot>
+                        @foreach($horizontalAds as $ad)
+                            <a href="{{ $ad->target_url ?: '#' }}" @if($ad->target_url) target="_blank" rel="sponsored noopener noreferrer" @else aria-disabled="true" @endif data-horizontal-choice data-ad-id="{{ $ad->id }}" data-ad-interval="{{ $ad->rotation_interval_seconds }}" @if($ad->id !== $initialAd->id) hidden @endif>
+                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($ad->horizontal_image_path) }}" alt="{{ $ad->label }}" loading="lazy">
+                            </a>
+                        @endforeach
+                    </div>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
     @if($activePoll)<x-active-poll :poll="$activePoll" />@endif
     @push('scripts')
     <style>
