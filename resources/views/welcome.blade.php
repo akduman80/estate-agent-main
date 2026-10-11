@@ -146,6 +146,21 @@
                 @endforeach
             </div>
         </section>
+    @else
+        <section class="home-horizontal-ad-band" aria-label="Reklam alanları">
+            <div class="home-horizontal-ad-grid">
+                @foreach(range(1, 2) as $placeholder)
+                    <div class="home-horizontal-ad-slot home-horizontal-ad-placeholder">
+                        <img src="{{ $adLogoUrl }}" alt="ZYDEMLAK logosu" loading="lazy">
+                        <div>
+                            <strong>ZYDEMLAK.COM</strong>
+                            <p>Markanız burada öne çıksın.</p>
+                            <a href="{{ route('contact') }}">Reklam için iletişim</a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
     @endif
 
     @if($activePoll)<x-active-poll :poll="$activePoll" />@endif
@@ -166,14 +181,21 @@
     .home-edge-ad-empty span { color: #475569; font-size: .88rem; font-weight: 700; line-height: 1.45; }
     .home-edge-ad-empty a { display: grid; min-height: 44px; place-items: center; height: auto; border-radius: .75rem; background: #f97316; color: white; font-size: .76rem; font-weight: 800; text-decoration: none; box-shadow: 0 6px 16px rgb(249 115 22 / .25); }
     .home-edge-ad-empty a:hover { background: #ea580c; }
-    .home-horizontal-ad-band { display: none; padding: 1.5rem 1rem; background: #f1f5f9; border-top: 1px solid #dbe4ef; }
+    .home-horizontal-ad-band { display: none !important; padding: 1.5rem 1rem; background: #f1f5f9; border-top: 1px solid #dbe4ef; }
     .home-horizontal-ad-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; width: min(100%, 1280px); margin: 0 auto; }
     .home-horizontal-ad-grid-single { grid-template-columns: minmax(0, 1fr); max-width: 620px; }
     .home-horizontal-ad-slot { min-width: 0; aspect-ratio: 5 / 2; overflow: hidden; border-radius: 1rem; background: white; box-shadow: 0 8px 24px rgb(15 23 42 / .12); }
     .home-horizontal-ad-slot a, .home-horizontal-ad-slot img { display: block; width: 100%; height: 100%; }
     .home-horizontal-ad-slot a[hidden] { display: none; }
     .home-horizontal-ad-slot img { object-fit: cover; }
-    @media (max-width: 1679px) { .home-edge-ads { display: none; } .home-horizontal-ad-band { display: block; } }
+    .home-horizontal-ad-placeholder { position: relative; display: flex; align-items: center; justify-content: center; gap: clamp(.75rem, 2vw, 2rem); padding: 1rem; border: 1px solid #dbe5f2; background: radial-gradient(ellipse at left, #fff7ed, #fff 65%); }
+    .home-horizontal-ad-placeholder::before { position: absolute; inset: 0 0 auto; height: 5px; background: linear-gradient(90deg, #f97316, #fb923c, #172554); content: ''; }
+    .home-horizontal-ad-placeholder img { width: 30%; max-width: 160px; height: auto; max-height: 80%; object-fit: contain; }
+    .home-horizontal-ad-placeholder strong { color: #172554; font-size: clamp(.9rem, 1.7vw, 1.4rem); font-weight: 900; letter-spacing: -.035em; }
+    .home-horizontal-ad-placeholder p { margin: .4rem 0 .75rem; color: #475569; font-size: clamp(.75rem, 1.3vw, 1rem); font-weight: 700; }
+    .home-horizontal-ad-placeholder a { display: inline-flex; align-items: center; justify-content: center; width: auto; height: auto; min-height: 40px; padding: .5rem .75rem; border-radius: .65rem; background: #f97316; color: white; font-size: .75rem; font-weight: 800; text-decoration: none; }
+    .home-horizontal-ad-placeholder a:hover { background: #ea580c; }
+    @media (max-width: 1679px) { .home-edge-ads { display: none !important; } .home-horizontal-ad-band { display: block !important; } }
     @media (max-width: 767px) { .home-horizontal-ad-grid { grid-template-columns: minmax(0, 1fr); max-width: 800px; } .home-horizontal-ad-slot:nth-child(n + 2) { display: none; } }
 
     .home-overview.home-tools-overview { align-items: stretch; }
