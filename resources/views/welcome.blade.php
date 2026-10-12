@@ -77,6 +77,8 @@
         </section>
 
         <main id="ilanlar" class="mx-auto w-full max-w-7xl flex-grow px-4 py-7 sm:px-6 lg:px-8">
+            <x-home-print-ad />
+
             <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
                 <section class="min-w-0">
                     <div class="mb-5 flex items-end justify-between gap-3 border-b border-blue-100 pb-3">

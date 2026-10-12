@@ -134,7 +134,7 @@
     {{ $slot }}
 </main>
 
-    @include('partials.site-advertisements')
+
 
 <!-- Footer Area -->
 <div class="footer-area">

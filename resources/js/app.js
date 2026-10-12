@@ -9,6 +9,78 @@ document.addEventListener('DOMContentLoaded', () => {
         button.setAttribute('aria-expanded', String(! menu?.classList.contains('hidden')));
     });
 
+    document.querySelectorAll('[data-home-print-ad]').forEach((ad) => {
+        const slides = [...ad.querySelectorAll('img')];
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        if (slides.length === 0) {
+            console.error('Reklam görseli bulunamadı.');
+            return;
+        }
+
+        let activeIndex = 0;
+        let timer;
+        let transitioning = false;
+
+        const updateLink = () => {
+            const activeSlide = slides[activeIndex];
+            const destination = new URL(activeSlide.dataset.destination || 'https://wa.me/905303607769');
+            if (destination.hostname === 'wa.me' && ! destination.searchParams.has('text')) destination.searchParams.set('text', activeSlide.dataset.message);
+            ad.href = destination.href;
+            ad.setAttribute('aria-label', activeSlide.dataset.label);
+        };
+
+        const stopRotation = () => {
+            window.clearTimeout(timer);
+            timer = undefined;
+        };
+
+        const startRotation = () => {
+            stopRotation();
+
+            if (slides.length < 2 || transitioning || reducedMotion.matches || document.hidden || ad.matches(':hover') || ad.contains(document.activeElement)) {
+                return;
+            }
+
+            timer = window.setTimeout(() => {
+                const nextIndex = (activeIndex + 1) % slides.length;
+                const nextSlide = slides[nextIndex];
+
+                if (! nextSlide.complete || ! nextSlide.naturalWidth) {
+                    console.error(`Ana sayfa reklamı yüklenemedi: ${nextSlide.currentSrc}`);
+                    startRotation();
+                    return;
+                }
+
+                const previousSlide = slides[activeIndex];
+                // Keep an opaque image underneath the incoming slide throughout the fade.
+                previousSlide.classList.add('is-previous');
+                previousSlide.setAttribute('aria-hidden', 'true');
+                activeIndex = nextIndex;
+                transitioning = true;
+                slides[activeIndex].classList.add('is-visible');
+                slides[activeIndex].removeAttribute('aria-hidden');
+                updateLink();
+                window.setTimeout(() => {
+                    previousSlide.classList.remove('is-visible', 'is-previous');
+                    transitioning = false;
+                    startRotation();
+                }, reducedMotion.matches ? 0 : 640);
+            }, 5000);
+        };
+
+        updateLink();
+        startRotation();
+        ad.addEventListener('pointerenter', stopRotation);
+        ad.addEventListener('pointerleave', startRotation);
+        ad.addEventListener('focusin', stopRotation);
+        ad.addEventListener('focusout', (event) => {
+            if (! ad.contains(event.relatedTarget)) startRotation();
+        });
+        document.addEventListener('visibilitychange', startRotation);
+        reducedMotion.addEventListener('change', startRotation);
+    });
+
     document.querySelectorAll('[data-project-card-gallery]').forEach((gallery) => {
         const track = gallery.querySelector('[data-project-card-track]');
         const slides = track ? [...track.children] : [];
@@ -173,58 +245,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
         render(currentCount);
     });
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const adContainer = document.querySelector('.home-edge-ads');
-    if (adContainer) {
-        adContainer.querySelectorAll('[data-ad-slot]').forEach(slot => {
-            const ads = [...slot.querySelectorAll('a[data-ad-interval]')];
-            if (ads.length < 2) return;
-            let current = ads.findIndex(ad => !ad.hidden);
-            window.setInterval(() => {
-                const weights = ads.map(ad => 1 / Math.max(10, Number(ad.dataset.adInterval) || 60));
-                const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-                let choice = Math.random() * totalWeight;
-                let next = 0;
-                for (let index = 0; index < weights.length; index++) {
-                    choice -= weights[index];
-                    if (choice <= 0) { next = index; break; }
-                }
-                ads[current].hidden = true;
-                current = next;
-                ads[current].hidden = false;
-            }, 10000);
-        });
-    }
-    const horizontalContainer = document.querySelector('[data-horizontal-ad-rotation]');
-    if (horizontalContainer) {
-        const slots = [...horizontalContainer.querySelectorAll('[data-horizontal-ad-slot]')];
-        const choices = [...(slots[0]?.querySelectorAll('[data-horizontal-choice]') || [])];
-        const chooseWeighted = candidates => {
-            const weights = candidates.map(ad => 1 / Math.max(10, Number(ad.dataset.adInterval) || 60));
-            const total = weights.reduce((sum, weight) => sum + weight, 0);
-            let ticket = Math.random() * total;
-            for (let index = 0; index < weights.length; index++) {
-                ticket -= weights[index];
-                if (ticket <= 0) return candidates[index];
-            }
-            return candidates[candidates.length - 1];
-        };
-        if (choices.length > 1) {
-            window.setInterval(() => {
-                const visibleSlots = window.matchMedia('(max-width: 767px)').matches ? slots.slice(0, 1) : slots;
-                if (choices.length <= visibleSlots.length) return;
-                const remaining = [...choices];
-                visibleSlots.forEach(slot => {
-                    const selected = chooseWeighted(remaining);
-                    if (!selected) return;
-                    slot.querySelectorAll('[data-horizontal-choice]').forEach(ad => {
-                        ad.hidden = ad.dataset.adId !== selected.dataset.adId;
-                    });
-                    remaining.splice(remaining.indexOf(selected), 1);
-                });
-            }, 10000);
-        }
-    }
 });
