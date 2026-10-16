@@ -24,17 +24,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @if(request()->routeIs('home'))
+        <link rel="stylesheet" href="{{ asset('css/home-welcome.css') }}">
+    @endif
     @stack('head')
     @include('partials.pwa', ['pwaAdmin' => false])
 </head>
 <body class="flex min-h-screen flex-col overflow-x-hidden bg-slate-50 font-sans text-slate-800 antialiased {{ auth()->check() ? 'has-phone-bottom-nav' : '' }}">
+    @if(request()->routeIs('home'))
+        <x-home-welcome />
+    @endif
     <header class="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
         <div class="mx-auto flex h-20 max-w-screen-2xl items-center justify-between gap-3 px-4 sm:h-20 sm:px-6 lg:px-8">
             <a href="{{ route('home') }}" class="group flex shrink-0 items-center rounded bg-white" aria-label="ZYDEMLAK ana sayfa">
                 <img src="{{ $logoUrl }}" alt="ZYDEMLAK" class="h-14 w-auto max-w-36 object-contain transition duration-300 group-hover:scale-105 sm:h-16 sm:max-w-44">
             </a>
 
-            <nav class="hidden items-center gap-1 text-sm font-bold lg:flex xl:gap-2" aria-label="Ana menü">
+            <nav class="hidden items-center gap-1 text-sm font-bold xl:flex xl:gap-2" aria-label="Ana menü">
                 <a href="{{ route('home') }}" class="whitespace-nowrap rounded-lg px-3 py-2 transition {{ request()->routeIs('home') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Anasayfa</a>
                 <a href="{{ route('listings.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 font-bold text-slate-600 transition hover:bg-slate-50 hover:text-orange-500">Tüm İlanlar</a>
                 <a href="{{ route('blogs.index') }}" class="whitespace-nowrap rounded-lg px-3 py-2 transition {{ request()->routeIs('blogs.*') ? 'bg-slate-100 font-bold text-blue-950' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-500' }}">Emlak Haberleri</a>
@@ -81,7 +87,7 @@
                 <a href="{{ url('/portal/listings/create') }}" class="flex items-center gap-2 whitespace-nowrap rounded-lg bg-orange-500 px-3 py-2 text-sm font-bold text-white shadow transition hover:bg-orange-600 sm:px-4">
                     <i class="fa-solid fa-circle-plus"></i><span class="hidden sm:inline">Ücretsiz İlan Ver</span>
                 </a>
-                <button type="button" data-mobile-menu-button class="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 lg:hidden" aria-label="Menüyü aç" aria-expanded="false">
+                <button type="button" data-mobile-menu-button class="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 xl:hidden" aria-label="Menüyü aç" aria-expanded="false">
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
@@ -97,7 +103,7 @@
             </div>
         </div>
 
-        <nav data-mobile-menu class="hidden border-t border-slate-100 bg-white px-4 py-3 lg:hidden" aria-label="Mobil menü">
+        <nav data-mobile-menu class="hidden border-t border-slate-100 bg-white px-4 py-3 xl:hidden" aria-label="Mobil menü">
             <div class="mx-auto grid max-w-7xl gap-1 text-sm font-bold">
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-600">Anasayfa</a>
                 <a href="{{ route('listings.index') }}" class="rounded-lg px-3 py-2 font-bold hover:bg-orange-50 hover:text-orange-600">Tüm İlanlar</a>
