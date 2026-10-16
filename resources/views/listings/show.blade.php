@@ -1,4 +1,5 @@
 @php
+    $eidsCard = \App\Support\ListingEidsCard::forListing($listing);
     $images = $listing->images->map(fn ($image) => [
         'url' => \App\Services\ListingMediaService::publicUrl($image->image_path),
         'alt' => $image->alt_text ?: $listing->title,
@@ -138,6 +139,8 @@
                         <h2 class="mb-5 text-xl font-extrabold text-blue-950">İlan açıklaması</h2>
                         <div class="listing-description prose max-w-none text-sm leading-7 text-slate-600">{!! \App\Support\ListingDescriptionHtml::render($listing->description) !!}</div>
                     </section>
+
+                    <x-listing-eids-card :card="$eidsCard" />
 
                     @if($listing->video_path)
                         <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
