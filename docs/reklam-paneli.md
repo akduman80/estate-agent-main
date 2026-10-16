@@ -10,6 +10,8 @@ Zorunlu alanlar ad (255 karakter), sıra, 1600 × 240 px görsel, HTTP/HTTPS hed
 
 Yeni migration veya şema değişikliği yoktur. Mevcut dağıtım betiği `optimize:clear` sonrasında `php artisan advertisements:prepare-home` çalıştırır. İlk yayında çalışmakta olan eski deploy betiği henüz yeni satırı içermeyebileceğinden Composer post-install kancası da aynı idempotent komutu `--if-ready` ile çalıştırır. Bu seçenek .env veya reklam tablosu olmayan yeni kurulumlarda aktarımı atlar; mevcut üretim veritabanındaki hataları gizlemez.
 
+Yalnız kaynak çeken yayın kurulumlarında, yetki kontrolünden sonra ilk Reklamlar liste sayfası açılışı da aynı güvenli aktarımı çalıştırır. Aktarım tamamlanmadan önce henüz hiç home kaydı yoksa son yayınlanan üç statik JPG gösterilmeye devam eder. Aktarım işareti oluştuktan sonra varsayılanlara dönüş yapılmaz. Kamuya açık ana sayfa veritabanına yazmaz ve kayıt silmez.
+
 1. Dosya kilidiyle eşzamanlı aktarımı engeller.
 2. Yalnız placement=`left`/`right` eski kayıtlarını yerel diskin private `advertisements/legacy-*.json` dosyasına yedekler. Yedekleme başarısız olursa hiçbir eski kayıt silinmez.
 3. İlk çalışmada henüz kaydı olmayan ilk üç sırayı orijinal JPG'leri public diske birebir kopyalayarak içe aktarır. Var olan home kayıtlarının kimliği, görseli, bağlantısı, yayın tarihleri ve kapalı durumu korunur.

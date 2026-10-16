@@ -43,9 +43,22 @@ class HomeAdvertisements
 
     public static function slides(): Collection
     {
+        $positions = array_keys(self::placements());
+        // Some installations only pull source on push. Keep the already-published
+        // carousel visible until deploy or the authorized admin page imports it.
+        // After import, disabling/deleting every record must never restore defaults.
+        if (! Storage::disk('local')->exists('advertisements/home-imported-v1.json')
+            && ! Advertisement::query()->whereIn('placement', $positions)->exists()) {
+            return collect(self::defaults())->map(fn (array $ad): array => [
+                'src' => asset('fe-assets/assets/img/advertisements/'.$ad['file']),
+                'label' => $ad['label'],
+                'destination' => 'https://wa.me/905303607769?text='.rawurlencode($ad['message']),
+            ]);
+        }
+
         // Resolve a position before publication filtering so an unpublished replacement
         // cannot reveal an older record in the same position.
-        return Advertisement::query()->whereIn('placement', array_keys(self::placements()))
+        return Advertisement::query()->whereIn('placement', $positions)
             ->orderByDesc('id')->get()->unique('placement')->sortBy('placement')
             ->filter(fn (Advertisement $ad): bool => $ad->is_active
                 && (! $ad->starts_at || $ad->starts_at->lte(now()))

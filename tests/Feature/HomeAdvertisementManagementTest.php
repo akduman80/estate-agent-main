@@ -63,6 +63,19 @@ class HomeAdvertisementManagementTest extends TestCase
         Livewire::test(ListAdvertisements::class)->assertSuccessful()->assertSee('Reklamlar nasıl kullanılır?')->assertCanSeeTableRecords($ads)->assertDontSee('Eski sağ (kapalı)')->assertDontSee('Sabit gösterim');
     }
 
+    public function test_authorized_list_initializes_records_and_deleted_ads_do_not_return(): void
+    {
+        Advertisement::create(['label' => 'Eski sağ', 'placement' => 'right', 'image_path' => 'site/ads/legacy.jpg']);
+        // Public rendering preserves the existing carousel without writing to DB.
+        $this->get('/')->assertOk()->assertSee('reklam-01-fincan-kupa.jpg', false);
+        $this->assertDatabaseCount('advertisements', 1);
+        Livewire::test(ListAdvertisements::class)->assertSuccessful();
+        $this->assertDatabaseCount('advertisements', 3);
+        $this->assertDatabaseMissing('advertisements', ['placement' => 'right']);
+        Advertisement::query()->delete();
+        $this->get('/')->assertOk()->assertDontSee('data-home-print-ad', false)->assertDontSee('reklam-01-fincan-kupa.jpg', false);
+    }
+
     public function test_admin_upload_create_edit_unpublish_and_publish_are_used_by_site(): void
     {
         $file = UploadedFile::fake()->image('new-banner.jpg', 1600, 240);
