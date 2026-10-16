@@ -15,16 +15,8 @@ class Poll extends Model
         return [
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
+            'voting_reset_at' => 'datetime',
         ];
-    }
-
-    protected static function booted(): void
-    {
-        static::saved(function (Poll $poll): void {
-            if ($poll->status === 'active') {
-                static::query()->whereKeyNot($poll->getKey())->where('status', 'active')->update(['status' => 'closed']);
-            }
-        });
     }
 
     public function options(): HasMany

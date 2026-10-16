@@ -161,6 +161,7 @@
         </nav>
     @endauth
 
+    <x-active-poll />
     @livewireScripts
     @stack('scripts')
 @include('partials.documents-panel', ['documentDownload' => true])

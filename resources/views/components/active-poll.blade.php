@@ -1,63 +1,32 @@
-@props(['poll'])
-
-@php
-    $hasVoted = (bool) session('poll_voted_'.$poll->getKey());
-    $showResults = $poll->results_visibility === 'always' || ($poll->results_visibility === 'after_vote' && $hasVoted);
-    $totalVotes = $poll->options->sum('votes_count');
-@endphp
-
-<section class="poll-section border-y border-slate-200 bg-white py-10 sm:py-12">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="poll-card overflow-hidden rounded-2xl bg-blue-950 text-white shadow-xl lg:grid lg:grid-cols-[.72fr_1.28fr]">
-            <div class="poll-intro relative overflow-hidden p-7 sm:p-9">
-                <div class="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-orange-500/15"></div>
-                <div class="relative">
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500 text-xl"><i class="fa-solid fa-square-poll-vertical"></i></span>
-                    <p class="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-orange-400">Günün anketi</p>
-                    <h2 class="mt-2 text-2xl font-extrabold">{{ $poll->title }}</h2>
-                    <p class="mt-3 text-sm leading-6 text-slate-300">Görüşünüz, içeriklerimizi ve hizmetlerimizi geliştirmemize yardımcı olur.</p>
-                    <p class="mt-6 text-xs text-slate-400"><i class="fa-solid fa-users mr-2 text-orange-400"></i>{{ number_format($totalVotes, 0, ',', '.') }} katılım</p>
-                </div>
-            </div>
-
-            <div class="poll-options bg-white p-7 text-slate-800 sm:p-9">
-                <div class="text-lg font-extrabold leading-7 text-blue-950">{!! \App\Support\RichContentHtml::render($poll->question) !!}</div>
-
-                @if(session('poll_status'))
-                    <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-semibold text-emerald-800"><i class="fa-solid fa-circle-check mr-2"></i>{{ session('poll_status') }}</div>
-                @elseif(session('poll_info'))
-                    <div class="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm font-semibold text-blue-800"><i class="fa-solid fa-circle-info mr-2"></i>{{ session('poll_info') }}</div>
-                @endif
-
-                @error('option_id')
-                    <div class="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-800">{{ $message }}</div>
-                @enderror
-
-                @if($showResults)
-                    <div class="mt-6 space-y-4">
-                        @foreach($poll->options as $option)
-                            @php $percentage = $totalVotes > 0 ? round(($option->votes_count / $totalVotes) * 100) : 0; @endphp
-                            <div>
-                                <div class="mb-1.5 flex justify-between gap-3 text-sm"><span class="font-semibold">{{ $option->text }}</span><span class="font-extrabold text-orange-600">%{{ $percentage }}</span></div>
-                                <div class="h-2.5 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full bg-orange-500" style="width: {{ $percentage }}%"></div></div>
-                            </div>
-                        @endforeach
-                    </div>
-                @elseif($hasVoted)
-                    <p class="mt-6 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">Oyunuz kaydedildi. Sonuçlar anket kapandığında açıklanacaktır.</p>
-                @else
-                    <form method="post" action="{{ route('polls.vote', $poll) }}" class="mt-6 space-y-3">
-                        @csrf
-                        @foreach($poll->options as $option)
-                            <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-3.5 text-sm font-semibold transition hover:border-orange-300 hover:bg-orange-50">
-                                <input type="radio" name="option_id" value="{{ $option->getKey() }}" class="border-slate-300 text-orange-500 focus:ring-orange-500" required>
-                                <span>{{ $option->text }}</span>
-                            </label>
-                        @endforeach
-                        <button type="submit" class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-extrabold text-white shadow transition hover:bg-orange-600"><i class="fa-solid fa-check-to-slot"></i>Oyumu gönder</button>
-                    </form>
-                @endif
-            </div>
+<dialog id="visitor-poll" aria-labelledby="visitor-poll-question" data-endpoint="{{ route('polls.active') }}" data-csrf="{{ csrf_token() }}">
+    <button type="button" class="poll-close" aria-label="Anketi kapat">×</button>
+    <p class="poll-eyebrow">GÖRÜŞÜNÜZ BİZİM İÇİN DEĞERLİ</p>
+    <h2 id="visitor-poll-question"></h2>
+    <form>
+        <fieldset aria-labelledby="visitor-poll-question"></fieldset>
+        <p class="poll-message" role="status" aria-live="polite"></p>
+        <div class="poll-actions">
+            <button type="button" class="poll-later">Daha Sonra</button>
+            <button type="submit" class="poll-submit" disabled>Oy Ver</button>
         </div>
-    </div>
-</section>
+    </form>
+</dialog>
+<style>
+#visitor-poll *{box-sizing:border-box}
+#visitor-poll{box-sizing:border-box;width:400px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);margin:auto;padding:28px 22px 22px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;color:#172554;overflow:auto;box-shadow:0 20px 60px #0f172a40;font-family:inherit}
+#visitor-poll::backdrop{background:#0f172a55}
+#visitor-poll .poll-close{display:block;margin:-16px -10px 4px auto;width:44px;height:44px;font-size:28px;border:0;background:transparent;cursor:pointer;color:#475569}
+#visitor-poll .poll-eyebrow{font-size:11px;font-weight:800;letter-spacing:.08em;color:#c2410c;margin:0 0 10px}
+#visitor-poll h2{font-size:20px;font-weight:800;line-height:1.4;overflow-wrap:anywhere;margin:0 0 20px}
+#visitor-poll fieldset{padding:0;margin:0;border:0;min-width:0;display:grid;gap:10px}
+#visitor-poll label{display:flex;align-items:center;gap:12px;min-height:48px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:15px;line-height:1.5;cursor:pointer;overflow-wrap:anywhere}
+#visitor-poll label:has(input:checked){background:#fff7ed;border-color:#f97316}
+#visitor-poll input{flex-shrink:0;accent-color:#ea580c;width:18px;height:18px}
+#visitor-poll .poll-actions{display:flex;gap:10px;margin-top:16px}
+#visitor-poll .poll-actions button{flex:1;min-height:46px;padding:10px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:#f8fafc;color:#172554}
+#visitor-poll .poll-actions .poll-submit{background:#ea580c;color:#fff;border-color:#ea580c}
+#visitor-poll button:disabled{opacity:.5;cursor:wait}
+#visitor-poll :focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+#visitor-poll .poll-message{font-size:14px;line-height:1.5;color:#9a3412;margin:12px 0 0}
+</style>
+<script src="{{ asset('js/visitor-poll.js') }}?v={{ filemtime(public_path('js/visitor-poll.js')) }}" defer></script>

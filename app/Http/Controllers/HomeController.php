@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
-use App\Models\Poll;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\Setting;
@@ -23,13 +22,11 @@ class HomeController extends Controller
 
         $featuredProject = Project::query()->published()->orderByDesc('is_featured')->latest('published_at')->first();
 
-        $activePoll = Poll::query()->with('options')->currentlyActive()->latest('starts_at')->first();
 
         return view('welcome', [
             'recentListings' => $recentListings,
             'featuredPost' => $featuredPost,
             'featuredProject' => $featuredProject,
-            'activePoll' => $activePoll,
             'marketData' => $marketData->current(),
             'rentRate' => Setting::get('rent_increase_rate'),
             'rentPeriod' => Setting::get('rent_increase_period'),

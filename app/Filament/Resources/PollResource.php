@@ -50,7 +50,7 @@ class PollResource extends Resource
                         'closed' => 'Kapalı',
                     ])
                     ->default('draft')
-                    ->helperText('Bir anketi yayına aldığınızda daha önce yayında olan anket otomatik kapanır.')
+                    ->helperText('Yayın tarihleri uygun anketlerden ziyaretçiye oturum başına yalnızca biri gösterilir.')
                     ->required(),
                 Select::make('results_visibility')
                     ->label('Sonuçları Göster')

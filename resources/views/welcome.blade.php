@@ -111,7 +111,6 @@
         </main>
     </div>
 
-    @if($activePoll)<x-active-poll :poll="$activePoll" />@endif
     @push('scripts')
     <style>
 

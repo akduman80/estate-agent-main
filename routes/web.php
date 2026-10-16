@@ -24,6 +24,7 @@ use App\Livewire\BlogList;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/anketler/aktif', [PollVoteController::class, 'active'])->name('polls.active');
 
 Route::post('/anketler/{poll}/oy', PollVoteController::class)
     ->middleware('throttle:10,1')
