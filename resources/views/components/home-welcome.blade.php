@@ -10,6 +10,8 @@
     }
     $next = collect($schedule)->first(fn ($item) => strtotime($item['at']) > time());
 @endphp
+<div class="home-welcome-disclosure" data-welcome-disclosure>
+<div class="home-welcome-disclosure__clip" id="home-welcome-content">
 <section class="home-welcome home-welcome--prayers" aria-label="Hoş geldiniz">
     <img class="home-welcome__architecture home-welcome__architecture--left" src="{{ asset('images/welcome/house-left.svg') }}" width="420" height="150" alt="" aria-hidden="true">
     <div class="home-welcome__copy">
@@ -51,6 +53,14 @@
     </aside>
     </div>
 </section>
+</div>
+</div>
+<div class="home-welcome-control" data-welcome-control hidden>
+    <button type="button" data-welcome-toggle aria-expanded="true" aria-controls="home-welcome-content" aria-label="Karşılama, hava durumu ve namaz vakitleri alanını kapat" title="Üst alanı kapat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 15 7-7 7 7" /></svg>
+    </button>
+</div>
+<script src="{{ asset('js/home-welcome-toggle.js') }}?v={{ filemtime(public_path('js/home-welcome-toggle.js')) }}" defer></script>
 <script>
     // Reload an open page at the Istanbul date change; hide old values first.
     (() => {
