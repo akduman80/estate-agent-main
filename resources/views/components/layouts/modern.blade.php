@@ -25,7 +25,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @if(request()->routeIs('home'))
-        <link rel="stylesheet" href="{{ asset('css/home-welcome.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/home-welcome.css') }}?v={{ filemtime(public_path('css/home-welcome.css')) }}">
     @endif
     @stack('head')
     @include('partials.pwa', ['pwaAdmin' => false])
