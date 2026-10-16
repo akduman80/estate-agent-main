@@ -24,10 +24,15 @@ class PrepareHomeAdvertisements extends Command
             return self::SUCCESS;
         }
         $directory = Storage::disk('local')->path('advertisements');
-        if (! is_dir($directory) && ! mkdir($directory, 0700, true) && ! is_dir($directory)) {
+        if (! is_dir($directory) && ! mkdir($directory, 0770, true) && ! is_dir($directory)) {
             throw new RuntimeException('Reklam yedek klasörü oluşturulamadı.');
         }
+        @chmod($directory, 0770);
         $lock = fopen($directory.'/prepare.lock', 'c');
+        if ($lock) {
+            // Deployment and PHP-FPM share the application's Unix group.
+            @chmod($directory.'/prepare.lock', 0660);
+        }
         if (! $lock || ! flock($lock, LOCK_EX | LOCK_NB)) {
             $this->error('Reklam hazırlığı başka bir işlemde çalışıyor.');
 
