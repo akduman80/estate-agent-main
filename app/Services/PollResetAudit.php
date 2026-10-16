@@ -22,6 +22,13 @@ class PollResetAudit
         if (! $disk->put(self::PATH, $content, 'private') || $disk->get(self::PATH) !== $content) {
             throw new \RuntimeException('Anket işlem raporu doğrulanamadı.');
         }
+        // Deployment and HTTP run as different users in the same application group.
+        // Share only the sanitized status; vote backup files retain owner-only access.
+        if (PHP_OS_FAMILY !== 'Windows') {
+            if (! chmod(dirname($disk->path(self::PATH)), 0750) || ! chmod($disk->path(self::PATH), 0640)) {
+                throw new \RuntimeException('Anket durum raporu uygulama grubuyla paylaşılamadı.');
+            }
+        }
     }
 
     public static function publicStatus(): ?array
