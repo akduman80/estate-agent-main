@@ -6,7 +6,6 @@ use App\Models\Poll;
 use App\Models\PollOption;
 use App\Models\PollVote;
 use App\Services\PollVoter;
-use App\Services\PollResetAudit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
@@ -30,7 +29,7 @@ class PollVoteController extends Controller
             'ends_at' => $poll->ends_at?->toIso8601String(),
             'url' => route('polls.vote', $poll),
             'options' => $poll->options->map(fn ($option) => ['id' => $option->id, 'text' => $option->text]),
-        ] : null, 'maintenance' => PollResetAudit::publicStatus()])->header('Cache-Control', 'no-store, private');
+        ] : null])->header('Cache-Control', 'no-store, private');
     }
 
     public function __invoke(Request $request, Poll $poll): RedirectResponse|JsonResponse
