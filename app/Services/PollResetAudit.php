@@ -35,7 +35,7 @@ class PollResetAudit
     {
         $report = self::read();
         return $report ? array_intersect_key($report, array_flip([
-            'match_count', 'poll_id', 'status', 'starts_at', 'ends_at', 'backup_verified',
+            'match_count', 'poll_id', 'title', 'question', 'status', 'starts_at', 'ends_at', 'backup_verified',
             'reset_completed', 'period', 'test_votes_removed',
         ])) : null;
     }

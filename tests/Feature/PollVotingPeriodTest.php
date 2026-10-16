@@ -79,6 +79,19 @@ class PollVotingPeriodTest extends TestCase
         $this->assertNull($poll->fresh()->voting_reset_at);
     }
 
+    public function test_named_poll_preflight_can_resolve_a_unique_title_without_changing_votes(): void
+    {
+        $poll = $this->poll();
+        $poll->update(['title' => 'WEB SİTEMİZ SİZCE OLMUŞ MU?']);
+        $migration = require database_path('migrations/2026_10_16_000004_identify_and_backup_named_site_poll_once.php');
+        $migration->up();
+        $report = \App\Services\PollResetAudit::read();
+        $this->assertSame(1, $report['match_count']);
+        $this->assertSame($poll->id, $report['poll_id']);
+        $this->assertTrue($report['backup_verified']);
+        $this->assertNull($poll->fresh()->voting_period);
+    }
+
     public function test_live_preflight_requires_a_unique_question_and_preserves_votes(): void
     {
         $poll = $this->poll();
