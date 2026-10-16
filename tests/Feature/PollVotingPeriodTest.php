@@ -92,6 +92,33 @@ class PollVotingPeriodTest extends TestCase
         $this->assertNull($poll->fresh()->voting_period);
     }
 
+    public function test_verified_live_reset_migration_is_scoped_and_cannot_repeat_the_reset(): void
+    {
+        $poll = $this->poll();
+        $this->assertSame(1, $poll->id);
+        $poll->update(['title' => 'WEB SİTEMİZ SİZCE OLMUŞMU ?']);
+        $other = $this->poll();
+        $option = $poll->options->first()->id;
+        $this->postJson(route('polls.vote', $poll), ['option_id' => $option])->assertOk();
+        $this->postJson(route('polls.vote', $other), ['option_id' => $other->options->first()->id])->assertOk();
+        $prepare = require database_path('migrations/2026_10_16_000004_identify_and_backup_named_site_poll_once.php');
+        $prepare->up();
+        $reset = require database_path('migrations/2026_10_16_000005_reset_verified_site_poll_one_once.php');
+        $reset->up();
+        $report = \App\Services\PollResetAudit::read();
+        $this->assertTrue($report['reset_completed']);
+        $this->assertTrue($report['zero_votes_verified_at_reset']);
+        $this->assertSame(0, $poll->votes()->count());
+        $this->assertSame(1, $other->votes()->count());
+        $this->postJson(route('polls.vote', $poll), [
+            'option_id' => $option, 'period' => $report['period'],
+            'voter_token' => '11111111-1111-4111-8111-111111111111',
+        ])->assertOk();
+        $reset->up();
+        $this->assertSame(1, $poll->votes()->count());
+        $this->assertSame($report['period'], $poll->fresh()->voting_period);
+    }
+
     public function test_live_preflight_requires_a_unique_question_and_preserves_votes(): void
     {
         $poll = $this->poll();
