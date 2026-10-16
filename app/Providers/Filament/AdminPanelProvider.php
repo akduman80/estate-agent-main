@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
+use App\Support\AdminNavigation;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,6 +28,12 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->darkMode()
+            ->navigation(fn (\Filament\Navigation\NavigationBuilder $builder) => AdminNavigation::build($builder))
+            ->renderHook(
+                PanelsRenderHook::TOPBAR_END,
+                fn () => view('filament.admin.theme-switcher'),
+            )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn () => view('partials.pwa', ['pwaAdmin' => true]),
