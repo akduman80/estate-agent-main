@@ -79,6 +79,29 @@ class PollVotingPeriodTest extends TestCase
         $this->assertNull($poll->fresh()->voting_reset_at);
     }
 
+    public function test_live_preflight_requires_a_unique_question_and_preserves_votes(): void
+    {
+        $poll = $this->poll();
+        $poll->update(['question' => '<p>WEB SİTEMİZ SİZCE OLMUŞ MU?</p>']);
+        $this->postJson(route('polls.vote', $poll), ['option_id' => $poll->options->first()->id])->assertOk();
+        $migration = require database_path('migrations/2026_10_16_000002_backup_requested_site_poll_once.php');
+        $migration->up();
+        $report = \App\Services\PollResetAudit::read();
+        $this->assertSame(1, $report['match_count']);
+        $this->assertSame($poll->id, $report['poll_id']);
+        $this->assertTrue($report['backup_verified']);
+        $this->assertFalse($report['reset_completed']);
+        $backup = json_decode(Storage::disk('local')->get($report['backup_path']), true);
+        $this->assertCount(1, $backup['votes']);
+        $this->assertSame(1, $poll->votes()->count());
+        $other = $this->poll();
+        $other->update(['question' => 'Web sitemiz sizce olmuş mu?']);
+        $migration->up();
+        $this->assertSame(2, \App\Services\PollResetAudit::read()['match_count']);
+        $this->assertSame(1, $poll->votes()->count());
+        $this->assertNull($poll->fresh()->voting_period);
+    }
+
     public function test_members_can_vote_again_after_reset_and_only_once_across_browsers(): void
     {
         $poll = $this->poll();
