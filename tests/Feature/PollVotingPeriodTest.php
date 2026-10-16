@@ -140,6 +140,30 @@ class PollVotingPeriodTest extends TestCase
         $this->assertSame(1, $poll->votes()->count());
     }
 
+    public function test_live_cleanup_removes_only_the_two_recorded_test_identities(): void
+    {
+        $poll = $this->poll();
+        $period = '32b5e655-e019-46e5-b9bb-6542f9f7a107';
+        $poll->update(['voting_period' => $period]);
+        \App\Services\PollResetAudit::write(['period' => $period, 'reset_completed' => true]);
+        foreach (['0c4c1eca-fe1b-49c7-a56c-e0e0d0080b08', '8239787c-362e-4445-a9e3-ab6c273b4c0a', '11111111-1111-4111-8111-111111111111'] as $token) {
+            $this->postJson(route('polls.vote', $poll), [
+                'option_id' => $poll->options->first()->id, 'voter_token' => $token, 'period' => $period,
+            ])->assertOk();
+        }
+        $cleanup = require database_path('migrations/2026_10_16_000007_remove_only_recorded_live_poll_test_votes.php');
+        $cleanup->up();
+        $this->assertSame(1, $poll->votes()->count());
+        $this->assertEquals(1, $poll->options()->sum('votes_count'));
+        $report = \App\Services\PollResetAudit::read();
+        $this->assertTrue($report['test_votes_removed']);
+        $this->assertSame(2, $report['removed_test_vote_count']);
+        $this->assertTrue($report['counters_consistent_after_cleanup']);
+        $cleanup->up();
+        $this->assertSame(1, $poll->votes()->count());
+        $this->assertSame($period, $poll->fresh()->voting_period);
+    }
+
     public function test_live_preflight_requires_a_unique_question_and_preserves_votes(): void
     {
         $poll = $this->poll();
