@@ -37,6 +37,7 @@ npm run build
 
 php artisan migrate --force
 php artisan optimize:clear
+php artisan advertisements:prepare-home
 php artisan optimize
 php artisan queue:restart || true
 

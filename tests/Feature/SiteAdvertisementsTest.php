@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Advertisement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class SiteAdvertisementsTest extends TestCase
@@ -49,6 +50,9 @@ class SiteAdvertisementsTest extends TestCase
 
     public function test_home_has_one_ordered_ad_before_listings(): void
     {
+        Storage::fake('local');
+        Storage::fake('public');
+        $this->artisan('advertisements:prepare-home')->assertSuccessful();
         $html = $this->get('/')->assertOk()->getContent();
         $this->assertSame(1, substr_count($html, 'data-home-print-ad'));
         $first = strpos($html, 'reklam-01-fincan-kupa.jpg');
@@ -62,6 +66,9 @@ class SiteAdvertisementsTest extends TestCase
 
     public function test_panel_record_overrides_slot_and_respects_publication(): void
     {
+        Storage::fake('local');
+        Storage::fake('public');
+        $this->artisan('advertisements:prepare-home')->assertSuccessful();
         $record = Advertisement::create(['label' => 'Yeni fincan', 'image_path' => 'site/ads/new.jpg', 'placement' => 'home01', 'is_active' => true, 'target_url' => 'https://wa.me/905303607769?text=Yeni']);
         $this->get('/')->assertOk()->assertSee('site/ads/new.jpg', false)->assertSee('text=Yeni', false)->assertDontSee('reklam-01-fincan-kupa.jpg', false);
         foreach ([['is_active' => false], ['is_active' => true, 'starts_at' => now()->addDay()], ['starts_at' => null, 'ends_at' => now()->subDay()]] as $state) {

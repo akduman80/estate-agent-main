@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const updateLink = () => {
             const activeSlide = slides[activeIndex];
             const destination = new URL(activeSlide.dataset.destination || 'https://wa.me/905303607769');
-            if (destination.hostname === 'wa.me' && ! destination.searchParams.has('text')) destination.searchParams.set('text', activeSlide.dataset.message);
             ad.href = destination.href;
             ad.setAttribute('aria-label', activeSlide.dataset.label);
         };

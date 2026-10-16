@@ -10,6 +10,8 @@ class ListAdvertisements extends ListRecords
 {
     protected static string $resource = AdvertisementResource::class;
 
+    protected static string $view = 'filament.resources.advertisements.pages.list-advertisements';
+
     protected function getHeaderActions(): array
     {
         return [Actions\CreateAction::make()];
