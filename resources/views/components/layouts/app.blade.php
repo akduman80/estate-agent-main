@@ -68,20 +68,7 @@
                 <div class="header-half header-social">
                     <ul class="treeform-social list-inline text-right mb-0 pt-0">
                         @if($headerDocuments->isNotEmpty())
-                            <li class="dropdown header-documents-dropdown">
-                                <a href="#" class="dropdown-toggle header-documents-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-file-text-o"></i> Dokümanlar <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-right">
-                                    @foreach($headerDocuments as $index => $document)
-                                        <li>
-                                            <a href="{{ route('documents.download', ['index' => $index]) }}">
-                                                <i class="fa fa-download"></i> {{ $document['title'] }}
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </li>
+                            <li class="header-documents-dropdown"><button type="button" class="header-documents-toggle" data-documents-open aria-haspopup="dialog" aria-controls="documents-panel" aria-expanded="false"><i class="fa fa-file-text-o" aria-hidden="true"></i> Dokümanlar <span class="caret"></span></button></li>
                         @endif
 
                         @auth
@@ -221,5 +208,6 @@
         });
     });
 </script>
+@include('partials.documents-panel', ['documentDownload' => false])
 </body>
 </html>

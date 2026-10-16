@@ -53,24 +53,7 @@
 
             <div class="header-actions flex shrink-0 items-center gap-2">
                 @if($headerDocuments->isNotEmpty())
-                    <details class="group relative hidden lg:block">
-                        <summary class="flex cursor-pointer list-none items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 [&::-webkit-details-marker]:hidden">
-                            <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
-                            <span>Dokümanlar</span>
-                            <i class="fa-solid fa-chevron-down text-[10px] transition group-open:rotate-180" aria-hidden="true"></i>
-                        </summary>
-                        <div class="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-2xl">
-                            <p class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">İndirmeye hazır dokümanlar</p>
-                            @foreach($headerDocuments as $index => $document)
-                                <a href="{{ route('documents.download', ['index' => $index]) }}" download class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700">
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                                        <i class="fa-solid fa-download" aria-hidden="true"></i>
-                                    </span>
-                                    <span class="min-w-0 flex-1 font-semibold">{{ $document['title'] }}</span>
-                                </a>
-                            @endforeach
-                        </div>
-                    </details>
+                    <button type="button" data-documents-open aria-haspopup="dialog" aria-controls="documents-panel" aria-expanded="false" class="hidden lg:block cursor-pointer rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700"> <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Dokümanlar <span aria-hidden="true">⌄</span></button>
                 @endif
                 @auth
                     <a href="{{ auth()->user()->role?->getRedirectPath() ?? '/portal' }}" class="hidden items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 sm:flex">
@@ -113,20 +96,7 @@
                     <span class="rounded bg-orange-400 px-1.5 py-0.5 text-[10px] font-black uppercase leading-none text-blue-950">Yeni</span>
                 </a>
                 @if($headerDocuments->isNotEmpty())
-                    <details class="group rounded-lg border border-orange-200 bg-orange-50">
-                        <summary class="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-orange-700 [&::-webkit-details-marker]:hidden">
-                            <span class="flex items-center gap-2 font-bold"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Dokümanlar</span>
-                            <i class="fa-solid fa-chevron-down text-xs transition group-open:rotate-180" aria-hidden="true"></i>
-                        </summary>
-                        <div class="space-y-1 border-t border-orange-100 bg-white p-2">
-                            @foreach($headerDocuments as $index => $document)
-                                <a href="{{ route('documents.download', ['index' => $index]) }}" download class="flex items-center gap-2 rounded-md px-3 py-2 text-slate-700 hover:bg-orange-50 hover:text-orange-700">
-                                    <i class="fa-solid fa-download text-orange-500" aria-hidden="true"></i>
-                                    <span>{{ $document['title'] }}</span>
-                                </a>
-                            @endforeach
-                        </div>
-                    </details>
+                    <button type="button" data-documents-open aria-haspopup="dialog" aria-controls="documents-panel" aria-expanded="false" class="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-left font-bold text-orange-700">Dokümanlar <span aria-hidden="true">⌄</span></button>
                 @endif
             </div>
         </nav>
@@ -193,5 +163,6 @@
 
     @livewireScripts
     @stack('scripts')
+@include('partials.documents-panel', ['documentDownload' => true])
 </body>
 </html>
