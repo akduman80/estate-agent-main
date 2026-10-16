@@ -119,6 +119,27 @@ class PollVotingPeriodTest extends TestCase
         $this->assertSame($report['period'], $poll->fresh()->voting_period);
     }
 
+    public function test_authorized_start_change_preserves_the_period_votes_and_end_date(): void
+    {
+        $this->freezeTime();
+        $poll = $this->poll();
+        $period = '32b5e655-e019-46e5-b9bb-6542f9f7a107';
+        $poll->update(['voting_period' => $period, 'starts_at' => now()->addHour(), 'ends_at' => now()->addMonth()]);
+        $end = $poll->ends_at->toIso8601String();
+        \App\Services\PollResetAudit::write(['reset_completed' => true]);
+        $migration = require database_path('migrations/2026_10_16_000006_start_verified_site_poll_now_once.php');
+        $migration->up();
+        $this->assertSame(now()->timestamp, $poll->fresh()->starts_at->timestamp);
+        $this->assertSame($end, $poll->fresh()->ends_at->toIso8601String());
+        $this->assertSame($period, $poll->fresh()->voting_period);
+        $this->postJson(route('polls.vote', $poll), [
+            'option_id' => $poll->options->first()->id, 'period' => $period,
+            'voter_token' => '11111111-1111-4111-8111-111111111111',
+        ])->assertOk();
+        $migration->up();
+        $this->assertSame(1, $poll->votes()->count());
+    }
+
     public function test_live_preflight_requires_a_unique_question_and_preserves_votes(): void
     {
         $poll = $this->poll();
