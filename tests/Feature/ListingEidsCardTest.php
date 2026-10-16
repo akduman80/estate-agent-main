@@ -5,11 +5,48 @@ namespace Tests\Feature;
 use App\Models\BusinessProfile;
 use App\Models\Listing;
 use App\Models\ListingEidsVerification;
+use App\Models\User;
+use App\Enums\UserRole;
 use App\Support\ListingEidsCard;
 use Tests\TestCase;
 
 class ListingEidsCardTest extends TestCase
 {
+    public function test_site_owner_identity_is_scoped_and_still_requires_verification(): void
+    {
+        $listing = $this->listing();
+        $listing->source_type = 'zydemlak';
+        $listing->user_id = 1;
+        $listing->business_profile_id = null;
+        $listing->eidsVerification->user_id = 1;
+        $listing->eidsVerification->business_profile_id = null;
+        $owner = new User(['role' => UserRole::SUPERVISOR]);
+        $owner->id = 1;
+        $owner->setRelation('businessProfile', null);
+        $listing->setRelation('user', $owner);
+        $listing->setRelation('businessProfile', null);
+        $this->assertSame('ZİYADE EMLAK – Yetki Belge No: 8000022', ListingEidsCard::forListing($listing)['title']);
+
+        foreach (['pending', 'rejected', 'cancelled', 'expired'] as $status) {
+            $listing->eids_status = $status;
+            $this->assertNull(ListingEidsCard::forListing($listing));
+        }
+        $listing->eids_status = 'verified';
+        $listing->eidsVerification->expires_at = now()->subSecond();
+        $this->assertNull(ListingEidsCard::forListing($listing));
+        $listing->eidsVerification->expires_at = null;
+        $listing->source_type = 'real_estate_office';
+        $this->assertNull(ListingEidsCard::forListing($listing));
+        $listing->source_type = 'zydemlak';
+        $owner->role = UserRole::AGENT;
+        $this->assertNull(ListingEidsCard::forListing($listing));
+        $owner->role = UserRole::SUPERVISOR;
+        $owner->id = 9;
+        $listing->user_id = 9;
+        $listing->eidsVerification->user_id = 9;
+        $this->assertNull(ListingEidsCard::forListing($listing));
+    }
+
     private function listing(): Listing
     {
         $listing = new Listing(['source_type' => 'real_estate_office', 'eids_status' => 'verified', 'user_id' => 7, 'business_profile_id' => 2]);

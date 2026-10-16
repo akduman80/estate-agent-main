@@ -41,6 +41,17 @@ final class ListingEidsCard
         $name = trim((string) $profile?->office_name);
         $license = trim((string) $profile?->license_number);
 
+        // Explicit site-owner identity requested by the owner. This is display
+        // information only; it never grants or changes EIDS authorization.
+        if (! $profile && blank($listing->business_profile_id)
+            && $listing->source_type === 'zydemlak'
+            && (int) $listing->user_id === 1
+            && (int) $listing->user?->id === 1
+            && $role === UserRole::SUPERVISOR) {
+            $name = 'ZİYADE EMLAK';
+            $license = '8000022';
+        }
+
         if ($name === '' || $license === '') {
             return null;
         }
