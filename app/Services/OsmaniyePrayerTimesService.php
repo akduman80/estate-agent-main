@@ -11,9 +11,9 @@ class OsmaniyePrayerTimesService
 {
     public const SOURCE_URL = 'https://namazvakitleri.diyanet.gov.tr/tr-TR/9788/osmaniye-icin-namaz';
 
-    public function today(): array
+    public function today(int $daysAhead = 0): array
     {
-        $today = now('Europe/Istanbul')->locale('tr');
+        $today = now('Europe/Istanbul')->addDays($daysAhead)->locale('tr');
         $date = $today->toDateString();
         $label = $today->translatedFormat('d F Y l');
 
