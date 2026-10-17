@@ -8,10 +8,18 @@
     <div class="documents-search"><label for="documents-search">Belge ara</label><input id="documents-search" type="search" placeholder="Belge adı yazın…" autocomplete="off"></div>
     <div class="documents-list" tabindex="0" role="region" aria-label="Belge listesi">
         @foreach($headerDocuments as $index => $document)
-            <a class="documents-link" href="{{ route('documents.download', ['index' => $index]) }}" @if($documentDownload) download @endif><span class="documents-icon" aria-hidden="true">↓</span><span>{{ $document['title'] }}</span></a>
+            <article class="documents-entry" data-document-title="{{ $document['title'] }}">
+                <a class="documents-link" href="{{ route('documents.download', ['index' => $index]) }}" @if($documentDownload) download @endif aria-label="{{ $document['title'] }} — Orijinali İndir"><span class="documents-icon" aria-hidden="true">↓</span><span>{{ $document['title'] }}</span></a>
+                <div class="documents-actions" role="group" aria-label="{{ $document['title'] }} işlemleri">
+                    <button type="button" data-document-action="download">Orijinali İndir</button>
+                    <button type="button" data-document-action="fill">Belgeyi Doldur</button>
+                    <button type="button" data-document-action="edit">Belgeyi Düzenle</button>
+                </div>
+            </article>
         @endforeach
         <div class="documents-empty" hidden><p>Aramanızla eşleşen belge bulunamadı.</p><button type="button" data-documents-clear>Aramayı temizle</button></div>
     </div>
 </dialog>
+@include('partials.document-workspace')
 <script src="{{ asset('js/documents-panel.js') }}" defer></script>
 @endif

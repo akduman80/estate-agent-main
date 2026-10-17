@@ -4,13 +4,19 @@
     panel.dataset.ready = 'true';
     const search = panel.querySelector('input');
     const links = [...panel.querySelectorAll('.documents-link')];
+    const entries = [...panel.querySelectorAll('.documents-entry')];
     const viewport = window.visualViewport;
     let trigger, saved;
     const fold = value => value.normalize('NFC').toLocaleLowerCase('tr-TR');
     function filter() {
         const query = fold(search.value.trim());
         let count = 0;
-        links.forEach(link => { link.hidden = !fold(link.textContent).includes(query); if (!link.hidden) count++; });
+        links.forEach((link, index) => {
+            const hidden = !fold(link.textContent).includes(query);
+            link.hidden = hidden;
+            if (entries[index]) entries[index].hidden = hidden;
+            if (!hidden) count++;
+        });
         panel.querySelector('[data-documents-count]').textContent = query ? `${count} / ${links.length} belge` : `${links.length} belge`;
         panel.querySelector('.documents-empty').hidden = count !== 0;
         panel.querySelector('.documents-list').scrollTop = 0;
@@ -47,6 +53,16 @@
         panel.showModal(); button.setAttribute('aria-expanded', 'true'); position(); search.focus({preventScroll:true});
     }));
     panel.querySelector('[data-documents-close]').addEventListener('click', () => panel.close());
+    panel.addEventListener('click', event => {
+        const action = event.target.closest('[data-document-action]');
+        if (!action) return;
+        const entry = action.closest('.documents-entry');
+        const link = entry.querySelector('.documents-link');
+        if (action.dataset.documentAction === 'download') { link.click(); return; }
+        panel.dispatchEvent(new CustomEvent('document-workspace:open', {bubbles: true, detail: {
+            title: entry.dataset.documentTitle, url: link.href, mode: action.dataset.documentAction, trigger: action,
+        }}));
+    });
     panel.addEventListener('click', event => { if (event.target === panel) { const r = panel.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) panel.close(); } });
     panel.addEventListener('close', () => {
         if (saved) { const {x,y,...styles} = saved; Object.assign(document.body.style, styles); window.scrollTo(x,y); saved = null; }
