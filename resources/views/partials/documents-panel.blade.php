@@ -21,5 +21,5 @@
     </div>
 </dialog>
 @include('partials.document-workspace')
-<script src="{{ asset('js/documents-panel.js') }}" defer></script>
+<script src="{{ asset('js/documents-panel.js') }}?v=documents-workspace-20261017" defer></script>
 @endif
