@@ -19,13 +19,13 @@ export const templates = {
     '1dc3d14ca5a5d05e0183893cb7c92adaf5b06f5a62481a52706f1364b2a2d60f': {
         id: 'tahliye-v1', size: [595.32, 841.92], pages: 1,
         fields: [
-            {key: 'tenant', label: 'Kiracının adı soyadı', y: 708.10},
-            {key: 'tenantIdentity', label: 'Kiracının T.C. kimlik numarası', y: 669.10},
-            {key: 'landlord', label: 'Kiraya verenin adı soyadı', y: 643.18},
-            {key: 'landlordIdentity', label: 'Kiraya verenin T.C. kimlik numarası', y: 604.06},
-            {key: 'address', label: 'Kiralananın adresi', y: 578.23, lines: 2},
-            {key: 'commitmentDate', label: 'Taahhüt tarihi', y: 552.31},
-            {key: 'vacateDate', label: 'Tahliye tarihi', y: 526.51},
+            {key: 'tenant', kind: 'name', label: 'Kiracının adı soyadı', y: 708.10},
+            {key: 'tenantIdentity', kind: 'identity', label: 'Kiracının T.C. kimlik numarası', y: 669.10},
+            {key: 'landlord', kind: 'name', label: 'Kiraya verenin adı soyadı', y: 643.18},
+            {key: 'landlordIdentity', kind: 'identity', label: 'Kiraya verenin T.C. kimlik numarası', y: 604.06},
+            {key: 'address', kind: 'address', label: 'Mecurun (kiralananın) adresi', y: 578.23, lines: 2},
+            {key: 'commitmentDate', kind: 'date', label: 'Taahhüt tarihi', y: 552.31},
+            {key: 'vacateDate', kind: 'date', label: 'Tahliye tarihi', y: 526.51},
         ].map(field => ({...field, positions: [{page: 1, x: 225, y: field.y, width: 299, lines: field.lines || 1}]})),
     },
 };

@@ -1,4 +1,7 @@
-﻿import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js';
+import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v=documents-20261018';
+
+import {SmartFields, createFieldControl, readField} from './smart-fields.js';
+import {validateField} from './field-rules.js';
 
 const dialog = document.getElementById('document-workspace');
 if (dialog) initialize();
@@ -8,7 +11,8 @@ function initialize() {
     const form = find('fields'), blocks = find('blocks');
     const canvas = dialog.querySelector('canvas'), context = canvas.getContext('2d');
     const modes = [...dialog.querySelectorAll('[data-workspace-mode]')];
-    const labels = {paragraph: 'Paragraf', article: 'Madde', note: 'Açıklama', dateAmount: 'Tarih / tutar', table: 'Tablo', signature: 'İmza alanı'};
+    const labels = {paragraph: 'Paragraf', article: 'Madde', note: 'Açıklama', dateAmount: 'Tarih / tutar', table: 'Tablo', signature: 'İmza alanı', field: 'Bilgi alanı'};
+    const smart = new SmartFields(dialog.querySelector('.dw-controls'), find('voice-status'));
     let session = null, generation = 0, renderTask = null, resizeTimer;
     let baseCanvas = null, viewport = null;
     const draft = () => session.drafts[session.mode];
@@ -31,6 +35,7 @@ function initialize() {
         rebuildControls(); paintValues();
     }
     function rebuildControls() {
+        smart.cancel();
         form.replaceChildren(); blocks.replaceChildren();
         const template = session.template;
         find('fill-notice').textContent = template
@@ -38,8 +43,7 @@ function initialize() {
             : 'Bu belgenin alan eşlemesi henüz hazır değil. Doldurma kullanılamıyor; orijinalini indirebilirsiniz.';
         if (template) for (const field of template.fields) {
             const label = document.createElement('label'); label.className = 'dw-field'; label.textContent = field.label;
-            const input = document.createElement(field.lines > 1 ? 'textarea' : 'input');
-            if (input.tagName === 'INPUT') input.type = 'text';
+            const input = createFieldControl(field.kind, field.lines > 1);
             input.name = field.key; input.value = session.drafts.fill.state.values[field.key] || '';
             input.addEventListener('input', () => {
                 session.drafts.fill.change(state => { state.values[field.key] = input.value; });
@@ -48,6 +52,7 @@ function initialize() {
             label.append(input); form.append(label);
         }
         for (const block of session.drafts.edit.state.blocks) renderBlock(block);
+        smart.refresh();
         history();
     }
     function editBlock(id, update) {
@@ -63,23 +68,37 @@ function initialize() {
             rebuildControls();
         }));
         section.append(heading);
-        function field(labelText, key, multiline = false) {
+        function field(labelText, key, multiline = false, kind = 'text') {
             const label = document.createElement('label'); label.className = 'dw-field'; label.textContent = labelText;
-            const input = document.createElement(multiline ? 'textarea' : 'input');
-            if (!multiline) input.type = 'text';
-            input.value = block[key] || '';
-            input.addEventListener('input', () => editBlock(block.id, target => { target[key] = input.value; }));
+            const input = createFieldControl(kind, multiline);
+            const metadata = block.fieldData?.[key];
+            if (metadata?.country) input.dataset.country = metadata.country;
+            if (metadata?.currency) input.dataset.currency = metadata.currency;
+            input.value = metadata?.raw ?? block[key] ?? '';
+            input.addEventListener('input', () => editBlock(block.id, target => {
+                const data = readField(input);
+                // Canonical data is separate from the transient, editable display buffer.
+                target[key] = ['phone', 'date', 'amount'].includes(kind) ? (data.canonical ?? '') : input.value;
+                target.fieldData ||= {}; target.fieldData[key] = data;
+            }));
             label.append(input); section.append(label);
         }
-        if (block.type === 'table') {
+        if (block.type === 'field') {
+            const select = document.createElement('select'); select.className = 'dw-field-option'; select.setAttribute('aria-label', 'Bilgi alanının türü');
+            const kinds = {name: 'Ad soyad', identity: 'T.C. kimlik numarası', phone: 'Telefon', email: 'E-posta', address: 'Adres', city: 'İl', district: 'İlçe', neighborhood: 'Mahalle', date: 'Tarih', amount: 'Tutar', text: 'Serbest metin'};
+            for (const [value, text] of Object.entries(kinds)) { const option = document.createElement('option'); option.value = value; option.textContent = text; select.append(option); }
+            select.value = block.kind || 'text';
+            select.addEventListener('change', () => { editBlock(block.id, target => { target.kind = select.value; target.text = ''; target.fieldData = {}; }); rebuildControls(); }); section.append(select);
+            field(kinds[block.kind || 'text'], 'text', false, block.kind || 'text');
+        } else if (block.type === 'table') {
             const scroll = document.createElement('div'); scroll.className = 'dw-table-scroll';
             const table = document.createElement('table'); table.setAttribute('aria-label', 'Çalışma kopyasına eklenen tablo');
             const body = document.createElement('tbody');
             block.rows.forEach((row, rowIndex) => {
                 const tr = document.createElement('tr');
                 row.forEach((value, columnIndex) => {
-                    const td = document.createElement('td'), input = document.createElement('input');
-                    input.type = 'text'; input.value = value;
+                    const td = document.createElement('td'), input = createFieldControl('text');
+                    input.value = value;
                     input.setAttribute('aria-label', `${rowIndex + 1}. satır, ${columnIndex + 1}. sütun`);
                     input.addEventListener('input', () => editBlock(block.id, target => { target.rows[rowIndex][columnIndex] = input.value; }));
                     td.append(input); tr.append(td);
@@ -91,11 +110,11 @@ function initialize() {
             table.append(body); scroll.append(table); section.append(scroll);
             section.append(button('Satır ekle', () => { editBlock(block.id, target => target.rows.push(['', ''])); rebuildControls(); }));
         } else if (block.type === 'dateAmount') {
-            field('Tarih', 'date'); field('Tutar ve para birimi', 'amount'); field('Açıklama', 'text', true);
+            field('Tarih', 'date', false, 'date'); field('Tutar', 'amount', false, 'amount'); field('Açıklama', 'text', true, 'description');
         } else if (block.type === 'signature') {
-            field('İmzalayacak kişinin adı / unvanı', 'text');
+            field('İmzalayacak kişinin adı / unvanı', 'text', false, 'name');
             const note = document.createElement('p'); note.textContent = 'İmza için boş alan. Elektronik imza oluşturulmaz.'; section.append(note);
-        } else field(labels[block.type], 'text', true);
+        } else field(labels[block.type], 'text', true, {note: 'description', paragraph: 'paragraph', article: 'article'}[block.type] || 'text');
         blocks.append(section);
     }
     function paintValues() {
@@ -104,9 +123,11 @@ function initialize() {
         context.drawImage(baseCanvas, 0, 0);
         if (session.mode !== 'fill' || !session.template) return;
         const scale = viewport.scale, values = session.drafts.fill.state.values;
-        let overflowing = false;
+        let overflowing = false, invalid = false;
         for (const field of session.template.fields) {
-            const value = (values[field.key] || '').trim(); if (!value) continue;
+            const checked = validateField(values[field.key] || '', field.kind);
+            if (!checked.valid) { invalid = true; continue; }
+            const value = checked.display.trim(); if (!value) continue;
             for (const position of field.positions.filter(item => item.page === session.page)) {
                 let fontSize = 11, lines;
                 const wrap = () => {
@@ -128,7 +149,7 @@ function initialize() {
                 });
             }
         }
-        say(overflowing ? 'Bazı bilgiler ayrılan alana sığmıyor ve önizlemeye aktarılmadı. Daha kısa bilgi girin.' : 'Gerçek şablon üzerinde önizleme. Bilgiler sunucuya gönderilmez; çıktı henüz sunulmaz.');
+        say(invalid ? 'İşaretli alanları düzeltin. Geçersiz bilgiler önizlemeye aktarılmadı.' : overflowing ? 'Bazı bilgiler ayrılan alana sığmıyor ve önizlemeye aktarılmadı. Daha kısa bilgi girin.' : 'Gerçek şablon üzerinde önizleme. Bilgiler sunucuya gönderilmez; çıktı henüz sunulmaz.');
     }
     async function renderPage(token = generation) {
         if (!session?.pdf || !dialog.open) return;
@@ -218,6 +239,7 @@ function initialize() {
     find('close').addEventListener('click', close);
     dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
     dialog.addEventListener('close', () => {
+        smart.cancel();
         ++generation; session?.abort.abort(); renderTask?.cancel(); renderTask = null;
         const trigger = session?.trigger;
         const task = session?.loadingTask;

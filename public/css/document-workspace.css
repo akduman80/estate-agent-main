@@ -40,4 +40,17 @@
 .dw-table-scroll{overflow:auto}
 .dw-history{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .dw-unsaved{margin-top:8px;color:#64748b;font-size:12px}
+.dw-input-group{display:flex;align-items:flex-start;gap:6px;min-width:0;max-width:100%;margin-top:4px}
+.dw-controls .dw-input-group>input,.dw-controls .dw-input-group>textarea{flex:1 1 0;min-width:0;width:0;margin-top:0}
+.dw-controls .dw-input-group>.dw-smart-input{min-height:44px;border:1px solid #94a3b8;border-radius:6px;background:#fff;color:#1e293b;padding:8px;font:inherit;font-size:16px}
+.dw-controls .dw-input-group>textarea.dw-smart-input{min-height:80px;resize:vertical}
+.documents-workspace .dw-mic{display:inline-flex;justify-content:center;align-items:center;flex:0 0 44px;width:44px;min-width:44px;height:44px;padding:8px;border:1px solid #fdba74;background:#fff7ed;color:#9a3412}
+.documents-workspace .dw-mic.is-listening{background:#9a3412;color:#fff;border-color:#9a3412;box-shadow:0 0 0 3px #fed7aa}
+.documents-workspace .dw-mic:disabled{border-color:#cbd5e1;background:#f1f5f9;color:#64748b;opacity:.65}
+.dw-field-error{display:block;color:#b91c1c;font-size:12px;font-weight:400;line-height:1.45;margin-top:4px;overflow-wrap:anywhere}
+.dw-field-error:empty{display:none}
+.dw-controls .dw-input-group>[aria-invalid=true]{border-color:#b91c1c}
+.dw-field-option{display:block;width:100%;max-width:100%;min-width:0;min-height:44px;margin:6px 0;border:1px solid #94a3b8;border-radius:6px;padding:6px;background:#fff;color:#1e293b;font:inherit;font-size:16px}
+.dw-voice-info,.dw-voice-status{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.dw-voice-info{color:#475569}.dw-voice-status{color:#9a3412;min-height:18px}
 @media(max-width:767px){.documents-workspace{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border:0;border-radius:0;margin:0}.dw-heading{padding:12px max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left))}.dw-heading h2{font-size:16px}.dw-body{display:flex;flex-direction:column;overflow:auto}.dw-controls{overflow:visible;border-right:0;border-bottom:1px solid #cbd5e1;flex:none}.dw-preview{overflow:visible;flex:none;padding:12px}.dw-modes{padding:8px 12px}.dw-status{padding:8px 12px}.dw-paper{max-width:680px;margin:auto}.dw-controls input,.dw-controls textarea{font-size:16px}}

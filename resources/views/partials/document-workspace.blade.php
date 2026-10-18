@@ -1,4 +1,4 @@
-﻿<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}">
+<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=documents-20261018">
 <dialog id="document-workspace" class="documents-workspace" aria-labelledby="document-workspace-title" data-pdf-base="{{ asset('vendor/pdfjs') }}/">
     <header class="dw-heading">
         <div><h2 id="document-workspace-title">Belge çalışma alanı</h2><p data-workspace-subtitle>Orijinal belge korunur.</p></div>
@@ -12,6 +12,8 @@
     <p class="dw-status" data-workspace-status role="status" aria-live="polite">Belge hazırlanıyor…</p>
     <div class="dw-body">
         <section class="dw-controls" aria-label="Belge işlemleri">
+            <p class="dw-voice-info">Sesli giriş isteğe bağlıdır. Tarayıcının konuşma hizmeti sesi hizmet sağlayıcısına iletebilir. Bu site ses dosyası oluşturmaz veya saklamaz. Mikrofon yalnız dokunduğunuzda açılır.</p>
+            <p class="dw-voice-status" data-workspace-voice-status role="status" aria-live="polite"></p>
             <div class="dw-history">
                 <button type="button" data-workspace-undo disabled>Geri al</button>
                 <button type="button" data-workspace-redo disabled>Yeniden yap</button>
@@ -32,6 +34,7 @@
                     <button type="button" data-workspace-add="dateAmount">Tarih / tutar ekle</button>
                     <button type="button" data-workspace-add="table">Tablo ekle</button>
                     <button type="button" data-workspace-add="signature">İmza alanı ekle</button>
+                    <button type="button" data-workspace-add="field">Bilgi alanı ekle</button>
                 </div>
                 <div data-workspace-blocks></div>
             </div>
@@ -48,5 +51,5 @@
         </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018"></script>
 
