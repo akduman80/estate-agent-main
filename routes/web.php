@@ -105,3 +105,5 @@ Route::get('/mobile-draft-media/{import}/{index}', function (\App\Models\MobileD
     abort_unless($file && \Illuminate\Support\Facades\Storage::disk($file['disk'])->exists($file['path']), 404);
     return \Illuminate\Support\Facades\Storage::disk($file['disk'])->download($file['path']);
 })->middleware('auth')->name('mobile-draft-media');
+
+require __DIR__.'/document-tools.php';

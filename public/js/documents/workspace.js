@@ -3,6 +3,7 @@ import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v
 import {SmartFields, createFieldControl, readField} from './smart-fields.js?v=documents-20261018-stage4';
 import {validateField} from './field-rules.js';
 import {buildPdf} from './pdf-output.js';
+import {leaseHash, leaseTemplate, renderLease} from './native-lease.js';
 
 const dialog = document.getElementById('document-workspace');
 if (dialog) initialize();
@@ -45,6 +46,7 @@ function initialize() {
         find('fill-notice').textContent = template
             ? 'Eşlenmiş alanlar gerçek şablona işlenir. Sabit metin ve yerleşim korunur. Tahliye şablonunun alt tarih ve imza satırları eşleme dışındadır.'
             : 'Bu belgenin alan eşlemesi henüz hazır değil. Doldurma kullanılamıyor; orijinalini indirebilirsiniz.';
+        if (session.nativeLease) find('fill-notice').textContent = 'Gerçek Word şablonunun 18 tablo alanı doldurulur. Bilgiler yalnız dönüşüm için sunucuya iletilir; geçici çalışma dosyaları işlem sonunda temizlenir. Alt banka, mahkeme ve imza satırları bu formda eşlenmemiştir.';
         if (template) for (const field of template.fields) {
             const label = document.createElement('label'); label.className = 'dw-field'; label.textContent = field.label;
             const input = createFieldControl(field.kind, field.lines > 1 || field.positions?.some(p => (p.lines || 1) > 1 || (p.height || 0) > 25));
@@ -126,6 +128,8 @@ function initialize() {
     }
     function outputButtons(ready) {
         for (const name of ['pdf', 'print', 'share']) find(name).disabled = !ready;
+        find('word').disabled = !(ready && session?.nativeLease && session.mode === 'fill' && session.wordOutput);
+        find('word').textContent = session?.nativeLease && session.mode === 'fill' ? 'Word İndir' : 'Word İndir (desteklenmiyor)';
     }
     function paintValues() {
         if (!session?.pdf) return;
@@ -134,30 +138,51 @@ function initialize() {
         if (key === session.previewKey) return;
         session.previewKey = key; session.output = null; outputButtons(false);
         clearTimeout(outputTimer); const version = ++outputVersion;
-        outputTimer = setTimeout(() => updateOutput(version, false), 250);
+        outputTimer = setTimeout(() => updateOutput(version, false), session.nativeLease ? 1200 : 250);
     }
     async function updateOutput(version, explicit) {
         const current = session; if (!current?.pdf) return;
+        if(current.nativeBusy) { clearTimeout(outputTimer); outputTimer=setTimeout(()=>updateOutput(version,explicit),500); return; }
         try {
             if (current.mode === 'fill' && !current.template) throw new Error('Alan eşlemesi hazır değil; doldurulmuş çıktı oluşturulamaz.');
-            const bytes = await buildPdf(current.source, current.template, structuredClone(draft().state), current.mode);
+            let bytes;
+            if(current.nativeLease && current.mode === 'fill') {
+                current.nativeBusy=true;
+                const result=await renderLease(dialog,structuredClone(draft().state.values),current.abort.signal);
+                bytes=result.pdf;
+                if(current===session && version===outputVersion) current.wordOutput=result.docx;
+            } else bytes = await buildPdf(current.source, current.template, structuredClone(draft().state), current.mode);
             if (current !== session || version !== outputVersion) return;
             const pdfBase = new URL(dialog.dataset.pdfBase, location.href);
             const pdfjs = await import(new URL('pdf.min.js', pdfBase).href);
             const loading = pdfjs.getDocument({data: bytes.slice(), isEvalSupported: false, enableXfa: false, standardFontDataUrl: new URL('standard_fonts/', pdfBase).href});
             const pdf = await loading.promise;
             if (current !== session || version !== outputVersion) { await loading.destroy(); return; }
+            if(current.nativeLease && current.mode==='fill') {
+                try { await verifyLeaseLayout(current.baselinePdf,pdf); }
+                catch(error) { await loading.destroy(); throw error; }
+            }
             renderTask?.cancel(); renderTask = null;
             const old = current.outputTask; current.outputTask = loading; current.pdf = pdf;
             current.page = Math.min(current.page, pdf.numPages); current.output = bytes;
             find('paper').hidden = false;
             await renderPage(); if (old) await old.destroy();
             if (explicit) { outputButtons(true); find('output-status').textContent = 'Belge hazır. Ön izleme ile indirilen PDF aynı dosyadır.'; }
-            say('Canlı ön izleme: orijinal sayfalar ve çalışma kopyanız. Bilgiler sunucuya gönderilmez.');
+            say(current.nativeLease ? 'Gerçek DOCX şablonundan ön izleme hazır. Geçici dönüşüm dosyaları temizlendi.' : 'Canlı ön izleme: orijinal sayfalar ve çalışma kopyanız. Bilgiler sunucuya gönderilmez.');
         } catch (error) {
             if (current !== session || version !== outputVersion) return;
             current.output = null; outputButtons(false); find('output-status').textContent = error.message;
             if (current.template || current.mode === 'edit') { find('paper').hidden = true; say(error.message); }
+        } finally { current.nativeBusy=false; }
+    }
+    async function verifyLeaseLayout(original,output) {
+        if(original.numPages!==output.numPages) throw new Error('Metin orijinal sayfa düzenini aşıyor. Alanları kısaltın.');
+        for(let pageNumber=1;pageNumber<=original.numPages;pageNumber++) {
+            const baseline=await original.getPage(pageNumber),candidate=await output.getPage(pageNumber);
+            const a=await baseline.getTextContent(),b=await candidate.getTextContent();
+            for(const item of a.items.filter(item=>item.str.trim())) {
+                if(!b.items.some(next=>next.str===item.str && Math.abs(next.transform[4]-item.transform[4])<.6 && Math.abs(next.transform[5]-item.transform[5])<.6)) throw new Error('Metin tablo veya sabit satırları kaydırıyor. Alanları kısaltın.');
+            }
         }
     }
     function selectTab(tab) {
@@ -210,12 +235,21 @@ function initialize() {
             if (!response.ok) throw new Error('download');
             const declaredSize = Number(response.headers.get('Content-Length'));
             if (declaredSize > 25 * 1024 * 1024) throw new Error('size');
-            const bytes = new Uint8Array(await response.arrayBuffer());
+            let bytes = new Uint8Array(await response.arrayBuffer());
             if (bytes.byteLength > 25 * 1024 * 1024) throw new Error('size');
             if (token !== generation) return;
             // Keep the source bytes immutable; PDF.js receives a separate buffer.
             session.source = bytes;
-            const format = identifyFormat(bytes);
+            let format = identifyFormat(bytes);
+            let templateOverride=null;
+            if(format==='ooxml' && (await templateFor(bytes,url.href)).hash===leaseHash) {
+                session.nativeLease=true;
+                say('Gerçek Word şablonu PDF ön izlemesine dönüştürülüyor…');
+                const rendered=await renderLease(dialog,{},session.abort.signal);
+                if(token!==generation) return;
+                session.wordOutput=rendered.docx; bytes=rendered.pdf; session.source=bytes;
+                format='pdf'; templateOverride=structuredClone(leaseTemplate);
+            }
             if (format !== 'pdf') {
                 find('preview-message').textContent = format === 'ooxml'
                     ? 'Bu Office/ZIP belgesinde (DOCX dahil) sayfa düzenini koruyan tarayıcı önizlemesi ve şablon düzenlemesi henüz desteklenmiyor. Orijinalini indirebilir, ayrı çalışma kopyasına ek içerik hazırlayabilirsiniz.'
@@ -223,7 +257,7 @@ function initialize() {
                 say('Doldurma kapalı. Ek içerikler yalnız ayrı çalışma kopyasında hazırlanır.');
                 return;
             }
-            const {template} = await templateFor(bytes, url.href);
+            const template = templateOverride || (await templateFor(bytes, url.href)).template;
             const pdfBase = new URL(dialog.dataset.pdfBase, location.href);
             const pdfjs = await import(new URL('pdf.min.js', pdfBase).href);
             if (token !== generation) return;
@@ -232,6 +266,12 @@ function initialize() {
             const pdf = await session.loadingTask.promise;
             if (token !== generation) return;
             session.pdf = pdf;
+            if(session.nativeLease) {
+                session.baselinePdf=pdf;
+                template.pageSizes=[];
+                for(let page=1;page<=pdf.numPages;page++) {const size=(await pdf.getPage(page)).getViewport({scale:1});template.pageSizes.push([size.width,size.height]);}
+                template.size=template.pageSizes[0];
+            }
             if (template && template.pages === pdf.numPages) {
                 let matches = true;
                 for (let index = 0; index < pdf.numPages; index++) {
@@ -294,6 +334,12 @@ function initialize() {
     find('return').addEventListener('click', () => selectTab('form'));
     find('generate').addEventListener('click', () => { clearTimeout(outputTimer); updateOutput(++outputVersion, true); });
     find('pdf').addEventListener('click', downloadOutput);
+    find('word').addEventListener('click',()=>{
+        if(!session?.wordOutput || session.mode!=='fill' || !session.output) return;
+        const url=URL.createObjectURL(new Blob([session.wordOutput],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}));
+        const anchor=document.createElement('a');anchor.href=url;anchor.download='kira-sozlesmesi.docx';anchor.click();
+        setTimeout(()=>URL.revokeObjectURL(url),30000);
+    });
     find('share').addEventListener('click', async () => {
         if (!session?.output) return;
         const file = new File([session.output], 'belge.pdf', {type: 'application/pdf'});

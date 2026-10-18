@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=documents-20261018-stage4">
-<dialog id="document-workspace" class="documents-workspace" aria-labelledby="document-workspace-title" data-pdf-base="{{ asset('vendor/pdfjs') }}/">
+<dialog id="document-workspace" class="documents-workspace" aria-labelledby="document-workspace-title" data-csrf="{{ csrf_token() }}" data-pdf-base="{{ asset('vendor/pdfjs') }}/">
     <header class="dw-heading">
         <div><h2 id="document-workspace-title">Belge çalışma alanı</h2><p data-workspace-subtitle>Orijinal belge korunur.</p></div>
         <button type="button" data-workspace-close aria-label="Belge çalışma alanını kapat">✕</button>
@@ -61,7 +61,7 @@
             <h3>Belge işlemleri</h3>
             <button type="button" data-workspace-generate>Belgeyi Oluştur</button>
             <button type="button" data-workspace-pdf disabled>PDF İndir</button>
-            <button type="button" disabled title="Düzeni koruyan DOCX dönüşümü desteklenmiyor">Word İndir (desteklenmiyor)</button>
+            <button type="button" data-workspace-word disabled>Word İndir (desteklenmiyor)</button>
             <button type="button" data-workspace-print disabled>Yazdır</button>
             <button type="button" data-workspace-share disabled>Paylaş</button>
             <button type="button" data-workspace-return>Tekrar Düzenle</button>
@@ -70,5 +70,5 @@
         </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018-stage4"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018-native-lease1"></script>
 
