@@ -1,7 +1,8 @@
-import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v=documents-20261018';
+import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v=documents-20261018-stage4';
 
-import {SmartFields, createFieldControl, readField} from './smart-fields.js';
+import {SmartFields, createFieldControl, readField} from './smart-fields.js?v=documents-20261018-stage4';
 import {validateField} from './field-rules.js';
+import {buildPdf} from './pdf-output.js';
 
 const dialog = document.getElementById('document-workspace');
 if (dialog) initialize();
@@ -14,7 +15,8 @@ function initialize() {
     const labels = {paragraph: 'Paragraf', article: 'Madde', note: 'Açıklama', dateAmount: 'Tarih / tutar', table: 'Tablo', signature: 'İmza alanı', field: 'Bilgi alanı'};
     const smart = new SmartFields(dialog.querySelector('.dw-controls'), find('voice-status'));
     let session = null, generation = 0, renderTask = null, resizeTimer;
-    let baseCanvas = null, viewport = null;
+    let baseCanvas = null, viewport = null, outputTimer, outputVersion = 0;
+    dialog.dataset.tab = "form";
     const draft = () => session.drafts[session.mode];
     const say = message => { find('status').textContent = message; };
     const button = (label, callback) => {
@@ -38,12 +40,17 @@ function initialize() {
         smart.cancel();
         form.replaceChildren(); blocks.replaceChildren();
         const template = session.template;
+        find('generate').disabled = !session.pdf || (session.mode === 'fill' && !template);
+        if (!session.pdf) find('output-status').textContent = 'PDF ön izlemesi ve doğrulanmış şablon hazır olduğunda çıktı açılır. DOCX dönüşümü desteklenmiyor; orijinal dosyayı indirebilirsiniz.';
         find('fill-notice').textContent = template
-            ? 'Üst bölümdeki yedi boş alan doldurulur. Belge sonundaki noktalı tarih ve imza alanı bu eşlemeye dahil değildir. Sabit metin ve yerleşim korunur; yalnız önizleme yapılır.'
+            ? 'Eşlenmiş alanlar gerçek şablona işlenir. Sabit metin ve yerleşim korunur. Tahliye şablonunun alt tarih ve imza satırları eşleme dışındadır.'
             : 'Bu belgenin alan eşlemesi henüz hazır değil. Doldurma kullanılamıyor; orijinalini indirebilirsiniz.';
         if (template) for (const field of template.fields) {
             const label = document.createElement('label'); label.className = 'dw-field'; label.textContent = field.label;
-            const input = createFieldControl(field.kind, field.lines > 1);
+            const input = createFieldControl(field.kind, field.lines > 1 || field.positions?.some(p => (p.lines || 1) > 1 || (p.height || 0) > 25));
+            input.readOnly = !!field.locked; input.required = !!field.required;
+            if (field.microphone === false) input.dataset.voiceDisabled = 'true';
+            if (field.country) input.dataset.country = field.country; if (field.currency) input.dataset.currency = field.currency;
             input.name = field.key; input.value = session.drafts.fill.state.values[field.key] || '';
             input.addEventListener('input', () => {
                 session.drafts.fill.change(state => { state.values[field.key] = input.value; });
@@ -57,7 +64,7 @@ function initialize() {
     }
     function editBlock(id, update) {
         session.drafts.edit.change(state => update(state.blocks.find(block => block.id === id)));
-        history();
+        history(); paintValues();
     }
     function renderBlock(block) {
         const section = document.createElement('section'); section.className = 'dw-block';
@@ -65,7 +72,7 @@ function initialize() {
         const title = document.createElement('strong'); title.textContent = labels[block.type];
         heading.append(title, button(`${labels[block.type]} kaldır`, () => {
             session.drafts.edit.change(state => { state.blocks = state.blocks.filter(item => item.id !== block.id); });
-            rebuildControls();
+            rebuildControls(); paintValues();
         }));
         section.append(heading);
         function field(labelText, key, multiline = false, kind = 'text') {
@@ -117,39 +124,52 @@ function initialize() {
         } else field(labels[block.type], 'text', true, {note: 'description', paragraph: 'paragraph', article: 'article'}[block.type] || 'text');
         blocks.append(section);
     }
+    function outputButtons(ready) {
+        for (const name of ['pdf', 'print', 'share']) find(name).disabled = !ready;
+    }
     function paintValues() {
-        if (!session || !baseCanvas || !viewport) return;
-        canvas.width = baseCanvas.width; canvas.height = baseCanvas.height;
-        context.drawImage(baseCanvas, 0, 0);
-        if (session.mode !== 'fill' || !session.template) return;
-        const scale = viewport.scale, values = session.drafts.fill.state.values;
-        let overflowing = false, invalid = false;
-        for (const field of session.template.fields) {
-            const checked = validateField(values[field.key] || '', field.kind);
-            if (!checked.valid) { invalid = true; continue; }
-            const value = checked.display.trim(); if (!value) continue;
-            for (const position of field.positions.filter(item => item.page === session.page)) {
-                let fontSize = 11, lines;
-                const wrap = () => {
-                    context.font = `${fontSize * scale}px DocumentTemplateSans, Arial, sans-serif`;
-                    const words = value.replace(/\s+/g, ' ').split(' '), result = []; let line = '';
-                    for (const word of words) {
-                        const next = line ? `${line} ${word}` : word;
-                        if (line && context.measureText(next).width > position.width * scale) { result.push(line); line = word; }
-                        else line = next;
-                    }
-                    if (line) result.push(line); return result;
-                };
-                do { lines = wrap(); if (lines.length <= position.lines && lines.every(line => context.measureText(line).width <= position.width * scale)) break; fontSize -= .5; } while (fontSize >= 8);
-                if (fontSize < 8) { overflowing = true; continue; }
-                context.fillStyle = '#111'; context.textBaseline = 'alphabetic';
-                lines.forEach((line, index) => {
-                    const point = viewport.convertToViewportPoint(position.x, position.y - index * 12);
-                    context.fillText(line, point[0], point[1]);
-                });
-            }
+        if (!session?.pdf) return;
+        for (const input of form.querySelectorAll('input,textarea')) { const f = session.template?.fields.find(f => f.key === input.name); if (f) { f.country = input.dataset.country; f.currency = input.dataset.currency; } }
+        const key = JSON.stringify([session.mode, draft().state, session.template?.fields.map(f => [f.country, f.currency])]);
+        if (key === session.previewKey) return;
+        session.previewKey = key; session.output = null; outputButtons(false);
+        clearTimeout(outputTimer); const version = ++outputVersion;
+        outputTimer = setTimeout(() => updateOutput(version, false), 250);
+    }
+    async function updateOutput(version, explicit) {
+        const current = session; if (!current?.pdf) return;
+        try {
+            if (current.mode === 'fill' && !current.template) throw new Error('Alan eşlemesi hazır değil; doldurulmuş çıktı oluşturulamaz.');
+            const bytes = await buildPdf(current.source, current.template, structuredClone(draft().state), current.mode);
+            if (current !== session || version !== outputVersion) return;
+            const pdfBase = new URL(dialog.dataset.pdfBase, location.href);
+            const pdfjs = await import(new URL('pdf.min.js', pdfBase).href);
+            const loading = pdfjs.getDocument({data: bytes.slice(), isEvalSupported: false, enableXfa: false, standardFontDataUrl: new URL('standard_fonts/', pdfBase).href});
+            const pdf = await loading.promise;
+            if (current !== session || version !== outputVersion) { await loading.destroy(); return; }
+            renderTask?.cancel(); renderTask = null;
+            const old = current.outputTask; current.outputTask = loading; current.pdf = pdf;
+            current.page = Math.min(current.page, pdf.numPages); current.output = bytes;
+            find('paper').hidden = false;
+            await renderPage(); if (old) await old.destroy();
+            if (explicit) { outputButtons(true); find('output-status').textContent = 'Belge hazır. Ön izleme ile indirilen PDF aynı dosyadır.'; }
+            say('Canlı ön izleme: orijinal sayfalar ve çalışma kopyanız. Bilgiler sunucuya gönderilmez.');
+        } catch (error) {
+            if (current !== session || version !== outputVersion) return;
+            current.output = null; outputButtons(false); find('output-status').textContent = error.message;
+            if (current.template || current.mode === 'edit') { find('paper').hidden = true; say(error.message); }
         }
-        say(invalid ? 'İşaretli alanları düzeltin. Geçersiz bilgiler önizlemeye aktarılmadı.' : overflowing ? 'Bazı bilgiler ayrılan alana sığmıyor ve önizlemeye aktarılmadı. Daha kısa bilgi girin.' : 'Gerçek şablon üzerinde önizleme. Bilgiler sunucuya gönderilmez; çıktı henüz sunulmaz.');
+    }
+    function selectTab(tab) {
+        dialog.dataset.tab = tab;
+        dialog.querySelectorAll('[data-workspace-tab]').forEach(node => node.setAttribute('aria-selected', String(node.dataset.workspaceTab === tab)));
+        if (tab === 'preview') requestAnimationFrame(() => renderPage().catch(() => say('Ön izleme açılamadı.')));
+    }
+    function downloadOutput() {
+        if (!session?.output) return;
+        const url = URL.createObjectURL(new Blob([session.output], {type: 'application/pdf'}));
+        const a = document.createElement('a'); a.href = url; a.download = 'belge.pdf'; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
     }
     async function renderPage(token = generation) {
         if (!session?.pdf || !dialog.open) return;
@@ -160,12 +180,14 @@ function initialize() {
         if (token !== generation || current !== session || pageNumber !== current.page) return;
         const width = Math.max(240, Math.min(find('paper').parentElement.clientWidth - 32, 1000));
         const initial = page.getViewport({scale: 1});
-        const nextViewport = page.getViewport({scale: width / initial.width * Math.min(devicePixelRatio || 1, 2)});
+        const nextViewport = page.getViewport({scale: width / initial.width * Math.min(devicePixelRatio || 1, 2) * (current.zoom || 1)});
         const buffer = document.createElement('canvas'); buffer.width = Math.ceil(nextViewport.width); buffer.height = Math.ceil(nextViewport.height);
         const task = page.render({canvasContext: buffer.getContext('2d'), viewport: nextViewport}); renderTask = task;
         try { await task.promise; } catch (error) { if (error.name === 'RenderingCancelledException') return; throw error; }
         if (token !== generation || current !== session || pageNumber !== current.page || renderTask !== task) return;
         renderTask = null; baseCanvas = buffer; viewport = nextViewport;
+        canvas.width = buffer.width; canvas.height = buffer.height; context.drawImage(buffer, 0, 0);
+        find('paper').style.width = `${width * (current.zoom || 1)}px`;
         find('page').textContent = `${current.page} / ${current.pdf.numPages}`;
         find('prev').disabled = current.page <= 1; find('next').disabled = current.page >= current.pdf.numPages;
         find('paper').hidden = false; find('paging').hidden = false; find('preview-message').hidden = true;
@@ -182,7 +204,7 @@ function initialize() {
         baseCanvas = null; viewport = null;
         document.getElementById('document-workspace-title').textContent = detail.title;
         find('download').href = url.href;
-        dialog.showModal(); setMode(detail.mode); say('Orijinalden ayrı çalışma kopyası hazırlanıyor…');
+        dialog.showModal(); selectTab('form'); outputButtons(false); setMode(detail.mode); say('Orijinalden ayrı çalışma kopyası hazırlanıyor…');
         try {
             const response = await fetch(url.href, {signal: session.abort.signal, credentials: 'same-origin', redirect: 'error'});
             if (!response.ok) throw new Error('download');
@@ -201,7 +223,7 @@ function initialize() {
                 say('Doldurma kapalı. Ek içerikler yalnız ayrı çalışma kopyasında hazırlanır.');
                 return;
             }
-            const {template} = await templateFor(bytes);
+            const {template} = await templateFor(bytes, url.href);
             const pdfBase = new URL(dialog.dataset.pdfBase, location.href);
             const pdfjs = await import(new URL('pdf.min.js', pdfBase).href);
             if (token !== generation) return;
@@ -211,10 +233,14 @@ function initialize() {
             if (token !== generation) return;
             session.pdf = pdf;
             if (template && template.pages === pdf.numPages) {
-                const page = await pdf.getPage(1);
-                if (token !== generation) return;
-                const size = page.getViewport({scale: 1});
-                if (Math.abs(size.width - template.size[0]) < .1 && Math.abs(size.height - template.size[1]) < .1) session.template = template;
+                let matches = true;
+                for (let index = 0; index < pdf.numPages; index++) {
+                    const page = await pdf.getPage(index + 1);
+                    if (token !== generation) return;
+                    const size = page.getViewport({scale: 1}), expected = template.pageSizes?.[index] || template.size;
+                    if (Math.abs(size.width - expected[0]) >= .1 || Math.abs(size.height - expected[1]) >= .1) matches = false;
+                }
+                if (matches) session.template = structuredClone(template);
             }
             await document.fonts.load('11px DocumentTemplateSans');
             if (token !== generation) return;
@@ -240,7 +266,7 @@ function initialize() {
     dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
     dialog.addEventListener('close', () => {
         smart.cancel();
-        ++generation; session?.abort.abort(); renderTask?.cancel(); renderTask = null;
+        ++generation; ++outputVersion; clearTimeout(outputTimer); session?.outputTask?.destroy(); session?.abort.abort(); renderTask?.cancel(); renderTask = null;
         const trigger = session?.trigger;
         const task = session?.loadingTask;
         if (task && typeof task.destroy === 'function') Promise.resolve(task.destroy()).catch(() => {});
@@ -257,12 +283,38 @@ function initialize() {
     dialog.querySelectorAll('[data-workspace-add]').forEach(node => node.addEventListener('click', () => {
         const type = node.dataset.workspaceAdd;
         session.drafts.edit.change(state => state.blocks.push({id: crypto.randomUUID(), type, text: '', ...(type === 'table' ? {rows: [['', '']]} : {})}));
-        rebuildControls(); blocks.lastElementChild?.querySelector('input,textarea')?.focus();
+        rebuildControls(); paintValues(); blocks.lastElementChild?.querySelector('input,textarea')?.focus();
     }));
     for (const [name, step] of [['prev', -1], ['next', 1]]) find(name).addEventListener('click', () => {
         if (!session?.pdf) return;
         session.page = Math.max(1, Math.min(session.pdf.numPages, session.page + step));
         renderPage().catch(() => say('Sayfa önizlemesi açılamadı. Orijinalini indirebilirsiniz.'));
+    });
+    dialog.querySelectorAll('[data-workspace-tab]').forEach(node => node.addEventListener('click', () => selectTab(node.dataset.workspaceTab)));
+    find('return').addEventListener('click', () => selectTab('form'));
+    find('generate').addEventListener('click', () => { clearTimeout(outputTimer); updateOutput(++outputVersion, true); });
+    find('pdf').addEventListener('click', downloadOutput);
+    find('share').addEventListener('click', async () => {
+        if (!session?.output) return;
+        const file = new File([session.output], 'belge.pdf', {type: 'application/pdf'});
+        if (!navigator.canShare?.({files: [file]}) || !navigator.share) {
+            find('output-status').textContent = 'Bu tarayıcı dosya paylaşamıyor. PDF İndir ile kaydedip istediğiniz uygulamaya ekleyin.'; return;
+        }
+        try { await navigator.share({files: [file], title: 'Belge'}); find('output-status').textContent = 'Dosya paylaşım menüsüne aktarıldı.'; }
+        catch (error) { find('output-status').textContent = error.name === 'AbortError' ? 'Paylaşım iptal edildi.' : 'Dosya paylaşılamadı. PDF İndir ile devam edin.'; }
+    });
+    find('print').addEventListener('click', () => {
+        if (!session?.output) return;
+        const url = URL.createObjectURL(new Blob([session.output], {type: 'application/pdf'}));
+        find('output-status').textContent = 'Yazdırma isteği hazırlanıyor. Pencere açılmazsa PDF’yi indirip cihazınızdan yazdırın.';
+        const frame = document.createElement('iframe'); frame.hidden = true; frame.src = url;
+        frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { find('output-status').textContent = 'Tarayıcı doğrudan yazdırmayı desteklemiyor. PDF’yi indirip yazdırın.'; } };
+        document.body.append(frame);
+        setTimeout(() => { frame.remove(); URL.revokeObjectURL(url); }, 60000);
+    });
+    for (const [name, delta] of [['zoom-out', -.25], ['zoom-in', .25]]) find(name).addEventListener('click', () => {
+        if (!session?.pdf) return; session.zoom = Math.max(.5, Math.min(2.5, (session.zoom || 1) + delta));
+        find('zoom').textContent = Math.round(session.zoom * 100) + '%'; renderPage().catch(() => say('Yakınlaştırma başarısız.'));
     });
     window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => renderPage().catch(() => say('Önizleme yeniden boyutlandırılamadı.')), 180); });
 }

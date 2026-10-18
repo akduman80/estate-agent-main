@@ -94,7 +94,7 @@ export class SmartFields {
             mic.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"/></svg>';
             mic.disabled = !this.supported;
             mic.title = this.supported ? `${labelText}: sesli giriş` : 'Sesli giriş bu tarayıcıda desteklenmiyor';
-            mic.addEventListener('click', event => { if (event.isTrusted) this.listen(input); }); group.append(mic); group.after(error);
+            mic.addEventListener('click', event => { if (event.isTrusted) this.listen(input); }); if (input.dataset.voiceDisabled !== 'true') group.append(mic); group.after(error);
             const control = {button: mic, error, label: labelText}; this.controls.set(input, control);
             if (['phone', 'amount'].includes(kind)) {
                 const select = document.createElement('select'); select.className = 'dw-field-option';
@@ -151,7 +151,7 @@ export class SmartFields {
         if (message) this.message(message);
     }
     listen(input) {
-        if (!this.supported || !eligible(input) || !input.isConnected) return;
+        if (!this.supported || !eligible(input) || input.dataset.voiceDisabled === 'true' || !input.isConnected) return;
         if (this.active?.input === input) { try { this.active.recognition.stop(); } catch { this.cancel(); } return; }
         this.cancel();
         const control = this.controls.get(input), kind = fieldKind(input);

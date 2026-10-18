@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=documents-20261018">
+<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=documents-20261018-stage4">
 <dialog id="document-workspace" class="documents-workspace" aria-labelledby="document-workspace-title" data-pdf-base="{{ asset('vendor/pdfjs') }}/">
     <header class="dw-heading">
         <div><h2 id="document-workspace-title">Belge çalışma alanı</h2><p data-workspace-subtitle>Orijinal belge korunur.</p></div>
@@ -10,6 +10,11 @@
         <a class="dw-download" data-workspace-download download>Orijinali İndir</a>
     </div>
     <p class="dw-status" data-workspace-status role="status" aria-live="polite">Belge hazırlanıyor…</p>
+    <div class="dw-mobile-tabs" role="tablist" aria-label="Çalışma alanı bölümleri">
+        <button type="button" role="tab" aria-selected="true" data-workspace-tab="form">Form</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="preview">Ön İzleme</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="actions">İşlemler</button>
+    </div>
     <div class="dw-body">
         <section class="dw-controls" aria-label="Belge işlemleri">
             <p class="dw-voice-info">Sesli giriş isteğe bağlıdır. Tarayıcının konuşma hizmeti sesi hizmet sağlayıcısına iletebilir. Bu site ses dosyası oluşturmaz veya saklamaz. Mikrofon yalnız dokunduğunuzda açılır.</p>
@@ -38,18 +43,32 @@
                 </div>
                 <div data-workspace-blocks></div>
             </div>
-            <p class="dw-unsaved">Çalışmanız yalnız bu açık pencerede tutulur. Kapatıldığında silinir. Kaydetme, çıktı ve elektronik imza bu aşamada sunulmaz.</p>
+            <p class="dw-unsaved">Çalışmanız yalnız bu açık pencerede tutulur. Kapatıldığında silinir. İndirdiğiniz veya paylaştığınız dosyalar cihazınızda kalır. Elektronik imza oluşturulmaz.</p>
         </section>
         <section class="dw-preview" aria-label="Gerçek belge önizlemesi">
             <div class="dw-page-toolbar" hidden data-workspace-paging>
                 <button type="button" data-workspace-prev aria-label="Önceki sayfa">←</button>
                 <span data-workspace-page></span>
                 <button type="button" data-workspace-next aria-label="Sonraki sayfa">→</button>
+                <button type="button" data-workspace-zoom-out aria-label="Uzaklaştır">−</button>
+                <span data-workspace-zoom>100%</span>
+                <button type="button" data-workspace-zoom-in aria-label="Yakınlaştır">+</button>
             </div>
             <div class="dw-paper" hidden data-workspace-paper><canvas aria-label="Orijinal PDF ve doldurulan alanların önizlemesi" role="img"></canvas></div>
             <p class="dw-preview-message" data-workspace-preview-message>Orijinal belge yükleniyor…</p>
         </section>
+        <section class="dw-output" aria-label="Belge çıktıları">
+            <h3>Belge işlemleri</h3>
+            <button type="button" data-workspace-generate>Belgeyi Oluştur</button>
+            <button type="button" data-workspace-pdf disabled>PDF İndir</button>
+            <button type="button" disabled title="Düzeni koruyan DOCX dönüşümü desteklenmiyor">Word İndir (desteklenmiyor)</button>
+            <button type="button" data-workspace-print disabled>Yazdır</button>
+            <button type="button" data-workspace-share disabled>Paylaş</button>
+            <button type="button" data-workspace-return>Tekrar Düzenle</button>
+            <p>Paylaşım menüsünde cihazınızda bulunan WhatsApp, Telegram, BiP veya e-posta uygulamasını seçebilirsiniz. Dosya paylaşımı desteklenmiyorsa PDF’yi indirip uygulamaya ekleyin. Dosya otomatik gönderilmez.</p>
+            <p data-workspace-output-status role="status" aria-live="polite">Önce belgeyi oluşturun. Düzenleme modunda eklenen içerikler ayrı ek sayfalarda yer alır.</p>
+        </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018-stage4"></script>
 

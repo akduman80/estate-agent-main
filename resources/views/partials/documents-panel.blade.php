@@ -17,9 +17,20 @@
                 </div>
             </article>
         @endforeach
+        @foreach(app(\App\Support\DocumentTemplateStore::class)->publishedCatalog() as $templateDocument)
+            <article class="documents-entry" data-document-title="{{ $templateDocument['title'] }}">
+                <a class="documents-link" href="{{ $templateDocument['url'] }}" download><span class="documents-icon" aria-hidden="true">↓</span><span>{{ $templateDocument['title'] }}</span></a>
+                <div class="documents-actions" role="group" aria-label="{{ $templateDocument['title'] }} işlemleri">
+                    <button type="button" data-document-action="download">Orijinali İndir</button>
+                    <button type="button" data-document-action="fill">Belgeyi Doldur</button>
+                    <button type="button" data-document-action="edit">Belgeyi Düzenle</button>
+                </div>
+            </article>
+        @endforeach
         <div class="documents-empty" hidden><p>Aramanızla eşleşen belge bulunamadı.</p><button type="button" data-documents-clear>Aramayı temizle</button></div>
     </div>
 </dialog>
 @include('partials.document-workspace')
+<script type="application/json" id="document-template-catalog">{!! json_encode(app(\App\Support\DocumentTemplateStore::class)->publishedCatalog(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) !!}</script>
 <script src="{{ asset('js/documents-panel.js') }}?v=documents-workspace-20261017" defer></script>
 @endif

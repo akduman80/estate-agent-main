@@ -37,8 +37,11 @@ export function identifyFormat(bytes) {
     return 'unsupported';
 }
 
-export async function templateFor(bytes) {
+export async function templateFor(bytes, sourceUrl = null) {
     const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
         .map(value => value.toString(16).padStart(2, '0')).join('');
-    return {hash, template: templates[hash] || null};
+    const published = typeof document !== 'undefined' ? JSON.parse(document.getElementById('document-template-catalog')?.textContent || '[]') : [];
+    const revision = published.find(item => item.hash === hash && item.format === 'pdf' && sourceUrl && new URL(item.url, location.href).pathname === new URL(sourceUrl, location.href).pathname);
+    const mapped = revision?.mapping;
+    return {hash, template: mapped ? {id: revision.id, pages: mapped.pageSizes.length, size: mapped.pageSizes[0], pageSizes: mapped.pageSizes, fields: mapped.fields} : templates[hash] || null};
 }
