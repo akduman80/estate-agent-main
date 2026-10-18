@@ -1,4 +1,6 @@
-import {validateField} from './field-rules.js';
+import {validateField} from './field-rules.js?v=documents-20261018-all1';
+import {applyPdfEdits} from './pdf-edit.js?v=documents-20261018-all1';
+import {discardUnreachableObjects} from './pdf-structure.js?v=documents-20261018-all1';
 
 let engine;
 function script(src) {
@@ -32,9 +34,10 @@ export function wrapText(text, font, size, width) {
     }
     return lines;
 }
-export async function buildPdf(source, template, state, mode) {
+export async function buildPdf(source, template, state, mode, analyses = []) {
     if (source.byteLength > 25 * 1024 * 1024) throw new Error('Belge çok büyük.');
-    const {PDFDocument, rgb, fontkit, font: fontBytes} = await pdfEngine();
+    const lib = await pdfEngine();
+    const {PDFDocument, rgb, fontkit, font: fontBytes} = lib;
     const pdf = await PDFDocument.load(source.slice(), {updateMetadata: false});
     if (pdf.getPages().some(page => page.getRotation().angle % 360)) throw new Error('Döndürülmüş sayfa için çıktı eşlemesi desteklenmiyor.');
     pdf.registerFontkit(fontkit);
@@ -70,6 +73,11 @@ export async function buildPdf(source, template, state, mode) {
             }
         }
     } else {
+        if (Object.keys(state.edits || {}).length) await applyPdfEdits(pdf, lib, analyses, state.edits, async item => {
+            const selected = await positionFont({bold:/bold/i.test(item.fontFamily),italic:/italic|oblique/i.test(item.fontFamily)});
+            wrapText(state.edits[`${item.page}:${item.id}`] || '', selected, item.fontSize, Math.max(item.width, 1));
+            return selected;
+        });
         // Added material goes onto explicitly separate appendix pages; originals are never masked.
         let page, y;
         const newPage = () => { page = pdf.addPage([595.28, 841.89]); y = 790; };
@@ -102,5 +110,6 @@ export async function buildPdf(source, template, state, mode) {
             }
         }
     }
+    if (mode === 'edit' && Object.keys(state.edits || {}).length) await discardUnreachableObjects(pdf, lib);
     return pdf.save();
 }

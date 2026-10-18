@@ -1,4 +1,4 @@
-import {buildPdf} from './pdf-output.js';
+import {buildPdf} from './pdf-output.js?v=documents-20261018-all1';
 
 export async function mount(root, wire) {
     if (root.dataset.mounted) return; root.dataset.mounted = 'true';
@@ -60,10 +60,15 @@ export async function mount(root, wire) {
             section.append(button('Alanı kaldır', () => { mapping.fields.splice(index, 1); selected = -1; sync(); fields(); paint(); })); target.append(section);
         });
     }
-    async function load(bytes, savedMapping) {
+    async function load(bytes, savedMapping, docxPreview = null, keys = []) {
         ++renderToken; source = bytes; page = 1; selected = -1; format = new TextDecoder().decode(bytes.slice(0, 5)) === '%PDF-' ? 'pdf' : 'docx';
         if (original) await original.destroy(); original = null; pdf = null; background = null; canvas.width = canvas.height = 0;
-        if (format !== 'pdf') { mapping = {pageSizes: [], fields: []}; sync(); fields(); status('DOCX arşivlenebilir. Düzeni koruyan ön izleme/dönüşüm olmadığı için alan eşlemesi ve yayın kapalı.'); return; }
+        get('add').disabled = get('repeat').disabled = format !== 'pdf';
+        if (format !== 'pdf') {
+            if (!docxPreview) throw new Error('DOCX ön izlemesi oluşturulamadı.');
+            bytes = Uint8Array.from(atob(docxPreview), c => c.charCodeAt(0));
+            savedMapping ||= {pageSizes:[],fields:keys.map(key=>({key,label:key.replaceAll('_',' '),kind:'text',required:false,locked:false,microphone:true,positions:[]}))};
+        }
         original = pdfjs.getDocument({data: bytes.slice(), isEvalSupported: false, enableXfa: false, standardFontDataUrl: '/vendor/pdfjs/standard_fonts/'});
         pdf = await original.promise;
         const hasItems = value => value instanceof Map ? value.size > 0 : !!value && Object.keys(value).length > 0;
@@ -77,8 +82,10 @@ export async function mount(root, wire) {
         try {
             const file = event.target.files[0]; if (!file) return;
             if (file.size > 12 * 1024 * 1024) throw new Error('En fazla 12 MB yükleyebilirsiniz.');
-            await load(new Uint8Array(await file.arrayBuffer()));
             await new Promise((resolve, reject) => wire.upload('upload', file, resolve, () => reject(new Error('Yükleme başarısız.'))));
+            const bytes = new Uint8Array(await file.arrayBuffer());
+            const result = file.name.toLowerCase().endsWith('.docx') ? await wire.previewDocxUpload() : null;
+            await load(bytes, null, result?.preview, result?.keys);
             status('Dosya hazır. Eşleyip yeni taslak sürümü kaydedin.');
         } catch (error) { status(error.message); }
     };
@@ -100,15 +107,15 @@ export async function mount(root, wire) {
     root.addEventListener('click', async event => {
         try {
             const version = event.target.closest('[data-template-version]');
-            if (version) { const r = await wire.selectVersion(version.dataset.templateId, Number(version.dataset.templateVersion)); await load(Uint8Array.from(atob(r.bytes), c => c.charCodeAt(0)), r.mapping); }
+            if (version) { const r = await wire.selectVersion(version.dataset.templateId, Number(version.dataset.templateVersion)); await load(Uint8Array.from(atob(r.bytes), c => c.charCodeAt(0)), r.mapping, r.preview); }
             if (event.target.closest('[data-template-new]')) { await wire.newTemplate(); source = null; mapping = {pageSizes: [], fields: []}; pdf = null; background = null; fields(); canvas.width = canvas.height = 0; get('file').value = ''; status('Yeni dosya seçin.'); }
             if (event.target.closest('[data-template-test]')) {
-                if (!source || format !== 'pdf') throw new Error('Önce PDF seçin ve taslak sürümü kaydedin.');
+                if (!source) throw new Error('Önce PDF / DOCX seçin ve taslak sürümü kaydedin.');
                 await sync();
                 const values = {};
                 const samples = {identity:'10000000146',phone:'+905301234567',email:'ornek@example.com',date:'18.10.2026',amount:'1250,50',address:'Örnek Mahallesi\nİstanbul',name:'Çağrı Şen'};
                 mapping.fields.forEach(f => { values[f.key] = samples[f.kind] || 'Örnek bilgi'; });
-                const bytes = await buildPdf(source, {fields: mapping.fields}, {values}, 'fill');
+                const bytes = format === 'docx' ? Uint8Array.from(atob((await wire.testDocxVersion(values)).preview), c=>c.charCodeAt(0)) : await buildPdf(source, {fields: mapping.fields}, {values}, 'fill');
                 const task = pdfjs.getDocument({data: bytes, isEvalSupported: false, standardFontDataUrl: '/vendor/pdfjs/standard_fonts/'});
                 const oldPdf = pdf; pdf = await task.promise; page = 1; await render(); pdf = oldPdf;
                 const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', source))].map(v => v.toString(16).padStart(2, '0')).join('');

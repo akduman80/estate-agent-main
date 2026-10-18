@@ -1,11 +1,11 @@
 <x-filament-panels::page>
-    <div class="dt-manager" x-data x-init="import('/js/documents/template-editor.js').then(m => m.mount($el, $wire))">
+    <div class="dt-manager" x-data x-init="import('/js/documents/template-editor.js?v=documents-20261018-all1').then(m => m.mount($el, $wire))">
         <p>Yalnız boş şablon yükleyin. Doldurulmuş kimlik, telefon ve adres bilgileri yüklemeyin. Mevcut 12 belge korunur.</p>
         <label>Belge adı <input wire:model="titleInput" maxlength="120"></label>
         <label>Kategori <input wire:model="category" maxlength="80"></label>
         <div wire:ignore data-template-editor>
             <label>PDF / DOCX (en fazla 12 MB) <input type="file" accept=".pdf,.docx" data-template-file disabled></label>
-            <p>PDF eşlemesi sayfa noktalarıyla saklanır. DOCX özel arşive alınabilir; düzeni koruyan dönüşüm bulunmadığından ön izleme ve yayın kapalıdır. Yazı tipi: Türkçe destekli Liberation Sans.</p>
+            <p>PDF alanlarını sayfada çizin. DOCX şablonundaki değişkenleri @{{ad_soyad}} gibi çift süslü parantezle işaretleyin; alanlar otomatik bulunur. Word ve PDF çıktıları özgün şablondan üretilir. DOCX metni uzarsa sayfa akışı değişebilir; yayınlamadan önce örnek çıktıyı inceleyin.</p>
             <div class="dt-layout">
                 <section>
                     <div class="dt-tools"><button type="button" data-template-prev>← Önceki</button><span data-template-page></span><button type="button" data-template-next>Sonraki →</button><button type="button" data-template-add>Yeni alan çiz</button><button type="button" data-template-repeat>Seçili alanı tekrar çiz</button></div>

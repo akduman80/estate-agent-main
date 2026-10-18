@@ -1,6 +1,7 @@
+import {originalMappings} from './original-mappings.js?v=documents-20261018-all1';
 // Drafts exist only in memory. Templates and original download routes are read-only.
 export class DocumentDraft {
-    constructor() { this.state = {values: {}, blocks: []}; this.past = []; this.future = []; }
+    constructor() { this.state = {values: {}, blocks: [], edits: {}}; this.past = []; this.future = []; }
     change(update) {
         const next = structuredClone(this.state); update(next);
         if (JSON.stringify(next) === JSON.stringify(this.state)) return;
@@ -10,8 +11,8 @@ export class DocumentDraft {
     }
     undo() { if (!this.past.length) return; this.future.push(this.state); this.state = this.past.pop(); }
     redo() { if (!this.future.length) return; this.past.push(this.state); this.state = this.future.pop(); }
-    reset() { this.change(state => { state.values = {}; state.blocks = []; }); }
-    get dirty() { return Object.keys(this.state.values).some(key => this.state.values[key]) || this.state.blocks.length > 0; }
+    reset() { this.change(state => { state.values = {}; state.blocks = []; state.edits = {}; }); }
+    get dirty() { return Object.keys(this.state.values).some(key => this.state.values[key]) || this.state.blocks.length > 0 || Object.keys(this.state.edits || {}).length > 0; }
 }
 
 // Exact bytes, not list index/title, authorize a template mapping.
@@ -29,6 +30,11 @@ export const templates = {
         ].map(field => ({...field, positions: [{page: 1, x: 225, y: field.y, width: 299, lines: field.lines || 1}]})),
     },
 };
+
+for (const [hash, mapping] of Object.entries(originalMappings)) {
+    if (templates[hash]) templates[hash].fields.push(...mapping.fields);
+    else templates[hash] = mapping;
+}
 
 export function identifyFormat(bytes) {
     if (new TextDecoder().decode(bytes.slice(0, 5)) === '%PDF-') return 'pdf';

@@ -30,8 +30,9 @@
                 <form data-workspace-fields autocomplete="off"></form>
             </div>
             <div data-workspace-edit hidden>
-                <h3>Çalışma kopyasına ek içerik</h3>
-                <p class="dw-notice">Burada eklediğiniz metin, madde, tablo ve imza alanlarını değiştirebilir veya silebilirsiniz. Orijinal belgenin mevcut metnini değiştirme ve PDF metnini silme bu sürümde desteklenmiyor.</p>
+                <h3>Belge metinleri ve ek içerik</h3>
+                <p class="dw-notice">Özgün metni değiştirin veya boş bırakarak silin. Değişiklikler yalnız çalışma kopyasına uygulanır. Uzun metinleri ek içerik olarak ekleyebilirsiniz.</p>
+                <details><summary>Bu sayfanın özgün metinlerini düzenle</summary><div data-workspace-original-text></div></details>
                 <div class="dw-tools" aria-label="Eklenecek içerik">
                     <button type="button" data-workspace-add="paragraph">Paragraf ekle</button>
                     <button type="button" data-workspace-add="article">Madde ekle</button>
@@ -61,7 +62,7 @@
             <h3>Belge işlemleri</h3>
             <button type="button" data-workspace-generate>Belgeyi Oluştur</button>
             <button type="button" data-workspace-pdf disabled>PDF İndir</button>
-            <button type="button" data-workspace-word disabled>Word İndir (desteklenmiyor)</button>
+            <button type="button" data-workspace-word disabled>Word İndir</button>
             <button type="button" data-workspace-print disabled>Yazdır</button>
             <button type="button" data-workspace-share disabled>Paylaş</button>
             <button type="button" data-workspace-return>Tekrar Düzenle</button>
@@ -70,5 +71,5 @@
         </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018-native-lease1"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018-all1"></script>
 

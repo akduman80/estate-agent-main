@@ -73,6 +73,7 @@ class DocumentTemplateStore
 
     public function save(string $title, string $category, string $format, string $bytes, array $mapping, ?string $id = null): array
     {
+        $preview = null;
         if (strlen($bytes) > 25 * 1024 * 1024 || strlen($bytes) < 8) throw ValidationException::withMessages(['upload' => 'Dosya boyutu geçersiz.']);
         if ($format === 'pdf') {
             if (! str_starts_with($bytes, '%PDF-') || preg_match('~/JavaScript|/JS\b|/Launch\b|/EmbeddedFile|/Encrypt\b~', $bytes)) throw ValidationException::withMessages(['upload' => 'PDF geçersiz, şifreli veya etkin içerik barındırıyor.']);
@@ -96,8 +97,19 @@ class DocumentTemplateStore
                 } finally { $zip->close(); }
             } finally { if (is_file($temp)) unlink($temp); }
         }
+        if ($format === 'docx') {
+            try {
+                $keys = app(NativeDocxTemplate::class)->fields($bytes);
+                $mapped = array_column($mapping['fields'] ?? [], 'key');
+                if (array_diff($keys, $mapped) || array_diff($mapped, $keys) || count($mapped) !== count(array_unique($mapped))) throw new \RuntimeException('DOCX alan anahtarları eşleşmiyor.');
+                $validation = ['pageSizes' => [[595,842]], 'fields' => []];
+                foreach ($mapping['fields'] ?? [] as $field) { $field['positions'] = [['page'=>1,'x'=>10,'y'=>800,'width'=>100,'height'=>20,'fontSize'=>11]]; $validation['fields'][] = $field; }
+                $this->validateMapping($validation);
+                $preview = app(NativeLeaseDocument::class)->convert($bytes);
+            } catch (\Throwable) { throw ValidationException::withMessages(['upload' => 'DOCX doğrulanamadı veya ön izleme oluşturulamadı. Alan işaretlerini ve dönüştürücüyü kontrol edin.']); }
+        }
         if ($title === '' || mb_strlen($title) > 120 || mb_strlen($category) > 80) throw ValidationException::withMessages(['title' => 'Başlık veya kategori geçersiz.']);
-        return $this->locked(function () use ($title, $category, $format, $bytes, $mapping, $id) {
+        return $this->locked(function () use ($title, $category, $format, $bytes, $mapping, $id, $preview) {
             $catalog = $this->all();
             $id ??= bin2hex(random_bytes(16));
             if (! preg_match('/^[a-f0-9]{32}$/D', $id)) throw new \InvalidArgumentException('Geçersiz şablon.');
@@ -105,6 +117,10 @@ class DocumentTemplateStore
             $hash = hash('sha256', $bytes);
             $revision = compact('id', 'version', 'title', 'category', 'format', 'hash', 'mapping') + ['saved_at' => now()->toIso8601String()];
             $this->atomic($this->root()."/{$id}/{$version}.{$format}", $bytes);
+            if ($preview !== null) {
+                $revision['previewHash'] = hash('sha256', $preview);
+                $this->atomic($this->root()."/{$id}/{$version}.preview.pdf", $preview);
+            }
             $catalog[$id]['versions'][] = $revision;
             $catalog[$id]['active'] ??= null;
             $this->atomic($this->root().'/catalog.json', json_encode($catalog, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
@@ -128,25 +144,46 @@ class DocumentTemplateStore
             if (! isset($catalog[$id])) abort(404);
             if ($version !== null) {
                 $revision = $catalog[$id]['versions'][$version - 1] ?? null;
-                if (! $revision || $revision['format'] !== 'pdf') throw ValidationException::withMessages(['upload' => 'DOCX için güvenilir sayfa önizlemesi/dönüşüm altyapısı yok. Yayın kapalı.']);
-                $this->validateMapping($revision['mapping']);
+                if (! $revision || ! in_array($revision['format'], ['pdf','docx'], true)) throw ValidationException::withMessages(['upload' => 'Şablon biçimi geçersiz.']);
+                if ($revision['format'] === 'docx' && ! isset($revision['previewHash'])) throw ValidationException::withMessages(['upload' => 'Eski DOCX taslağını yeni sürüm olarak kaydedip test edin.']);
+                if ($revision['format'] === 'pdf') $this->validateMapping($revision['mapping']);
                 if (empty($revision['mapping']['fields'])) throw ValidationException::withMessages(['mapping' => 'Yayınlamadan önce en az bir alan eşleyin.']);
-                $source = $this->root()."/{$id}/{$version}.pdf";
+                $source = $this->root()."/{$id}/{$version}.{$revision['format']}";
                 if (! hash_equals($revision['hash'], hash_file('sha256', $source))) throw new \RuntimeException('Kaynak doğrulaması başarısız.');
-                $this->atomic($this->published()."/{$id}-{$version}.pdf", file_get_contents($source));
+                if ($revision['format'] === 'docx') {
+                    $preview = $this->preview($id, $version);
+                    $this->atomic($this->published()."/{$id}-{$version}.preview.pdf", $preview);
+                }
+                $this->atomic($this->published()."/{$id}-{$version}.{$revision['format']}", file_get_contents($source));
             }
             $catalog[$id]['active'] = $version;
             $public = [];
             foreach ($catalog as $entry) {
                 if ($entry['active'] === null) continue;
                 $r = $entry['versions'][$entry['active'] - 1];
-                $public[] = $r + ['url' => '/document-templates/'.$r['id'].'-'.$r['version'].'.pdf'];
+                $public[] = $r + ['url' => '/document-templates/'.$r['id'].'-'.$r['version'].'.'.$r['format']];
+                if ($r['format'] === 'docx') $public[array_key_last($public)]['previewUrl'] = '/document-templates/'.$r['id'].'-'.$r['version'].'.preview.pdf';
             }
             $this->atomic($this->published().'/catalog.json', json_encode($public, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
             $this->atomic($this->root().'/catalog.json', json_encode($catalog, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
             // No user data; remove withdrawn public copies after updating discovery.
             $keep = array_map(fn ($r) => basename($r['url']), $public);
-            foreach (glob($this->published().'/*.pdf') ?: [] as $path) if (! in_array(basename($path), $keep, true)) unlink($path);
+            foreach ($public as $r) if (isset($r['previewUrl'])) $keep[] = basename($r['previewUrl']);
+            foreach (array_merge(glob($this->published().'/*.pdf') ?: [], glob($this->published().'/*.docx') ?: []) as $path) if (! in_array(basename($path), $keep, true)) unlink($path);
         });
+    }
+
+    public function preview(string $id, int $version): string
+    {
+        [$revision] = $this->revision($id, $version);
+        abort_unless($revision['format'] === 'docx', 422);
+        if (! isset($revision['previewHash'])) {
+            [, $source] = $this->revision($id, $version);
+            app(NativeDocxTemplate::class)->fields($source);
+            return app(NativeLeaseDocument::class)->convert($source);
+        }
+        $bytes = file_get_contents($this->root()."/{$id}/{$version}.preview.pdf");
+        if (! hash_equals($revision['previewHash'], hash('sha256', $bytes))) throw new \RuntimeException('Ön izleme doğrulanamadı.');
+        return $bytes;
     }
 }

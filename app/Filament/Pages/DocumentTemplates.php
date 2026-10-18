@@ -48,7 +48,7 @@ class DocumentTemplates extends Page
     {
         $this->authorizeManager();
         $r = app(DocumentTemplateStore::class)->all()[$this->templateId]['versions'][($this->savedVersion ?? 0) - 1] ?? null;
-        abort_unless($r && hash_equals($r['hash'], $digest) && $r['format'] === 'pdf' && json_decode($this->mapping, true) === $r['mapping'], 422);
+        abort_unless($r && hash_equals($r['hash'], $digest) && in_array($r['format'], ['pdf','docx'], true) && json_decode($this->mapping, true) === $r['mapping'], 422);
         $this->tested = $digest; $this->message = 'Tarayıcı çıktı testi geçti. Kaydedilen sürüm yayınlanabilir.';
     }
     public function publishVersion(): void
@@ -74,7 +74,31 @@ class DocumentTemplates extends Page
         $this->templateId = $id; $this->savedVersion = $version; $this->tested = null;
         $this->titleInput = $r['title']; $this->category = $r['category']; $this->mapping = json_encode($r['mapping'], JSON_UNESCAPED_UNICODE);
         $this->upload?->delete(); $this->upload = null;
-        return $r + ['bytes' => base64_encode($bytes)];
+        return $r + ['bytes' => base64_encode($bytes)] + ($r['format'] === 'docx' ? ['preview' => base64_encode(app(DocumentTemplateStore::class)->preview($id, $version))] : []);
+    }
+    public function previewDocxUpload(): array
+    {
+        $this->authorizeManager();
+        $this->validate(['upload'=>'required|file|max:12288|mimes:docx']);
+        $bytes = file_get_contents($this->upload->getRealPath());
+        try {
+            $keys = app(\App\Support\NativeDocxTemplate::class)->fields($bytes);
+            $pdf = app(\App\Support\NativeLeaseDocument::class)->convert($bytes);
+        } catch (\Throwable) { throw \Illuminate\Validation\ValidationException::withMessages(['upload'=>'DOCX doğrulanamadı veya dönüştürücü meşgul.']); }
+        return ['preview'=>base64_encode($pdf), 'keys'=>$keys];
+    }
+    public function testDocxVersion(array $values): array
+    {
+        $this->authorizeManager();
+        [$r, $source] = app(DocumentTemplateStore::class)->revision($this->templateId, $this->savedVersion);
+        abort_unless($r['format'] === 'docx' && json_decode($this->mapping,true) === $r['mapping'],422);
+        foreach ($r['mapping']['fields'] as $field) if ($field['locked'] ?? false) $values[$field['key']] = '';
+        try {
+            $docx = app(\App\Support\NativeDocxTemplate::class)->fill($source,$values);
+            $pdf = app(\App\Support\NativeLeaseDocument::class)->convert($docx);
+        } catch (\Throwable) { throw \Illuminate\Validation\ValidationException::withMessages(['upload'=>'DOCX örnek çıktı testi başarısız.']); }
+        $this->tested = $r['hash'];
+        return ['preview'=>base64_encode($pdf)];
     }
     public function versions(): array { $this->authorizeManager(); return app(DocumentTemplateStore::class)->all(); }
 }

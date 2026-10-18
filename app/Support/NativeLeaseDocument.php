@@ -11,7 +11,8 @@ use ZipArchive;
 class NativeLeaseDocument
 {
     public const HASH = 'f7e7ea2e3d9a703650a8f6d55b7dec2f49c67fc574051607f076189309369924';
-    public const KEYS = ['district', 'street', 'number', 'propertyType', 'landlord', 'landlordIdentity', 'landlordAddress', 'tenant', 'tenantIdentity', 'tenantAddress', 'startDate', 'duration', 'annualRent', 'monthlyRent', 'paymentMethod', 'usage', 'condition', 'inventory'];
+    public const TABLE_KEYS = ['district', 'street', 'number', 'propertyType', 'landlord', 'landlordIdentity', 'landlordAddress', 'tenant', 'tenantIdentity', 'tenantAddress', 'startDate', 'duration', 'annualRent', 'monthlyRent', 'paymentMethod', 'usage', 'condition', 'inventory'];
+    public const KEYS = [...self::TABLE_KEYS, 'bank', 'branch', 'bankAccount', 'court', 'contractDate'];
 
     public function fill(string $source, array $values): string
     {
@@ -30,8 +31,8 @@ class NativeLeaseDocument
                 $ns = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
                 $xpath->registerNamespace('w', $ns);
                 $rows = $xpath->query('//w:tbl/w:tr');
-                if ($rows->length !== count(self::KEYS)) throw new \RuntimeException('Template changed');
-                foreach (self::KEYS as $index => $key) {
+                if ($rows->length !== count(self::TABLE_KEYS)) throw new \RuntimeException('Template changed');
+                foreach (self::TABLE_KEYS as $index => $key) {
                     $value = (string) ($values[$key] ?? '');
                     if ($value === '') continue;
                     $cell = $xpath->query('./w:tc', $rows->item($index))->item(1);
@@ -47,6 +48,22 @@ class NativeLeaseDocument
                         $run->appendChild($text);
                     }
                     $paragraph->appendChild($run);
+                }
+                $paragraphs = $xpath->query('//w:body/w:p');
+                // Floating fields leave the original condition paragraphs and their line breaks intact.
+                foreach (['bank'=>[44,463.75,656.289,60], 'branch'=>[44,163.242,635.589,84], 'bankAccount'=>[44,334.59,635.589,132], 'court'=>[50,366.84,325.089,51.28], 'contractDate'=>[51,219.02,262.989,51.60]] as $key=>[$index,$x,$y,$width]) {
+                    $value=(string)($values[$key]??'');if($value==='')continue;
+                    $run=$doc->createElementNS($ns,'w:r');$pict=$doc->createElementNS($ns,'w:pict');
+                    $shape=$doc->createElementNS('urn:schemas-microsoft-com:vml','v:rect');
+                    $top=841.89-$y-2-9.2;
+                    $shape->setAttribute('id','lease_'.$key);$shape->setAttribute('stroked','f');$shape->setAttribute('filled','f');
+                    $shape->setAttributeNS('urn:schemas-microsoft-com:office:office','o:insetmode','custom');
+                    $shape->setAttribute('style',"position:absolute;left:{$x}pt;top:{$top}pt;width:{$width}pt;height:14pt;mso-wrap-style:none;mso-position-horizontal-relative:page;mso-position-vertical-relative:page");
+                    $textbox=$doc->createElementNS('urn:schemas-microsoft-com:vml','v:textbox');$textbox->setAttribute('inset','0,0,0,0');$textbox->setAttribute('style','mso-fit-shape-to-text:t');
+                    $content=$doc->createElementNS($ns,'w:txbxContent');$paragraph=$doc->createElementNS($ns,'w:p');
+                    $properties=$doc->createElementNS($ns,'w:pPr');$spacing=$doc->createElementNS($ns,'w:spacing');$spacing->setAttributeNS($ns,'w:before','0');$spacing->setAttributeNS($ns,'w:after','0');$spacing->setAttributeNS($ns,'w:line','220');$spacing->setAttributeNS($ns,'w:lineRule','exact');$properties->appendChild($spacing);$paragraph->appendChild($properties);
+                    $textRun=$doc->createElementNS($ns,'w:r');$runProperties=$doc->createElementNS($ns,'w:rPr');$fonts=$doc->createElementNS($ns,'w:rFonts');$fonts->setAttributeNS($ns,'w:ascii','Arial');$fonts->setAttributeNS($ns,'w:hAnsi','Arial');$runProperties->appendChild($fonts);$fontSize=$doc->createElementNS($ns,'w:sz');$fontSize->setAttributeNS($ns,'w:val','20');$runProperties->appendChild($fontSize);$textRun->appendChild($runProperties);
+                    $text=$doc->createElementNS($ns,'w:t');$text->appendChild($doc->createTextNode($value));$textRun->appendChild($text);$paragraph->appendChild($textRun);$content->appendChild($paragraph);$textbox->appendChild($content);$shape->appendChild($textbox);$pict->appendChild($shape);$run->appendChild($pict);$paragraphs->item($index)->appendChild($run);
                 }
                 if (! $zip->addFromString('word/document.xml', $doc->saveXML())) throw new \RuntimeException('Cannot update working copy');
             } finally { $zip->close(); }
