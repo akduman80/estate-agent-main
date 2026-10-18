@@ -5,7 +5,7 @@ import {validateField} from './field-rules.js?v=documents-20261018-all1';
 import {buildPdf} from './pdf-output.js?v=documents-20261018-all1';
 import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=documents-20261018-all1';
 import {inspectPdf} from './pdf-edit.js?v=documents-20261018-all1';
-import {pdfToWord} from './word-output.js?v=documents-20261018-all1';
+import {pdfToWord} from './word-output.js?v=documents-20261018-all2';
 
 const dialog = document.getElementById('document-workspace');
 if (dialog) initialize();

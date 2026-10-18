@@ -71,5 +71,5 @@
         </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018-all1"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018-all2"></script>
 
