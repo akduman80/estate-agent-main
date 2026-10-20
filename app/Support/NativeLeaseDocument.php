@@ -11,12 +11,22 @@ use ZipArchive;
 class NativeLeaseDocument
 {
     public const HASH = 'f7e7ea2e3d9a703650a8f6d55b7dec2f49c67fc574051607f076189309369924';
-    public const TABLE_KEYS = ['district', 'street', 'number', 'propertyType', 'landlord', 'landlordIdentity', 'landlordAddress', 'tenant', 'tenantIdentity', 'tenantAddress', 'startDate', 'duration', 'annualRent', 'monthlyRent', 'paymentMethod', 'usage', 'condition', 'inventory'];
+    public const WORKING_TEMPLATE_HASH = '0dbe3733bb44efa8ed77ff67c36d73c70072a014bf29ed0c6994bb8c523ce06e';
+    public const TABLE_KEYS = ['city', 'county', 'district', 'street', 'number', 'propertyType', 'landlord', 'landlordIdentity', 'landlordAddress', 'tenant', 'tenantIdentity', 'tenantAddress', 'startDate', 'duration', 'annualRent', 'monthlyRent', 'paymentMethod', 'usage', 'condition', 'inventory'];
     public const KEYS = [...self::TABLE_KEYS, 'bank', 'branch', 'bankAccount', 'court', 'contractDate', 'guarantor'];
 
     public function fill(string $source, array $values): string
     {
         if (hash('sha256', $source) !== self::HASH) throw new \RuntimeException('Unsupported source');
+        $city = (string) ($values['city'] ?? '');
+        $county = (string) ($values['county'] ?? '');
+        if ($city !== '' || $county !== '') {
+            $locations = json_decode(file_get_contents(dirname(__DIR__, 2).'/resources/data/turkey-neighborhoods.json'), true, 512, JSON_THROW_ON_ERROR);
+            if (! isset($locations[$city]) || ($county !== '' && ! isset($locations[$city][$county]))) throw new \InvalidArgumentException('Invalid lease location');
+        }
+        // A versioned working template adds real rows; the original download is immutable.
+        $source = file_get_contents(dirname(__DIR__, 2).'/resources/documents/kira-sozlesmesi-v2-location.docx');
+        if (hash('sha256', $source) !== self::WORKING_TEMPLATE_HASH) throw new \RuntimeException('Working template changed');
         $temporary = tempnam(sys_get_temp_dir(), 'zyd-lease-');
         if ($temporary === false) throw new \RuntimeException('Temporary file unavailable');
         chmod($temporary, 0600);

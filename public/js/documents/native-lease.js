@@ -1,10 +1,11 @@
 import {validateField} from './field-rules.js?v=documents-20261018-all1';
+import {leaseLocation} from './lease-locations.js?v=lease-location-20261020-v1';
 
 export const leaseHash = 'f7e7ea2e3d9a703650a8f6d55b7dec2f49c67fc574051607f076189309369924';
 export const leaseTemplate = {
-    id:'native-lease-v1', pages:3,
+    id:'native-lease-v2-location', pages:3,
     fields:[
-        ['district','Mahalle','address'], ['street','Cadde / sokak','address'], ['number','Bina / daire numarası','text'],
+        ['city','İl','city'], ['county','İlçe','district'], ['district','Mahalle','neighborhood'], ['street','Cadde / sokak','address'], ['number','Bina / daire numarası','text'],
         ['propertyType','Kiralananın cinsi','text'], ['landlord','Kiraya verenin adı soyadı','name'],
         ['landlordIdentity','Kiraya verenin T.C. kimlik numarası','identity'], ['landlordAddress','Kiraya verenin adresi','address'],
         ['tenant','Kiracının adı soyadı','name'], ['tenantIdentity','Kiracının T.C. kimlik numarası','identity'],
@@ -26,6 +27,11 @@ export async function renderLease(dialog, values, signal) {
         if(value.length>240) throw new Error(`${field.label}: En fazla 240 karakter kullanın.`);
         normalized[field.key]=value ? checked.display : '';
     }
+    const location = leaseLocation(normalized.city, normalized.county);
+    if (normalized.city && !location.city) throw new Error('İl: Listeden geçerli bir il seçin.');
+    if (normalized.county && !location.county) throw new Error('İlçe: Seçtiğiniz ile bağlı geçerli bir ilçe seçin.');
+    normalized.city = normalized.city ? location.city : '';
+    normalized.county = normalized.county ? location.county : '';
     const extraWidths={bank:60,branch:84,bankAccount:132,court:51.28,contractDate:51.60,landlord:175,tenant:95,guarantor:85};
     const measure=document.createElement('canvas').getContext('2d');measure.font='10px Arial';
     for(const [key,width]of Object.entries(extraWidths))if(normalized[key]&&(normalized[key].includes('\n')||measure.measureText(normalized[key]).width>width))throw new Error(`${leaseTemplate.fields.find(f=>f.key===key).label}: Metin ayrılan alana sığmıyor. Kısaltın.`);

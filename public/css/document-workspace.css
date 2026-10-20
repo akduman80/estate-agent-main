@@ -75,3 +75,6 @@
 .dw-output h3{display:none}.dw-output p{margin:4px}.dw-output button:first-of-type{background:#f45105;border-color:#f45105;color:white}
 @media(min-width:1100px){[data-workspace-fields]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dw-field{margin-bottom:0}.dw-field:has(textarea){grid-column:1/-1}}
 @media(max-width:767px){.documents-workspace{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border-radius:0}.dw-body{display:block;overflow:auto}.dw-controls,.dw-preview{overflow:visible}.dw-output{max-height:none}.dw-preview{min-height:100%}.dw-page-toolbar{top:0}.dw-field{margin-bottom:10px}}
+/* Lease-only location row; other document forms retain their current layout. */
+.dw-lease-locations{display:grid;grid-column:1/-1;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0}
+@media(min-width:1100px){.dw-lease-locations{grid-template-columns:repeat(3,minmax(0,1fr))}}

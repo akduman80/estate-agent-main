@@ -3,9 +3,10 @@ import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v
 import {SmartFields, createFieldControl, readField} from './smart-fields.js?v=documents-20261018-all1';
 import {validateField} from './field-rules.js?v=documents-20261018-all1';
 import {buildPdf} from './pdf-output.js?v=documents-20261018-all1';
-import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=documents-20261020-pages2';
+import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=lease-location-20261020-v1';
 import {inspectPdf} from './pdf-edit.js?v=documents-20261018-all1';
 import {pdfToWord} from './word-output.js?v=documents-20261018-all2';
+import {leaseLocation, prepareLeaseLocationFields, updateLeaseLocationFields} from './lease-locations.js?v=lease-location-20261020-v1';
 
 const dialog = document.getElementById('document-workspace');
 if (dialog) initialize();
@@ -61,7 +62,11 @@ function initialize() {
             if (field.country) input.dataset.country = field.country; if (field.currency) input.dataset.currency = field.currency;
             input.name = field.key; input.value = session.drafts.fill.state.values[field.key] || '';
             input.addEventListener('input', () => {
-                session.drafts.fill.change(state => { state.values[field.key] = input.value; });
+                session.drafts.fill.change(state => {
+                    if (session.nativeLease && field.key === 'city' && leaseLocation(state.values.city).city !== leaseLocation(input.value).city) state.values.county = '';
+                    state.values[field.key] = input.value;
+                });
+                if (session.nativeLease && field.key === 'city') updateLeaseLocationFields(form, session.drafts.fill.state.values);
                 validateRequiredFields();
                 history(); paintValues();
             });
@@ -73,6 +78,7 @@ function initialize() {
                 label.append(note);
             }
         }
+        if (session.nativeLease && session.page === 1) prepareLeaseLocationFields(form, session.drafts.fill.state.values);
         for (const block of session.drafts.edit.state.blocks) renderBlock(block);
         renderOriginalText();
         smart.refresh();

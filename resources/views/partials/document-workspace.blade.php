@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=documents-20261020-pages2">
+<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=lease-location-20261020-v1">
 <dialog id="document-workspace" class="documents-workspace" aria-labelledby="document-workspace-title" data-csrf="{{ csrf_token() }}" data-pdf-base="{{ asset('vendor/pdfjs') }}/">
     <header class="dw-heading">
         <div><h2 id="document-workspace-title">Belge çalışma alanı</h2><p data-workspace-subtitle>Orijinal belge korunur.</p></div>
@@ -74,5 +74,5 @@
         </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261020-pages2"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=lease-location-20261020-v1"></script>
 
