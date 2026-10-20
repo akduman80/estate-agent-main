@@ -13,8 +13,8 @@ export const leaseTemplate = {
         ['paymentMethod','Kiranın ödeme şekli','text'], ['usage','Kiralananın kullanım şekli','text'],
         ['condition','Kiralananın durumu','text'], ['inventory','Demirbaşlar','description'],
         ['bank','Banka','text'], ['branch','Banka şubesi','text'], ['bankAccount','Hesap / IBAN','text'],
-        ['court','Mahkeme yeri','text'], ['contractDate','Sözleşme tarihi','date'],
-    ].map(([key,label,kind])=>({key,label,kind,positions:[],lines:['address','description'].includes(kind)?2:1,currency:'TRY'})),
+        ['court','Mahkeme yeri','text'], ['contractDate','Sözleşme tarihi','date'], ['guarantor','Kefilin adı soyadı','name'],
+    ].map(([key,label,kind])=>({key,label,kind,pages:['landlord','tenant','guarantor'].includes(key)?[1,2,3]:['bank','branch','bankAccount','court','contractDate'].includes(key)?[3]:[1],positions:[],lines:['address','description'].includes(kind)?2:1,currency:'TRY'})),
 };
 
 export async function renderLease(dialog, values, signal) {
@@ -26,7 +26,7 @@ export async function renderLease(dialog, values, signal) {
         if(value.length>240) throw new Error(`${field.label}: En fazla 240 karakter kullanın.`);
         normalized[field.key]=value ? checked.display : '';
     }
-    const extraWidths={bank:60,branch:84,bankAccount:132,court:51.28,contractDate:51.60};
+    const extraWidths={bank:60,branch:84,bankAccount:132,court:51.28,contractDate:51.60,landlord:175,tenant:95,guarantor:85};
     const measure=document.createElement('canvas').getContext('2d');measure.font='10px Arial';
     for(const [key,width]of Object.entries(extraWidths))if(normalized[key]&&(normalized[key].includes('\n')||measure.measureText(normalized[key]).width>width))throw new Error(`${leaseTemplate.fields.find(f=>f.key===key).label}: Metin ayrılan alana sığmıyor. Kısaltın.`);
     const response=await fetch('/dokumanlar/islemler/kira',{

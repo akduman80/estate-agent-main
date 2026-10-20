@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=documents-20261018-stage4">
+<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=documents-20261020-pages2">
 <dialog id="document-workspace" class="documents-workspace" aria-labelledby="document-workspace-title" data-csrf="{{ csrf_token() }}" data-pdf-base="{{ asset('vendor/pdfjs') }}/">
     <header class="dw-heading">
         <div><h2 id="document-workspace-title">Belge çalışma alanı</h2><p data-workspace-subtitle>Orijinal belge korunur.</p></div>
@@ -26,6 +26,8 @@
             </div>
             <div data-workspace-fill>
                 <h3>Belgeye özel alanlar</h3>
+                <nav class="dw-form-pages" data-workspace-form-pages aria-label="Doldurulacak sayfa"></nav>
+                <p class="dw-page-summary" data-workspace-page-summary aria-live="polite"></p>
                 <p data-workspace-fill-notice class="dw-notice">Şablon ve alan eşlemesi kontrol ediliyor.</p>
                 <form data-workspace-fields autocomplete="off"></form>
             </div>
@@ -55,6 +57,7 @@
                 <span data-workspace-zoom>100%</span>
                 <button type="button" data-workspace-zoom-in aria-label="Yakınlaştır">+</button>
             </div>
+            <nav class="dw-preview-pages" data-workspace-preview-pages aria-label="Ön izleme sayfaları"></nav>
             <div class="dw-paper" hidden data-workspace-paper><canvas aria-label="Orijinal PDF ve doldurulan alanların önizlemesi" role="img"></canvas></div>
             <p class="dw-preview-message" data-workspace-preview-message>Orijinal belge yükleniyor…</p>
         </section>
@@ -71,5 +74,5 @@
         </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261018-all2"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261020-pages2"></script>
 

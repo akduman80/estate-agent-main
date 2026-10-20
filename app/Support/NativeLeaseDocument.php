@@ -12,7 +12,7 @@ class NativeLeaseDocument
 {
     public const HASH = 'f7e7ea2e3d9a703650a8f6d55b7dec2f49c67fc574051607f076189309369924';
     public const TABLE_KEYS = ['district', 'street', 'number', 'propertyType', 'landlord', 'landlordIdentity', 'landlordAddress', 'tenant', 'tenantIdentity', 'tenantAddress', 'startDate', 'duration', 'annualRent', 'monthlyRent', 'paymentMethod', 'usage', 'condition', 'inventory'];
-    public const KEYS = [...self::TABLE_KEYS, 'bank', 'branch', 'bankAccount', 'court', 'contractDate'];
+    public const KEYS = [...self::TABLE_KEYS, 'bank', 'branch', 'bankAccount', 'court', 'contractDate', 'guarantor'];
 
     public function fill(string $source, array $values): string
     {
@@ -51,8 +51,13 @@ class NativeLeaseDocument
                 }
                 $paragraphs = $xpath->query('//w:body/w:p');
                 // Floating fields leave the original condition paragraphs and their line breaks intact.
-                foreach (['bank'=>[44,463.75,656.289,60], 'branch'=>[44,163.242,635.589,84], 'bankAccount'=>[44,334.59,635.589,132], 'court'=>[50,366.84,325.089,51.28], 'contractDate'=>[51,219.02,262.989,51.60]] as $key=>[$index,$x,$y,$width]) {
-                    $value=(string)($values[$key]??'');if($value==='')continue;
+                $placements = ['bank'=>[44,463.75,656.289,60], 'branch'=>[44,163.242,635.589,84], 'bankAccount'=>[44,334.59,635.589,132], 'court'=>[50,366.84,325.089,51.28], 'contractDate'=>[51,219.02,262.989,51.60],
+                    'landlord_1'=>[7,100,109.889,175,'landlord'], 'tenant_1'=>[7,290,109.889,175,'tenant'], 'guarantor_1'=>[7,465,109.889,95,'guarantor'],
+                    'landlord_2'=>[36,110,77.089,175,'landlord'], 'tenant_2'=>[36,305,77.089,175,'tenant'], 'guarantor_2'=>[36,475,77.089,85,'guarantor'],
+                    'landlord_3'=>[57,180,148.389,175,'landlord'], 'tenant_3'=>[57,465,148.389,95,'tenant'], 'guarantor_3'=>[57,70.95,134.589,100,'guarantor']];
+                foreach ($placements as $key=>$placement) {
+                    [$index,$x,$y,$width]=$placement;
+                    $value=(string)($values[$placement[4]??$key]??'');if($value==='')continue;
                     $run=$doc->createElementNS($ns,'w:r');$pict=$doc->createElementNS($ns,'w:pict');
                     $shape=$doc->createElementNS('urn:schemas-microsoft-com:vml','v:rect');
                     $top=841.89-$y-2-9.2;

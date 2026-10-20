@@ -42,6 +42,9 @@ export async function mount(root, wire) {
             };
             input('Alan anahtarı (aynı bilgi için bir anahtar)', f.key, v => { f.key = v; });
             input('Etiket', f.label, v => { f.label = v; });
+            if (format === 'docx') input('Bu alanın geçtiği sayfalar (örnek: 1, 3)', (f.pages || []).join(', '), value => {
+                f.pages = [...new Set(value.split(',').map(part => Number(part.trim())))];
+            });
             const label = document.createElement('label'); label.textContent = 'Alan türü';
             const select = document.createElement('select');
             for (const [value, title] of Object.entries({text:'Metin',name:'Ad soyad',identity:'T.C. kimlik',phone:'Telefon',email:'E-posta',address:'Adres',city:'İl',district:'İlçe',neighborhood:'Mahalle',date:'Tarih',amount:'Tutar',description:'Açıklama'})) {
@@ -76,7 +79,18 @@ export async function mount(root, wire) {
         const pageSizes = [];
         if (pdf.numPages > 100) throw new Error('En fazla 100 sayfa desteklenir.');
         for (let i = 1; i <= pdf.numPages; i++) { const p = await pdf.getPage(i); if (hasItems(await p.getJSActions())) throw new Error('Sayfa JavaScript içeriyor.'); if (p.rotate % 360) throw new Error('Döndürülmüş PDF sayfası desteklenmiyor.'); const v = p.getViewport({scale: 1}); pageSizes.push([v.width, v.height]); }
-        mapping = savedMapping || {pageSizes, fields: []}; mapping.pageSizes = pageSizes; sync(); fields(); await render(); status('Alan çizmek için Yeni alan çiz seçin ve sayfada sürükleyin.');
+        mapping = savedMapping || {pageSizes, fields: []}; mapping.pageSizes = pageSizes;
+        if (format === 'docx') {
+            const texts = [];
+            for (let number = 1; number <= pdf.numPages; number++) texts.push((await (await pdf.getPage(number)).getTextContent()).items.map(item => item.str).join(''));
+            for (const field of mapping.fields) {
+                if (field.pages?.length) continue;
+                const escaped = field.key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const marker = new RegExp(`\\{\\{\\s*${escaped}\\s*\\}\\}`);
+                field.pages = texts.flatMap((text, index) => marker.test(text) ? [index + 1] : []);
+            }
+        }
+        sync(); fields(); await render(); status('Alan çizmek için Yeni alan çiz seçin ve sayfada sürükleyin.');
     }
     get('file').onchange = async event => {
         try {

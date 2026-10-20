@@ -6449,3 +6449,35 @@ export const originalMappings = {
     ]
   }
 };
+// Verified repeated party names in the hash-pinned original documents.
+function repeatField(template, sourceKey, targetKeys) {
+    const source = template.fields.find(field => field.key === sourceKey);
+    for (const key of targetKeys) {
+        const target = template.fields.find(field => field.key === key);
+        if (!source || !target) throw new Error('Original document mapping changed');
+        source.positions.push(...target.positions);
+        template.fields = template.fields.filter(field => field !== target);
+    }
+}
+const originalsById = Object.fromEntries(Object.values(originalMappings).map(template => [template.id, template]));
+for (const index of [2,3]) {
+    const template = originalsById[`original-${index}-v2`];
+    repeatField(template, 'blank_4', ['blank_26']);
+    repeatField(template, 'blank_6', ['blank_27']);
+}
+for (const [index,buyer,left,right] of [[5,'blank_5',['blank_51'],['blank_52']], [6,'blank_8',['blank_67','blank_92','blank_122','blank_94'],['blank_68','blank_93','blank_123']], [7,'blank_8',['blank_30'],['blank_31']], [8,'blank_5',['blank_26'],['blank_27']], [9,'blank_5',['blank_22'],['blank_23']]]) {
+    const template = originalsById[`original-${index}-v2`];
+    repeatField(template, 'blank_1', left); repeatField(template, buyer, right);
+}
+const workplace = originalsById['original-4-v2'];
+for (const [key,label,x,y] of [['row_10','Kiracı',85,311],['guarantor','Müteselsil borçlu ve kefil',200,311],['row_7','Kiralayan',320,311]]) {
+    let field = workplace.fields.find(field => field.key === key);
+    if (!field) { field = {key,label,kind:'name',positions:[]}; workplace.fields.push(field); }
+    field.positions.push({page:4,x,y,width:110,height:12,fontSize:10,lines:1});
+}
+workplace.fields.find(field => field.key === 'blank_1').label = 'Kiranın yatırılacağı banka';
+for (const [key,label,kind,page,x,y,width] of [
+    ['branch','Banka şubesi','text',3,126.05,475.65,77],
+    ['bankAccount','Banka hesap numarası','text',3,286.13,475.65,120.75],
+    ['deposit','Teminat / depozito bedeli (TL)','amount',4,247.47,764.47,30.55],
+]) workplace.fields.push({key,label,kind,positions:[{page,x,y,width,height:11,fontSize:9,lines:1}]});

@@ -56,3 +56,22 @@
 @media(max-width:767px){.documents-workspace{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border:0;border-radius:0;margin:0}.dw-heading{padding:12px max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left))}.dw-heading h2{font-size:16px}.dw-body{display:flex;flex-direction:column;overflow:auto}.dw-controls{overflow:visible;border-right:0;border-bottom:1px solid #cbd5e1;flex:none}.dw-preview{overflow:visible;flex:none;padding:12px}.dw-modes{padding:8px 12px}.dw-status{padding:8px 12px}.dw-paper{max-width:680px;margin:auto}.dw-controls input,.dw-controls textarea{font-size:16px}}
 .dw-output{padding:16px;grid-column:1/-1;border-top:1px solid #cbd5e1;overflow-wrap:anywhere}.dw-output button{margin:4px}.dw-output p{font-size:13px;color:#475569}.dw-mobile-tabs{display:none}.dw-paper{flex:none}.dw-preview{min-height:240px}
 @media(max-width:767px){.dw-mobile-tabs{display:flex;gap:6px;padding:6px 12px;flex:none;overflow:auto}.dw-mobile-tabs button{flex:1;white-space:nowrap}.dw-mobile-tabs [aria-selected=true]{background:#172554;color:white}.documents-workspace[data-tab=form] .dw-preview,.documents-workspace[data-tab=form] .dw-output,.documents-workspace[data-tab=preview] .dw-controls,.documents-workspace[data-tab=preview] .dw-output,.documents-workspace[data-tab=actions] .dw-controls,.documents-workspace[data-tab=actions] .dw-preview{display:none}.dw-output{padding:12px}.dw-body{display:block}.dw-preview{overflow:auto}.dw-paper{max-width:none}}
+
+/* Dedicated, full-width document workspace; scoped to the documents module. */
+.documents-workspace{width:calc(100vw - 24px);max-width:1920px;height:calc(100dvh - 24px);max-height:calc(100dvh - 24px);border-radius:10px}
+.dw-body{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
+.dw-controls,.dw-preview{overscroll-behavior:contain}
+.dw-controls{background:#f8fbff;padding:16px}
+.dw-field{padding:10px;background:white;border:1px solid #dbeafe;border-radius:8px;color:#172554}
+.documents-workspace .dw-mic{background:#0672ff;border-color:#0672ff;color:white}
+.dw-preview{background:#282d34;padding:12px 16px 24px}
+.dw-page-toolbar{position:sticky;top:-12px;z-index:1;background:#282d34;color:white;padding:8px 0}
+.dw-form-pages,.dw-preview-pages{display:flex;gap:6px;overflow:auto;padding:4px 0 10px;scrollbar-width:thin}
+.dw-form-pages button,.dw-preview-pages button{flex:none;white-space:nowrap}
+.documents-workspace [aria-current=page]{background:#075bea;border-color:#075bea;color:white}
+.dw-page-summary,.dw-field-shared{font-size:12px;color:#475569}
+.dw-field-shared{display:block;margin-top:6px;font-weight:400}
+.dw-output{background:white;padding:8px 16px;max-height:150px;overflow:auto}
+.dw-output h3{display:none}.dw-output p{margin:4px}.dw-output button:first-of-type{background:#f45105;border-color:#f45105;color:white}
+@media(min-width:1100px){[data-workspace-fields]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dw-field{margin-bottom:0}.dw-field:has(textarea){grid-column:1/-1}}
+@media(max-width:767px){.documents-workspace{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border-radius:0}.dw-body{display:block;overflow:auto}.dw-controls,.dw-preview{overflow:visible}.dw-output{max-height:none}.dw-preview{min-height:100%}.dw-page-toolbar{top:0}.dw-field{margin-bottom:10px}}

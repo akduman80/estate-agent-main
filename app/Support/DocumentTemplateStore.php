@@ -53,7 +53,11 @@ class DocumentTemplateStore
         foreach ($sizes as $size) if (! is_array($size) || count($size) !== 2 || ! is_numeric($size[0] ?? null) || ! is_numeric($size[1] ?? null) || min($size) < 72 || max($size) > 3000) $fail();
         $keys = [];
         foreach ($mapping['fields'] ?? [] as $field) {
-            if (! is_array($field) || array_diff(array_keys($field), ['key','label','kind','required','locked','microphone','positions'])) $fail();
+            if (! is_array($field) || array_diff(array_keys($field), ['key','label','kind','required','locked','microphone','positions','pages'])) $fail();
+            if (isset($field['pages'])) {
+                if (! is_array($field['pages']) || ! array_is_list($field['pages']) || count($field['pages']) < 1 || count($field['pages']) > count($sizes)) $fail();
+                foreach ($field['pages'] as $page) if (! is_int($page) || ! isset($sizes[$page - 1])) $fail();
+            }
             $key = $field['key'] ?? '';
             if (! is_string($key) || ! preg_match('/^[a-zA-Z][a-zA-Z0-9_]{0,63}$/D', $key) || in_array($key, $keys, true)) $fail();
             $keys[] = $key;
@@ -102,7 +106,7 @@ class DocumentTemplateStore
                 $keys = app(NativeDocxTemplate::class)->fields($bytes);
                 $mapped = array_column($mapping['fields'] ?? [], 'key');
                 if (array_diff($keys, $mapped) || array_diff($mapped, $keys) || count($mapped) !== count(array_unique($mapped))) throw new \RuntimeException('DOCX alan anahtarları eşleşmiyor.');
-                $validation = ['pageSizes' => [[595,842]], 'fields' => []];
+                $validation = ['pageSizes' => $mapping['pageSizes'] ?? [[595,842]], 'fields' => []];
                 foreach ($mapping['fields'] ?? [] as $field) { $field['positions'] = [['page'=>1,'x'=>10,'y'=>800,'width'=>100,'height'=>20,'fontSize'=>11]]; $validation['fields'][] = $field; }
                 $this->validateMapping($validation);
                 $preview = app(NativeLeaseDocument::class)->convert($bytes);
@@ -146,6 +150,9 @@ class DocumentTemplateStore
                 $revision = $catalog[$id]['versions'][$version - 1] ?? null;
                 if (! $revision || ! in_array($revision['format'], ['pdf','docx'], true)) throw ValidationException::withMessages(['upload' => 'Şablon biçimi geçersiz.']);
                 if ($revision['format'] === 'docx' && ! isset($revision['previewHash'])) throw ValidationException::withMessages(['upload' => 'Eski DOCX taslağını yeni sürüm olarak kaydedip test edin.']);
+                if ($revision['format'] === 'docx') foreach ($revision['mapping']['fields'] ?? [] as $field) {
+                    if (empty($field['pages']) && empty($field['positions'])) throw ValidationException::withMessages(['mapping' => 'DOCX alanlarının geçtiği sayfaları eşleyip yeni sürümü test edin.']);
+                }
                 if ($revision['format'] === 'pdf') $this->validateMapping($revision['mapping']);
                 if (empty($revision['mapping']['fields'])) throw ValidationException::withMessages(['mapping' => 'Yayınlamadan önce en az bir alan eşleyin.']);
                 $source = $this->root()."/{$id}/{$version}.{$revision['format']}";

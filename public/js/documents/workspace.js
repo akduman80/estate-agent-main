@@ -1,9 +1,9 @@
-import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v=documents-20261018-all1';
+import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v=documents-20261020-pages2';
 
 import {SmartFields, createFieldControl, readField} from './smart-fields.js?v=documents-20261018-all1';
 import {validateField} from './field-rules.js?v=documents-20261018-all1';
 import {buildPdf} from './pdf-output.js?v=documents-20261018-all1';
-import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=documents-20261018-all1';
+import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=documents-20261020-pages2';
 import {inspectPdf} from './pdf-edit.js?v=documents-20261018-all1';
 import {pdfToWord} from './word-output.js?v=documents-20261018-all2';
 
@@ -45,12 +45,15 @@ function initialize() {
         const template = session.template;
         find('generate').disabled = !session.pdf || (session.mode === 'fill' && !template);
         if (!session.pdf) find('output-status').textContent = 'PDF ön izlemesi ve doğrulanmış şablon hazır olduğunda çıktı açılır. DOCX dönüşümü desteklenmiyor; orijinal dosyayı indirebilirsiniz.';
+        else if (!session.output) find('output-status').textContent = 'Ön izlemeyi kontrol edip Belgeyi Oluştur düğmesine basın.';
         find('fill-notice').textContent = template
             ? 'Alanlar gerçek belgeye işlenir. Kısa alanlarda metni sığacak şekilde yazın; uzun açıklamalar için düzenleme modundaki ek içerikleri kullanın.'
             : 'Bu belgenin alan eşlemesi henüz hazır değil. Doldurma kullanılamıyor; orijinalini indirebilirsiniz.';
-        if (session.nativeLease) find('fill-notice').textContent = 'Gerçek Word şablonunun tablo alanları ile banka, şube, hesap, mahkeme ve tarih bilgileri doldurulur. Bilgiler dönüşüm için sunucuya iletilir; geçici dosyalar işlem sonunda temizlenir. İmza alanları elle imzalanmak üzere boş kalır.';
+        if (session.nativeLease) find('fill-notice').textContent = 'Gerçek Word şablonunun tablo alanları ile banka, şube, hesap, mahkeme ve tarih bilgileri doldurulur. Bilgiler dönüşüm için sunucuya iletilir; geçici dosyalar işlem sonunda temizlenir. Taraf isimleri üç sayfanın imza başlıklarının altına otomatik aktarılır; imza alanları elle imzalanmak üzere boş kalır.';
         if (session.nativeTemplate) find('fill-notice').textContent = 'Alanlar özgün DOCX şablonuna işlenir. Bilgiler dönüşüm için sunucuya iletilir; geçici dosyalar işlem sonunda temizlenir. Uzun metin Word sayfa akışını değiştirebilir.';
-        if (template) for (const field of template.fields) {
+        renderPageNavigation();
+        const pageFields = template?.fields.filter(field => fieldPages(field).includes(session.page)) || [];
+        if (template) for (const field of pageFields) {
             const label = document.createElement('label'); label.className = 'dw-field'; label.textContent = field.label;
             const input = createFieldControl(field.kind, field.lines > 1 || field.positions?.some(p => (p.lines || 1) > 1 || (p.height || 0) > 25));
             input.readOnly = !!field.locked; input.required = !!field.required;
@@ -59,14 +62,67 @@ function initialize() {
             input.name = field.key; input.value = session.drafts.fill.state.values[field.key] || '';
             input.addEventListener('input', () => {
                 session.drafts.fill.change(state => { state.values[field.key] = input.value; });
+                validateRequiredFields();
                 history(); paintValues();
             });
             label.append(input); form.append(label);
+            const shared = fieldPages(field);
+            if (shared.length > 1) {
+                const note = document.createElement('small'); note.className = 'dw-field-shared';
+                note.textContent = `Aynı bilgi otomatik kullanılır: ${shared.map(page => `Sayfa ${page}`).join(', ')}`;
+                label.append(note);
+            }
         }
         for (const block of session.drafts.edit.state.blocks) renderBlock(block);
         renderOriginalText();
         smart.refresh();
+        validateRequiredFields();
         history();
+    }
+    function validateRequiredFields() {
+        for (const input of form.querySelectorAll('input,textarea')) {
+            if (!input.required || input.readOnly) continue;
+            if (!input.value.trim()) {
+                input.setCustomValidity('Zorunlu alanı doldurun.');
+                input.setAttribute('aria-invalid', 'true');
+                const control = smart.controls.get(input);
+                if (control) control.error.textContent = 'Zorunlu alanı doldurun.';
+            } else smart.validate(input);
+        }
+    }
+    function fieldPages(field) {
+        if (field.pages?.length) return field.pages;
+        const pages = [...new Set((field.positions || []).map(position => position.page))];
+        // DOCX placeholders without a verified page mapping stay visible for review.
+        return pages.length ? pages : [1];
+    }
+    function renderPageNavigation() {
+        const count = session.pdf?.numPages || 0;
+        for (const name of ['form-pages', 'preview-pages']) {
+            const target = find(name); target.replaceChildren();
+            if (name === 'form-pages' && count) {
+                const previous = button('← Önceki', () => goToPage(session.page - 1));
+                previous.disabled = session.page === 1; target.append(previous);
+            }
+            for (let page = 1; page <= count; page++) {
+                const node = button(`Sayfa ${page}`, () => goToPage(page));
+                node.setAttribute('aria-current', page === session.page ? 'page' : 'false');
+                target.append(node);
+            }
+            if (name === 'form-pages' && count) {
+                const next = button('Sonraki →', () => goToPage(session.page + 1));
+                next.disabled = session.page === count; target.append(next);
+            }
+        }
+        const fields = session.template?.fields.filter(field => fieldPages(field).includes(session.page)) || [];
+        find('page-summary').textContent = count ? `Sayfa ${session.page} / ${count} · ${fields.length} alan${fields.length ? '' : ' · Bu sayfada doğrulanmış doldurma alanı yok.'}` : '';
+    }
+    function goToPage(page) {
+        if (!session?.pdf) return;
+        session.page = Math.max(1, Math.min(session.pdf.numPages, page));
+        rebuildControls();
+        dialog.querySelector('.dw-controls').scrollTop = 0;
+        renderPage().catch(() => say('Sayfa önizlemesi açılamadı. Orijinalini indirebilirsiniz.'));
     }
     function renderOriginalText() {
         const target = find('original-text'); if (!target) return;
@@ -250,7 +306,7 @@ function initialize() {
         session = {mode: detail.mode, title: detail.title, trigger: detail.trigger, drafts: {fill: new DocumentDraft(), edit: new DocumentDraft()}, template: null, page: 1, pdf: null, abort: new AbortController()};
         find('paper').hidden = true; find('paging').hidden = true;
         find('preview-message').hidden = false; find('preview-message').textContent = 'Orijinal belge yükleniyor…';
-        baseCanvas = null; viewport = null;
+        baseCanvas = null; viewport = null; find('zoom').textContent = '100%';
         document.getElementById('document-workspace-title').textContent = detail.title;
         find('download').href = url.href;
         dialog.showModal(); selectTab('form'); outputButtons(false); setMode(detail.mode); say('Orijinalden ayrı çalışma kopyası hazırlanıyor…');
@@ -306,6 +362,15 @@ function initialize() {
             session.pdf = pdf;
             session.analyses = await inspectPdf(pdf, pdfjs.OPS);
             if (token !== generation) return;
+            if (session.nativeTemplate) {
+                for (const field of template.fields) {
+                    if (field.pages?.length || field.positions?.length) continue;
+                    const escaped = field.key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const marker = new RegExp(`\\{\\{\\s*${escaped}\\s*\\}\\}`);
+                    const pages = session.analyses.flatMap((page, index) => marker.test(page.items.map(item => item.text).join('')) ? [index + 1] : []);
+                    if (pages.length) field.pages = pages;
+                }
+            }
             if(session.nativeLease || session.nativeTemplate) {
                 session.baselinePdf=pdf;
                 template.pages=pdf.numPages;
@@ -369,9 +434,7 @@ function initialize() {
     }));
     for (const [name, step] of [['prev', -1], ['next', 1]]) find(name).addEventListener('click', () => {
         if (!session?.pdf) return;
-        session.page = Math.max(1, Math.min(session.pdf.numPages, session.page + step));
-        renderOriginalText();
-        renderPage().catch(() => say('Sayfa önizlemesi açılamadı. Orijinalini indirebilirsiniz.'));
+        goToPage(session.page + step);
     });
     dialog.querySelectorAll('[data-workspace-tab]').forEach(node => node.addEventListener('click', () => selectTab(node.dataset.workspaceTab)));
     find('return').addEventListener('click', () => selectTab('form'));

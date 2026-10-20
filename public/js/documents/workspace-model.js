@@ -1,4 +1,4 @@
-import {originalMappings} from './original-mappings.js?v=documents-20261018-all1';
+import {originalMappings} from './original-mappings.js?v=documents-20261020-pages2';
 // Drafts exist only in memory. Templates and original download routes are read-only.
 export class DocumentDraft {
     constructor() { this.state = {values: {}, blocks: [], edits: {}}; this.past = []; this.future = []; }
@@ -30,6 +30,8 @@ export const templates = {
         ].map(field => ({...field, positions: [{page: 1, x: 225, y: field.y, width: 299, lines: field.lines || 1}]})),
     },
 };
+
+templates['1dc3d14ca5a5d05e0183893cb7c92adaf5b06f5a62481a52706f1364b2a2d60f'].fields.find(field => field.key === 'tenant').positions.push({page:1,x:389.47,y:320,width:135,height:12,fontSize:10});
 
 for (const [hash, mapping] of Object.entries(originalMappings)) {
     if (templates[hash]) templates[hash].fields.push(...mapping.fields);
