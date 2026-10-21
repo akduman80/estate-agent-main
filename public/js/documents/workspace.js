@@ -2,11 +2,12 @@ import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v
 
 import {SmartFields, createFieldControl, readField} from './smart-fields.js?v=documents-20261018-all1';
 import {validateField} from './field-rules.js?v=documents-20261018-all1';
-import {buildPdf} from './pdf-output.js?v=documents-20261018-all1';
-import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=lease-location-20261020-v1';
+import {buildPdf} from './pdf-output.js?v=documents-20261021-v1';
+import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=documents-20261021-v1';
 import {inspectPdf} from './pdf-edit.js?v=documents-20261018-all1';
 import {pdfToWord} from './word-output.js?v=documents-20261018-all2';
-import {leaseLocation, prepareLeaseLocationFields, updateLeaseLocationFields} from './lease-locations.js?v=lease-location-20261020-v1';
+import {prepareLeaseLocationFields, updateLeaseLocationFields} from './lease-locations.js?v=lease-location-20261020-v1';
+import {clearDependentValues, prepareChoices, validateChoices, extendLocationFields, composeLocationValues} from './field-choices.js?v=documents-20261021-v1';
 
 const dialog = document.getElementById('document-workspace');
 if (dialog) initialize();
@@ -46,7 +47,7 @@ function initialize() {
         const template = session.template;
         find('generate').disabled = !session.pdf || (session.mode === 'fill' && !template);
         if (!session.pdf) find('output-status').textContent = 'PDF ön izlemesi ve doğrulanmış şablon hazır olduğunda çıktı açılır. DOCX dönüşümü desteklenmiyor; orijinal dosyayı indirebilirsiniz.';
-        else if (!session.output) find('output-status').textContent = 'Ön izlemeyi kontrol edip Belgeyi Oluştur düğmesine basın.';
+        else if (!session.output) find('output-status').textContent = 'Güncel belge otomatik hazırlanıyor. Boş veya kısmen dolu belge de yazdırılabilir.';
         find('fill-notice').textContent = template
             ? 'Alanlar gerçek belgeye işlenir. Kısa alanlarda metni sığacak şekilde yazın; uzun açıklamalar için düzenleme modundaki ek içerikleri kullanın.'
             : 'Bu belgenin alan eşlemesi henüz hazır değil. Doldurma kullanılamıyor; orijinalini indirebilirsiniz.';
@@ -63,10 +64,13 @@ function initialize() {
             input.name = field.key; input.value = session.drafts.fill.state.values[field.key] || '';
             input.addEventListener('input', () => {
                 session.drafts.fill.change(state => {
-                    if (session.nativeLease && field.key === 'city' && leaseLocation(state.values.city).city !== leaseLocation(input.value).city) state.values.county = '';
+                    if (state.values[field.key] !== input.value) clearDependentValues(template.fields, state.values, field.key);
                     state.values[field.key] = input.value;
+                    composeLocationValues(template.fields, state.values, field.key);
                 });
-                if (session.nativeLease && field.key === 'city') updateLeaseLocationFields(form, session.drafts.fill.state.values);
+                for (const control of form.querySelectorAll('input,textarea')) if (control !== input) control.value = session.drafts.fill.state.values[control.name] || '';
+                prepareChoices(form, template.fields, session.drafts.fill.state.values);
+                if (session.nativeLease && ['city','county'].includes(field.key)) updateLeaseLocationFields(form, session.drafts.fill.state.values);
                 validateRequiredFields();
                 history(); paintValues();
             });
@@ -79,6 +83,7 @@ function initialize() {
             }
         }
         if (session.nativeLease && session.page === 1) prepareLeaseLocationFields(form, session.drafts.fill.state.values);
+        if (template) prepareChoices(form, template.fields, session.drafts.fill.state.values);
         for (const block of session.drafts.edit.state.blocks) renderBlock(block);
         renderOriginalText();
         smart.refresh();
@@ -230,14 +235,16 @@ function initialize() {
         if(current.nativeBusy) { clearTimeout(outputTimer); outputTimer=setTimeout(()=>updateOutput(version,explicit),500); return; }
         try {
             if (current.mode === 'fill' && !current.template) throw new Error('Alan eşlemesi hazır değil; doldurulmuş çıktı oluşturulamaz.');
+            const outputState = structuredClone(draft().state);
+            if (current.mode === 'fill') validateChoices(current.template.fields, outputState.values);
             let bytes;
             if((current.nativeLease || current.nativeTemplate) && current.mode === 'fill') {
                 current.nativeBusy=true;
-                const values=structuredClone(draft().state.values);
+                const values=outputState.values;
                 const result=current.nativeTemplate ? await renderNativeTemplate(dialog,current.nativeTemplate,values,current.abort.signal) : await renderLease(dialog,values,current.abort.signal);
                 bytes=result.pdf;
                 if(current===session && version===outputVersion) current.wordOutput=result.docx;
-            } else bytes = await buildPdf(current.source, current.template, structuredClone(draft().state), current.mode, current.analyses);
+            } else bytes = await buildPdf(current.source, current.template, outputState, current.mode, current.analyses);
             if (current !== session || version !== outputVersion) return;
             const pdfBase = new URL(dialog.dataset.pdfBase, location.href);
             const pdfjs = await import(new URL('pdf.min.js', pdfBase).href);
@@ -253,7 +260,9 @@ function initialize() {
             current.page = Math.min(current.page, pdf.numPages); current.output = bytes;
             find('paper').hidden = false;
             await renderPage(); if (old) await old.destroy();
-            if (explicit) { outputButtons(true); find('output-status').textContent = 'Belge hazır. Ön izleme ile indirilen PDF aynı dosyadır.'; }
+            if (current !== session || version !== outputVersion) return;
+            outputButtons(true);
+            find('output-status').textContent = 'Belge hazır. Boş veya kısmen dolu olarak yazdırabilirsiniz. Ön izleme ile indirilen PDF aynı dosyadır.';
             say(current.nativeLease || current.nativeTemplate ? 'Gerçek DOCX şablonundan ön izleme hazır. Geçici dönüşüm dosyaları temizlendi.' : 'Canlı ön izleme: orijinal sayfalar ve çalışma kopyanız. Bilgiler sunucuya gönderilmez.');
         } catch (error) {
             if (current !== session || version !== outputVersion) return;
@@ -392,7 +401,7 @@ function initialize() {
                     const size = page.getViewport({scale: 1}), expected = template.pageSizes?.[index] || template.size;
                     if (Math.abs(size.width - expected[0]) >= .1 || Math.abs(size.height - expected[1]) >= .1) matches = false;
                 }
-                if (matches) session.template = structuredClone(template);
+                if (matches) session.template = extendLocationFields(structuredClone(template));
             }
             await document.fonts.load('11px DocumentTemplateSans');
             if (token !== generation) return;

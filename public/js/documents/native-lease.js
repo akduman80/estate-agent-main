@@ -15,7 +15,7 @@ export const leaseTemplate = {
         ['condition','Kiralananın durumu','text'], ['inventory','Demirbaşlar','description'],
         ['bank','Banka','text'], ['branch','Banka şubesi','text'], ['bankAccount','Hesap / IBAN','text'],
         ['court','Mahkeme yeri','text'], ['contractDate','Sözleşme tarihi','date'], ['guarantor','Kefilin adı soyadı','name'],
-    ].map(([key,label,kind])=>({key,label,kind,pages:['landlord','tenant','guarantor'].includes(key)?[1,2,3]:['bank','branch','bankAccount','court','contractDate'].includes(key)?[3]:[1],positions:[],lines:['address','description'].includes(kind)?2:1,currency:'TRY'})),
+    ].map(([key,label,kind])=>({key,label,kind,...(key==='county'?{dependsOn:'city'}:key==='district'?{dependsOn:'county'}:{}),...(key==='propertyType'?{options:['Daire','Müstakil ev','İş yeri','Arsa']}:key==='paymentMethod'?{options:['Banka havalesi','EFT','Nakit']}:{}),pages:['landlord','tenant','guarantor'].includes(key)?[1,2,3]:['bank','branch','bankAccount','court','contractDate'].includes(key)?[3]:[1],positions:[],lines:['address','description'].includes(kind)?2:1,currency:'TRY'})),
 };
 
 export async function renderLease(dialog, values, signal) {
@@ -55,7 +55,7 @@ export async function renderNativeTemplate(dialog, revision, values, signal) {
     for (const field of revision.mapping.fields) {
         const value = field.locked ? '' : values[field.key] || '';
         const checked = validateField(value,field.kind);
-        if (!checked.valid || (field.required && !value.trim())) throw new Error(`${field.label}: ${checked.error || 'Zorunlu alanı doldurun.'}`);
+        if (!checked.valid) throw new Error(`${field.label}: ${checked.error}`);
         normalized[field.key] = checked.display;
     }
     const response = await fetch(`/dokumanlar/islemler/sablon/${revision.id}/${revision.version}`, {

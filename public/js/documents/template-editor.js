@@ -1,4 +1,4 @@
-import {buildPdf} from './pdf-output.js?v=documents-20261018-all1';
+import {buildPdf} from './pdf-output.js?v=documents-20261021-v1';
 
 export async function mount(root, wire) {
     if (root.dataset.mounted) return; root.dataset.mounted = 'true';
@@ -42,6 +42,8 @@ export async function mount(root, wire) {
             };
             input('Alan anahtarı (aynı bilgi için bir anahtar)', f.key, v => { f.key = v; });
             input('Etiket', f.label, v => { f.label = v; });
+            input('Seçim önerileri (| ile ayırın; serbest metin korunur)', (f.options || []).join(' | '), v => { f.options = v.split('|').map(s => s.trim()).filter(Boolean); });
+            input('Bağlı üst alan anahtarı (İlçe → İl, Mahalle → İlçe)', f.dependsOn || '', v => { if (v.trim()) f.dependsOn = v.trim(); else delete f.dependsOn; });
             if (format === 'docx') input('Bu alanın geçtiği sayfalar (örnek: 1, 3)', (f.pages || []).join(', '), value => {
                 f.pages = [...new Set(value.split(',').map(part => Number(part.trim())))];
             });

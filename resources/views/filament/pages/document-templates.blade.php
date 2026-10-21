@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <div class="dt-manager" x-data x-init="import('/js/documents/template-editor.js?v=documents-20261020-pages2').then(m => m.mount($el, $wire))">
+    <div class="dt-manager" x-data x-init="import('/js/documents/template-editor.js?v=documents-20261021-v1').then(m => m.mount($el, $wire))">
         <p>Yalnız boş şablon yükleyin. Doldurulmuş kimlik, telefon ve adres bilgileri yüklemeyin. Mevcut 12 belge korunur.</p>
         <label>Belge adı <input wire:model="titleInput" maxlength="120"></label>
         <label>Kategori <input wire:model="category" maxlength="80"></label>

@@ -51,9 +51,21 @@ class DocumentTemplateStore
         if (! is_array($sizes) || ! array_is_list($sizes) || ! is_array($mapping['fields'] ?? null) || ! array_is_list($mapping['fields']) || array_diff(array_keys($mapping), ['pageSizes','fields'])) $fail();
         if (count($sizes) < 1 || count($sizes) > 100 || count($mapping['fields']) > 200) $fail();
         foreach ($sizes as $size) if (! is_array($size) || count($size) !== 2 || ! is_numeric($size[0] ?? null) || ! is_numeric($size[1] ?? null) || min($size) < 72 || max($size) > 3000) $fail();
+        $byKey = array_column($mapping['fields'], null, 'key');
+        foreach ($mapping['fields'] as $field) {
+            if (! isset($field['dependsOn'])) continue;
+            $parentKey = $field['dependsOn'];
+            if (! is_string($parentKey) || ! isset($byKey[$parentKey])) $fail();
+            $expected = match ($field['kind'] ?? '') { 'district' => 'city', 'neighborhood' => 'district', default => null };
+            if ($expected === null || ($byKey[$parentKey]['kind'] ?? '') !== $expected) $fail();
+        }
         $keys = [];
         foreach ($mapping['fields'] ?? [] as $field) {
-            if (! is_array($field) || array_diff(array_keys($field), ['key','label','kind','required','locked','microphone','positions','pages'])) $fail();
+            if (! is_array($field) || array_diff(array_keys($field), ['key','label','kind','required','locked','microphone','positions','pages','options','dependsOn'])) $fail();
+            if (isset($field['options'])) {
+                if (! is_array($field['options']) || ! array_is_list($field['options']) || count($field['options']) > 100) $fail();
+                foreach ($field['options'] as $option) if (! is_string($option) || trim($option) === '' || mb_strlen($option) > 120) $fail();
+            }
             if (isset($field['pages'])) {
                 if (! is_array($field['pages']) || ! array_is_list($field['pages']) || count($field['pages']) < 1 || count($field['pages']) > count($sizes)) $fail();
                 foreach ($field['pages'] as $page) if (! is_int($page) || ! isset($sizes[$page - 1])) $fail();

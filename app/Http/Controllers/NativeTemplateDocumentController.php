@@ -21,7 +21,8 @@ class NativeTemplateDocumentController extends Controller
         $values = [];
         foreach ($fields as $field) {
             $value = ($field['locked'] ?? false) ? '' : trim((string) ($data['values'][$field['key']] ?? ''));
-            if (($field['required'] ?? false) && $value === '') return response()->json(['message'=>$field['label'].': Zorunlu alanı doldurun.'],422)->header('Cache-Control','no-store, private');
+            // Required fields remain visible as completion warnings in the form.
+            // Blank values are permitted for partial document preview and printing.
             if ($field['kind'] === 'identity' && $value !== '') {
                 $d = array_map('intval', str_split($value));
                 if (! preg_match('/^[1-9][0-9]{10}$/D',$value) || ((($d[0]+$d[2]+$d[4]+$d[6]+$d[8])*7-($d[1]+$d[3]+$d[5]+$d[7]))%10+10)%10 !== $d[9] || array_sum(array_slice($d,0,10))%10 !== $d[10]) return response()->json(['message'=>'T.C. kimlik numarası geçersiz.'],422)->header('Cache-Control','no-store, private');

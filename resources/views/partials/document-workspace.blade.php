@@ -70,9 +70,9 @@
             <button type="button" data-workspace-share disabled>Paylaş</button>
             <button type="button" data-workspace-return>Tekrar Düzenle</button>
             <p>Paylaşım menüsünde cihazınızda bulunan WhatsApp, Telegram, BiP veya e-posta uygulamasını seçebilirsiniz. Dosya paylaşımı desteklenmiyorsa PDF’yi indirip uygulamaya ekleyin. Dosya otomatik gönderilmez.</p>
-            <p data-workspace-output-status role="status" aria-live="polite">Önce belgeyi oluşturun. Düzenleme modunda eklenen içerikler ayrı ek sayfalarda yer alır.</p>
+            <p data-workspace-output-status role="status" aria-live="polite">Belge otomatik hazırlanır; boş veya kısmen dolu olarak da yazdırabilirsiniz. Düzenleme modunda eklenen içerikler ayrı ek sayfalarda yer alır.</p>
         </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=lease-location-20261020-v1"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261021-v1"></script>
 

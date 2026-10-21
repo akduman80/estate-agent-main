@@ -58,7 +58,7 @@ export async function buildPdf(source, template, state, mode, analyses = []) {
         for (const field of template.fields) {
             const raw = field.locked ? '' : state.values[field.key] || '';
             const checked = validateField(raw, field.kind, {country: field.country, currency: field.currency});
-            if (!checked.valid || (field.required && !raw.trim())) throw new Error(`${field.label}: ${checked.error || 'Zorunlu alanı doldurun.'}`);
+            if (!checked.valid) throw new Error(`${field.label}: ${checked.error}`);
             if (!raw.trim()) continue;
             for (const p of field.positions) {
                 const page = pages[p.page - 1]; if (!page) throw new Error('Şablon sayfası bulunamadı.');
