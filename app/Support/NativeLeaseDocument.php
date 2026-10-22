@@ -13,17 +13,12 @@ class NativeLeaseDocument
     public const HASH = 'f7e7ea2e3d9a703650a8f6d55b7dec2f49c67fc574051607f076189309369924';
     public const WORKING_TEMPLATE_HASH = '0dbe3733bb44efa8ed77ff67c36d73c70072a014bf29ed0c6994bb8c523ce06e';
     public const TABLE_KEYS = ['city', 'county', 'district', 'street', 'number', 'propertyType', 'landlord', 'landlordIdentity', 'landlordAddress', 'tenant', 'tenantIdentity', 'tenantAddress', 'startDate', 'duration', 'annualRent', 'monthlyRent', 'paymentMethod', 'usage', 'condition', 'inventory'];
-    public const KEYS = [...self::TABLE_KEYS, 'bank', 'branch', 'bankAccount', 'court', 'contractDate', 'guarantor'];
+    public const KEYS = [...self::TABLE_KEYS, 'bank', 'branch', 'bankAccount', 'court', 'contractDate'];
 
     public function fill(string $source, array $values): string
     {
         if (hash('sha256', $source) !== self::HASH) throw new \RuntimeException('Unsupported source');
-        $city = (string) ($values['city'] ?? '');
-        $county = (string) ($values['county'] ?? '');
-        if ($city !== '' || $county !== '') {
-            $locations = json_decode(file_get_contents(dirname(__DIR__, 2).'/resources/data/turkey-neighborhoods.json'), true, 512, JSON_THROW_ON_ERROR);
-            if (! isset($locations[$city]) || ($county !== '' && ! isset($locations[$city][$county]))) throw new \InvalidArgumentException('Invalid lease location');
-        }
+        // Location suggestions are optional; user supplied addresses remain editable.
         // A versioned working template adds real rows; the original download is immutable.
         $source = file_get_contents(dirname(__DIR__, 2).'/resources/documents/kira-sozlesmesi-v2-location.docx');
         if (hash('sha256', $source) !== self::WORKING_TEMPLATE_HASH) throw new \RuntimeException('Working template changed');
@@ -62,9 +57,9 @@ class NativeLeaseDocument
                 $paragraphs = $xpath->query('//w:body/w:p');
                 // Floating fields leave the original condition paragraphs and their line breaks intact.
                 $placements = ['bank'=>[44,463.75,656.289,60], 'branch'=>[44,163.242,635.589,84], 'bankAccount'=>[44,334.59,635.589,132], 'court'=>[50,366.84,325.089,51.28], 'contractDate'=>[51,219.02,262.989,51.60],
-                    'landlord_1'=>[7,100,109.889,175,'landlord'], 'tenant_1'=>[7,290,109.889,175,'tenant'], 'guarantor_1'=>[7,465,109.889,95,'guarantor'],
-                    'landlord_2'=>[36,110,77.089,175,'landlord'], 'tenant_2'=>[36,305,77.089,175,'tenant'], 'guarantor_2'=>[36,475,77.089,85,'guarantor'],
-                    'landlord_3'=>[57,180,148.389,175,'landlord'], 'tenant_3'=>[57,465,148.389,95,'tenant'], 'guarantor_3'=>[57,70.95,134.589,100,'guarantor']];
+                    'landlord_1'=>[7,100,109.889,175,'landlord'], 'tenant_1'=>[7,290,109.889,175,'tenant'],
+                    'landlord_2'=>[36,110,77.089,175,'landlord'], 'tenant_2'=>[36,305,77.089,175,'tenant'],
+                    'landlord_3'=>[57,180,148.389,175,'landlord'], 'tenant_3'=>[57,465,148.389,95,'tenant']];
                 foreach ($placements as $key=>$placement) {
                     [$index,$x,$y,$width]=$placement;
                     $value=(string)($values[$placement[4]??$key]??'');if($value==='')continue;
@@ -79,6 +74,10 @@ class NativeLeaseDocument
                     $properties=$doc->createElementNS($ns,'w:pPr');$spacing=$doc->createElementNS($ns,'w:spacing');$spacing->setAttributeNS($ns,'w:before','0');$spacing->setAttributeNS($ns,'w:after','0');$spacing->setAttributeNS($ns,'w:line','220');$spacing->setAttributeNS($ns,'w:lineRule','exact');$properties->appendChild($spacing);$paragraph->appendChild($properties);
                     $textRun=$doc->createElementNS($ns,'w:r');$runProperties=$doc->createElementNS($ns,'w:rPr');$fonts=$doc->createElementNS($ns,'w:rFonts');$fonts->setAttributeNS($ns,'w:ascii','Arial');$fonts->setAttributeNS($ns,'w:hAnsi','Arial');$runProperties->appendChild($fonts);$fontSize=$doc->createElementNS($ns,'w:sz');$fontSize->setAttributeNS($ns,'w:val','20');$runProperties->appendChild($fontSize);$textRun->appendChild($runProperties);
                     $text=$doc->createElementNS($ns,'w:t');$text->appendChild($doc->createTextNode($value));$textRun->appendChild($text);$paragraph->appendChild($textRun);$content->appendChild($paragraph);$textbox->appendChild($content);$shape->appendChild($textbox);$pict->appendChild($shape);$run->appendChild($pict);$paragraphs->item($index)->appendChild($run);
+                }
+                // Remove guarantor labels and floating fields without moving other paragraphs.
+                foreach (iterator_to_array($xpath->query('//w:t')) as $text) {
+                    if (preg_match('/kefil/iu', $text->textContent)) $text->nodeValue = '';
                 }
                 if (! $zip->addFromString('word/document.xml', $doc->saveXML())) throw new \RuntimeException('Cannot update working copy');
             } finally { $zip->close(); }

@@ -1,16 +1,16 @@
-<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=lease-location-20261020-v1">
+<link rel="stylesheet" href="{{ asset('css/document-workspace.css') }}?v=documents-20261022">
 <dialog id="document-workspace" class="documents-workspace" aria-labelledby="document-workspace-title" data-csrf="{{ csrf_token() }}" data-pdf-base="{{ asset('vendor/pdfjs') }}/">
     <header class="dw-heading">
         <div><h2 id="document-workspace-title">Belge çalışma alanı</h2><p data-workspace-subtitle>Orijinal belge korunur.</p></div>
         <button type="button" data-workspace-close aria-label="Belge çalışma alanını kapat">✕</button>
     </header>
-    <div class="dw-modes" role="group" aria-label="Belge çalışma modu">
+    <div class="dw-modes" hidden role="group" aria-label="Belge çalışma modu">
         <button type="button" data-workspace-mode="fill" aria-pressed="false">Belgeyi Doldur</button>
         <button type="button" data-workspace-mode="edit" aria-pressed="false">Belgeyi Düzenle</button>
         <a class="dw-download" data-workspace-download download>Orijinali İndir</a>
     </div>
     <p class="dw-status" data-workspace-status role="status" aria-live="polite">Belge hazırlanıyor…</p>
-    <div class="dw-mobile-tabs" role="tablist" aria-label="Çalışma alanı bölümleri">
+    <div class="dw-mobile-tabs" hidden role="tablist" aria-label="Çalışma alanı bölümleri">
         <button type="button" role="tab" aria-selected="true" data-workspace-tab="form">Form</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="preview">Ön İzleme</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="actions">İşlemler</button>
@@ -68,11 +68,15 @@
             <button type="button" data-workspace-word disabled>Word İndir</button>
             <button type="button" data-workspace-print disabled>Yazdır</button>
             <button type="button" data-workspace-share disabled>Paylaş</button>
+            <div data-workspace-share-menu hidden role="group" aria-label="Paylaşılacak belge">
+                <button type="button" data-workspace-share-blank>Boş Orijinali Paylaş</button>
+                <button type="button" data-workspace-share-filled>Doldurulmuş Belgeyi Paylaş</button>
+            </div>
             <button type="button" data-workspace-return>Tekrar Düzenle</button>
             <p>Paylaşım menüsünde cihazınızda bulunan WhatsApp, Telegram, BiP veya e-posta uygulamasını seçebilirsiniz. Dosya paylaşımı desteklenmiyorsa PDF’yi indirip uygulamaya ekleyin. Dosya otomatik gönderilmez.</p>
             <p data-workspace-output-status role="status" aria-live="polite">Belge otomatik hazırlanır; boş veya kısmen dolu olarak da yazdırabilirsiniz. Düzenleme modunda eklenen içerikler ayrı ek sayfalarda yer alır.</p>
         </section>
     </div>
 </dialog>
-<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261021-v1"></script>
+<script type="module" src="{{ asset('js/documents/workspace.js') }}?v=documents-20261022"></script>
 

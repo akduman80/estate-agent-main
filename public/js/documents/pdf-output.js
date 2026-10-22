@@ -53,6 +53,12 @@ export async function buildPdf(source, template, state, mode, analyses = []) {
         return fonts.get(style);
     }
     const pages = pdf.getPages();
+        if (Object.keys(state.edits || {}).length) await applyPdfEdits(pdf, lib, analyses, state.edits, async item => {
+            const selected = await positionFont({bold:/bold/i.test(item.fontFamily),italic:/italic|oblique/i.test(item.fontFamily)});
+            wrapText(state.edits[`${item.page}:${item.id}`] || '', selected, item.fontSize, Math.max(item.width, 1));
+            return selected;
+        });
+
     if (mode === 'fill') {
         if (!template) throw new Error('Bu belge için doğrulanmış alan eşlemesi yok.');
         for (const field of template.fields) {
@@ -66,18 +72,14 @@ export async function buildPdf(source, template, state, mode, analyses = []) {
                 if (p.x < 0 || p.y < 0 || p.width <= 0 || p.x + p.width > bounds.width || p.y > bounds.height) throw new Error('Alan sayfa sınırları dışında.');
                 const size = p.fontSize || field.fontSize || 11, lineHeight = size * 1.15;
                 const fieldFont = await positionFont(p);
-                const lines = wrapText(checked.display, fieldFont, size, p.width);
+                const lines = wrapText((field.outputPrefix || '')+checked.display, fieldFont, size, p.width);
                 const maxLines = p.lines || Math.max(1, Math.floor((p.height || size * 1.2) / lineHeight));
                 if (lines.length > maxLines || p.y - (lines.length - 1) * lineHeight < 0) throw new Error(`${field.label}: Metin ayrılan alana sığmıyor. Kısaltın.`);
                 lines.forEach((line, i) => page.drawText(line, {x: p.x, y: p.y - i * lineHeight, size, font: fieldFont, color: rgb(0, 0, 0)}));
             }
         }
-    } else {
-        if (Object.keys(state.edits || {}).length) await applyPdfEdits(pdf, lib, analyses, state.edits, async item => {
-            const selected = await positionFont({bold:/bold/i.test(item.fontFamily),italic:/italic|oblique/i.test(item.fontFamily)});
-            wrapText(state.edits[`${item.page}:${item.id}`] || '', selected, item.fontSize, Math.max(item.width, 1));
-            return selected;
-        });
+    }
+    {
         // Added material goes onto explicitly separate appendix pages; originals are never masked.
         let page, y;
         const newPage = () => { page = pdf.addPage([595.28, 841.89]); y = 790; };
@@ -110,6 +112,23 @@ export async function buildPdf(source, template, state, mode, analyses = []) {
             }
         }
     }
-    if (mode === 'edit' && Object.keys(state.edits || {}).length) await discardUnreachableObjects(pdf, lib);
+    for (const annotation of state.annotations || []) {
+        if(!annotation.text.trim())continue;
+        const page=pages[annotation.page-1];
+        if(!page || annotation.x<0 || annotation.y<0 || annotation.width<=0 || annotation.x+annotation.width>page.getWidth())throw new Error('Yeni metin sayfa sınırları dışında.');
+        const selected=await positionFont(annotation),size=annotation.fontSize||11,lineHeight=size*1.3;
+        const lines=wrapText(annotation.text,selected,size,annotation.width);
+        const available=Math.max(1,Math.floor(annotation.height/lineHeight));
+        lines.slice(0,available).forEach((line,index)=>page.drawText(line,{x:annotation.x,y:annotation.y-index*lineHeight,size,font:selected,color:rgb(0,0,0)}));
+        if(lines.length>available){
+            let continuation,y=0;
+            // Automatic continuation, without changing or covering existing clauses.
+            for(const line of wrapText(lines.slice(available).join('\n'),selected,size,495)){
+                if(!continuation||y<55){continuation=pdf.addPage([595.28,841.89]);y=790;}
+                continuation.drawText(line,{x:50,y,size,font:selected,color:rgb(0,0,0)});y-=lineHeight;
+            }
+        }
+    }
+    if (Object.keys(state.edits || {}).length) await discardUnreachableObjects(pdf, lib);
     return pdf.save();
 }

@@ -1,4 +1,5 @@
 import {leaseLocations, leaseLocation} from './lease-locations.js?v=lease-location-20261020-v1';
+import {addressChoices} from './address-data.js?v=documents-20261022';
 
 // These source fields explicitly contain one combined location, without cadastral data.
 // Keep the original output position; helper controls only compose its text.
@@ -15,6 +16,8 @@ export function extendLocationFields(template) {
         compositeTarget:target,...(index?{dependsOn:`${target}_${index===1?'city':'county'}`}:{})
     }));
     template.fields.splice(template.fields.indexOf(original),0,...helpers);
+    if(template.id==='original-4-v2'){const quarter=template.fields.find(f=>f.key==='row_3');if(quarter){quarter.kind='neighborhood';quarter.dependsOn=target+'_county';}}
+
     return template;
 }
 
@@ -30,6 +33,8 @@ export function composeLocationValues(fields, values, changedKey) {
 
 // Dependencies use field keys, so multiple parties/addresses never share a parent accidentally.
 export function choiceValues(field, fields, values) {
+    const current=addressChoices(field,fields,values);
+    if(current!==null)return current;
     if (field.kind === 'city') return Object.keys(leaseLocations);
     if (field.kind === 'district' && field.dependsOn) {
         const parent = fields.find(item => item.key === field.dependsOn);
@@ -43,8 +48,7 @@ export function validateChoices(fields, values) {
         const value = values[field.key];
         if (!value || !(field.kind === 'city' || (field.kind === 'district' && field.dependsOn))) continue;
         const match = choiceValues(field, fields, values).find(option => option.toLocaleLowerCase('tr-TR') === value.trim().toLocaleLowerCase('tr-TR'));
-        if (!match) throw new Error(`${field.label}: Bağlı listeden geçerli bir konum seçin.`);
-        values[field.key] = match;
+        if (match) values[field.key] = match;
     }
     for (const field of fields.filter(field => field.compositeTarget && values[field.key])) composeLocationValues(fields, values, field.key);
     return values;

@@ -12,8 +12,7 @@
                 <a class="documents-link" href="{{ route('documents.download', ['index' => $index]) }}" @if($documentDownload) download @endif aria-label="{{ $document['title'] }} — Orijinali İndir"><span class="documents-icon" aria-hidden="true">↓</span><span>{{ $document['title'] }}</span></a>
                 <div class="documents-actions" role="group" aria-label="{{ $document['title'] }} işlemleri">
                     <button type="button" data-document-action="download">Orijinali İndir</button>
-                    <button type="button" data-document-action="fill">Belgeyi Doldur</button>
-                    <button type="button" data-document-action="edit">Belgeyi Düzenle</button>
+                    <button type="button" data-document-action="fill">Orijinali Doldur</button>
                 </div>
             </article>
         @endforeach
@@ -22,8 +21,7 @@
                 <a class="documents-link" href="{{ $templateDocument['url'] }}" download><span class="documents-icon" aria-hidden="true">↓</span><span>{{ $templateDocument['title'] }}</span></a>
                 <div class="documents-actions" role="group" aria-label="{{ $templateDocument['title'] }} işlemleri">
                     <button type="button" data-document-action="download">Orijinali İndir</button>
-                    <button type="button" data-document-action="fill">Belgeyi Doldur</button>
-                    <button type="button" data-document-action="edit">Belgeyi Düzenle</button>
+                    <button type="button" data-document-action="fill">Orijinali Doldur</button>
                 </div>
             </article>
         @endforeach

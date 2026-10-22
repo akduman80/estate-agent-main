@@ -1,13 +1,15 @@
-import {DocumentDraft, identifyFormat, templateFor} from './workspace-model.js?v=documents-20261020-pages2';
+import {guarantorFreeHashes} from './guarantor-free.js?v=documents-20261022';
+import {DirectEditor} from './direct-editor.js?v=documents-20261022';
+import {DocumentDraft, identifyFormat, templateFor, templates} from './workspace-model.js?v=documents-20261022';
 
 import {SmartFields, createFieldControl, readField} from './smart-fields.js?v=documents-20261018-all1';
 import {validateField} from './field-rules.js?v=documents-20261018-all1';
-import {buildPdf} from './pdf-output.js?v=documents-20261021-v1';
-import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=documents-20261021-v1';
+import {buildPdf} from './pdf-output.js?v=documents-20261022';
+import {leaseHash, leaseTemplate, renderLease, renderNativeTemplate} from './native-lease.js?v=documents-20261022';
 import {inspectPdf} from './pdf-edit.js?v=documents-20261018-all1';
 import {pdfToWord} from './word-output.js?v=documents-20261018-all2';
 import {prepareLeaseLocationFields, updateLeaseLocationFields} from './lease-locations.js?v=lease-location-20261020-v1';
-import {clearDependentValues, prepareChoices, validateChoices, extendLocationFields, composeLocationValues} from './field-choices.js?v=documents-20261021-v1';
+import {clearDependentValues, prepareChoices, validateChoices, extendLocationFields, composeLocationValues} from './field-choices.js?v=documents-20261022';
 
 const dialog = document.getElementById('document-workspace');
 if (dialog) initialize();
@@ -19,6 +21,18 @@ function initialize() {
     const modes = [...dialog.querySelectorAll('[data-workspace-mode]')];
     const labels = {paragraph: 'Paragraf', article: 'Madde', note: 'Açıklama', dateAmount: 'Tarih / tutar', table: 'Tablo', signature: 'İmza alanı', field: 'Bilgi alanı'};
     const smart = new SmartFields(dialog.querySelector('.dw-controls'), find('voice-status'));
+    const directRoot = document.createElement('div'); directRoot.className = 'dw-direct-pages'; find('paper').after(directRoot);
+    const direct = new DirectEditor(directRoot, find('voice-status'), () => { history(); paintValues(); });
+    dialog.classList.add('dw-direct');
+    const outputBar=dialog.querySelector('.dw-output'); dialog.querySelector('.dw-body').before(outputBar);
+    for(const name of ['undo','redo']) outputBar.insertBefore(find(name),find('output-status'));
+    find('redo').textContent='Yinele';
+    find('subtitle').textContent='Alanlara dokunarak yazın. Sayfaları aşağı kaydırın.';
+    const voiceInfo=dialog.querySelector('.dw-voice-info'); outputBar.append(voiceInfo); voiceInfo.hidden=true;
+    outputBar.append(find('voice-status'));
+    const voiceNotice=document.createElement('details');voiceNotice.innerHTML='<summary>Sesli giriş ve paylaşım bilgisi</summary>';
+    voiceInfo.hidden=false;voiceNotice.append(voiceInfo);outputBar.append(voiceNotice);
+
     let session = null, generation = 0, renderTask = null, resizeTimer;
     let baseCanvas = null, viewport = null, outputTimer, outputVersion = 0;
     dialog.dataset.tab = "form";
@@ -35,10 +49,10 @@ function initialize() {
     }
     function setMode(mode) {
         if (!session || !['fill', 'edit'].includes(mode)) return;
-        session.mode = mode;
+        session.mode = 'fill'; mode = 'fill';
         modes.forEach(node => node.setAttribute('aria-pressed', String(node.dataset.workspaceMode === mode)));
         find('fill').hidden = mode !== 'fill'; find('edit').hidden = mode !== 'edit';
-        find('subtitle').textContent = `${mode === 'fill' ? 'Doldurma' : 'Düzenleme'} • Ayrı çalışma kopyası • Orijinal korunur`;
+        find('subtitle').textContent = 'Alanlara dokunun. Yeni metin için boşluğa çift dokunun. Ctrl+B / Ctrl+I ile yeni metni biçimlendirin.';
         rebuildControls(); paintValues();
     }
     function rebuildControls() {
@@ -238,7 +252,7 @@ function initialize() {
             const outputState = structuredClone(draft().state);
             if (current.mode === 'fill') validateChoices(current.template.fields, outputState.values);
             let bytes;
-            if((current.nativeLease || current.nativeTemplate) && current.mode === 'fill') {
+            if(current.nativeTemplate && current.mode === 'fill') {
                 current.nativeBusy=true;
                 const values=outputState.values;
                 const result=current.nativeTemplate ? await renderNativeTemplate(dialog,current.nativeTemplate,values,current.abort.signal) : await renderLease(dialog,values,current.abort.signal);
@@ -251,10 +265,7 @@ function initialize() {
             const loading = pdfjs.getDocument({data: bytes.slice(), isEvalSupported: false, enableXfa: false, standardFontDataUrl: new URL('standard_fonts/', pdfBase).href});
             const pdf = await loading.promise;
             if (current !== session || version !== outputVersion) { await loading.destroy(); return; }
-            if(current.nativeLease && current.mode==='fill') {
-                try { await verifyLeaseLayout(current.baselinePdf,pdf); }
-                catch(error) { await loading.destroy(); throw error; }
-            }
+
             renderTask?.cancel(); renderTask = null;
             const old = current.outputTask; current.outputTask = loading; current.pdf = pdf;
             current.page = Math.min(current.page, pdf.numPages); current.output = bytes;
@@ -262,7 +273,7 @@ function initialize() {
             await renderPage(); if (old) await old.destroy();
             if (current !== session || version !== outputVersion) return;
             outputButtons(true);
-            find('output-status').textContent = 'Belge hazır. Boş veya kısmen dolu olarak yazdırabilirsiniz. Ön izleme ile indirilen PDF aynı dosyadır.';
+            find('output-status').textContent = 'Belge hazır. Boş veya kısmen dolu olarak yazdırabilirsiniz.' + (current.template?.reviewNotice ? ' '+current.template.reviewNotice : '');
             say(current.nativeLease || current.nativeTemplate ? 'Gerçek DOCX şablonundan ön izleme hazır. Geçici dönüşüm dosyaları temizlendi.' : 'Canlı ön izleme: orijinal sayfalar ve çalışma kopyanız. Bilgiler sunucuya gönderilmez.');
         } catch (error) {
             if (current !== session || version !== outputVersion) return;
@@ -293,24 +304,9 @@ function initialize() {
     }
     async function renderPage(token = generation) {
         if (!session?.pdf || !dialog.open) return;
-        const current = session;
-        const pageNumber = current.page;
-        if (renderTask) { renderTask.cancel(); renderTask = null; }
-        const page = await current.pdf.getPage(pageNumber);
-        if (token !== generation || current !== session || pageNumber !== current.page) return;
-        const width = Math.max(240, Math.min(find('paper').parentElement.clientWidth - 32, 1000));
-        const initial = page.getViewport({scale: 1});
-        const nextViewport = page.getViewport({scale: width / initial.width * Math.min(devicePixelRatio || 1, 2) * (current.zoom || 1)});
-        const buffer = document.createElement('canvas'); buffer.width = Math.ceil(nextViewport.width); buffer.height = Math.ceil(nextViewport.height);
-        const task = page.render({canvasContext: buffer.getContext('2d'), viewport: nextViewport}); renderTask = task;
-        try { await task.promise; } catch (error) { if (error.name === 'RenderingCancelledException') return; throw error; }
-        if (token !== generation || current !== session || pageNumber !== current.page || renderTask !== task) return;
-        renderTask = null; baseCanvas = buffer; viewport = nextViewport;
-        canvas.width = buffer.width; canvas.height = buffer.height; context.drawImage(buffer, 0, 0);
-        find('paper').style.width = `${width * (current.zoom || 1)}px`;
-        find('page').textContent = `${current.page} / ${current.pdf.numPages}`;
-        find('prev').disabled = current.page <= 1; find('next').disabled = current.page >= current.pdf.numPages;
-        find('paper').hidden = false; find('paging').hidden = false; find('preview-message').hidden = true;
+        await direct.render(session);
+        find('paper').hidden = true; find('paging').hidden = true;
+        find('preview-message').hidden = true;
         paintValues();
     }
     async function open(detail) {
@@ -405,6 +401,7 @@ function initialize() {
             }
             await document.fonts.load('11px DocumentTemplateSans');
             if (token !== generation) return;
+            if (session.nativeLease) mapLeaseFields(session);
             rebuildControls(); say(session.template ? 'Alan eşlemesi doğrulandı. Doldurma önizlemesi hazır.' : 'Gerçek PDF önizlemesi. Alan eşlemesi hazır olmadığı için doldurma kapalı.');
             await renderPage(token);
         } catch (error) {
@@ -414,6 +411,10 @@ function initialize() {
             find('preview-message').textContent = 'Belge yüklenemedi veya bu tarayıcı önizlemeyi desteklemiyor. Orijinali İndir bağlantısını kullanabilirsiniz.';
             say('Önizleme açılamadı. Orijinal belge değiştirilmedi.');
         }
+    }
+    function mapLeaseFields(current) {
+        const known = templates[guarantorFreeHashes.lease];
+        current.template=structuredClone(known);
     }
     const hasChanges = () => session && Object.values(session.drafts).some(item => item.dirty);
     function close() {
@@ -426,7 +427,7 @@ function initialize() {
     find('close').addEventListener('click', close);
     dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
     dialog.addEventListener('close', () => {
-        smart.cancel();
+        smart.cancel(); direct.clear();
         ++generation; ++outputVersion; clearTimeout(outputTimer); session?.outputTask?.destroy(); session?.abort.abort(); renderTask?.cancel(); renderTask = null;
         const trigger = session?.trigger;
         const task = session?.loadingTask;
@@ -474,15 +475,18 @@ function initialize() {
         }catch(error){if(current===session)find('output-status').textContent=error.message||'Word oluşturulamadı.';}
         finally{if(current===session&&version===outputVersion)find('word').disabled=false;}
     });
-    find('share').addEventListener('click', async () => {
-        if (!session?.output) return;
-        const file = new File([session.output], 'belge.pdf', {type: 'application/pdf'});
+    find('share').addEventListener('click', () => { find('share-menu').hidden = !find('share-menu').hidden; });
+    find('share-blank').addEventListener('click', () => shareBytes(session?.source));
+    find('share-filled').addEventListener('click', () => shareBytes(session?.output));
+    async function shareBytes(bytes) {
+        if (!bytes) return;
+        const file = new File([bytes], 'belge.pdf', {type: 'application/pdf'});
         if (!navigator.canShare?.({files: [file]}) || !navigator.share) {
-            find('output-status').textContent = 'Bu tarayıcı dosya paylaşamıyor. PDF İndir ile kaydedip istediğiniz uygulamaya ekleyin.'; return;
+            find('output-status').textContent = 'Bu tarayıcı PDF dosyası paylaşamıyor. PDF İndir ile kaydedip WhatsApp, Telegram veya e-postaya ekleyin. Instagram ve Facebook için PDF yerine uygun bir görsel gerekir.'; return;
         }
         try { await navigator.share({files: [file], title: 'Belge'}); find('output-status').textContent = 'Dosya paylaşım menüsüne aktarıldı.'; }
         catch (error) { find('output-status').textContent = error.name === 'AbortError' ? 'Paylaşım iptal edildi.' : 'Dosya paylaşılamadı. PDF İndir ile devam edin.'; }
-    });
+    }
     find('print').addEventListener('click', () => {
         if (!session?.output) return;
         const url = URL.createObjectURL(new Blob([session.output], {type: 'application/pdf'}));

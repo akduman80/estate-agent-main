@@ -1,7 +1,8 @@
+import {guarantorFreeMappings} from './guarantor-free.js?v=documents-20261022';
 import {originalMappings} from './original-mappings.js?v=documents-20261020-pages2';
 // Drafts exist only in memory. Templates and original download routes are read-only.
 export class DocumentDraft {
-    constructor() { this.state = {values: {}, blocks: [], edits: {}}; this.past = []; this.future = []; }
+    constructor() { this.state = {values: {}, blocks: [], edits: {}, annotations: []}; this.past = []; this.future = []; }
     change(update) {
         const next = structuredClone(this.state); update(next);
         if (JSON.stringify(next) === JSON.stringify(this.state)) return;
@@ -11,8 +12,8 @@ export class DocumentDraft {
     }
     undo() { if (!this.past.length) return; this.future.push(this.state); this.state = this.past.pop(); }
     redo() { if (!this.future.length) return; this.past.push(this.state); this.state = this.future.pop(); }
-    reset() { this.change(state => { state.values = {}; state.blocks = []; state.edits = {}; }); }
-    get dirty() { return Object.keys(this.state.values).some(key => this.state.values[key]) || this.state.blocks.length > 0 || Object.keys(this.state.edits || {}).length > 0; }
+    reset() { this.change(state => { state.values = {}; state.blocks = []; state.edits = {}; state.annotations = []; }); }
+    get dirty() { return Object.keys(this.state.values).some(key => this.state.values[key]) || this.state.blocks.length > 0 || Object.keys(this.state.edits || {}).length > 0 || (this.state.annotations || []).some(item => item.text); }
 }
 
 // Exact bytes, not list index/title, authorize a template mapping.
@@ -37,6 +38,8 @@ for (const [hash, mapping] of Object.entries(originalMappings)) {
     if (templates[hash]) templates[hash].fields.push(...mapping.fields);
     else templates[hash] = mapping;
 }
+
+guarantorFreeMappings(templates);
 
 export function identifyFormat(bytes) {
     if (new TextDecoder().decode(bytes.slice(0, 5)) === '%PDF-') return 'pdf';
