@@ -10,8 +10,9 @@ class AssistantService
 
     public function reply(string $message, array &$context, array $allowed = ['search', 'compare', 'open', 'details', 'documents', 'create', 'calculator', 'help'], bool $useRemote = false, array $history = []): array
     {
+        if (preg_match('/yeni arama|tum\s+(?:aktif\s+)?ilan/', Str::ascii(Str::lower($message), 'tr'))) $context = [];
         $analysis = $this->analyzer->analyze($message, $context['filters'] ?? []);
-        if ($useRemote && app(GeminiClient::class)->configured() && ! app(GeminiPrivacy::class)->sensitive($message) && ! in_array($analysis['intent'], ['compare', 'open', 'details', 'calculator'], true)) {
+        if ($useRemote && ! ($analysis['unsupported'] ?? false) && app(GeminiClient::class)->configured() && ! app(GeminiPrivacy::class)->sensitive($message) && ! in_array($analysis['intent'], ['compare', 'open', 'details', 'calculator'], true)) {
             $remote = app(GeminiAssistant::class)->reply($message, $context, $allowed, $history);
             if ($analysis['intent'] === 'search' && empty($remote['tool_used']) && ! isset($remote['pagination']) && ! isset($remote['draft']) && ! isset($remote['documents'])) {
                 $local = $this->reply($message, $context, $allowed, false);
