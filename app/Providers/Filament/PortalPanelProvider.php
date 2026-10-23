@@ -44,6 +44,10 @@ class PortalPanelProvider extends PanelProvider
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn () => view('filament.listing-rich-editor-formatting'),
             )
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn () => view('filament.assistant-listing-draft'),
+            )
             ->userMenuItems([
                 'website' => MenuItem::make()->label('Siteye Dön')->url(fn (): string => route('home'))->icon('heroicon-o-globe-alt'),
                 'security' => MenuItem::make()->label('Hesap Güvenliği')->url(fn (): string => route('account.security'))->icon('heroicon-o-shield-check'),
