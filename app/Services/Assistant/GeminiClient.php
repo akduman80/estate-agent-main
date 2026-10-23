@@ -10,7 +10,7 @@ class GeminiClient
 {
     public function configured(): bool
     {
-        return filled(config('assistant.gemini.key')) && preg_match('/^gemini-[a-z0-9.\-]+$/', (string) config('assistant.gemini.model')) === 1;
+        return is_string(config('assistant.gemini.key')) && trim(config('assistant.gemini.key')) !== '' && preg_match('/^gemini-[a-z0-9.\-]+$/', (string) config('assistant.gemini.model')) === 1;
     }
 
     public function generate(array $input, array $tools, string $system): array

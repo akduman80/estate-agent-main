@@ -11,7 +11,8 @@ if (! in_array($mode, ['status','activate','set-key','test'], true)) { fwrite(ST
 try {
     $vars = is_file('.env') ? Dotenv\Dotenv::parse(file_get_contents('.env')) : [];
     if ($mode === 'status') {
-        echo 'ENV KEY: '.(filled($vars['GEMINI_API_KEY'] ?? getenv('GEMINI_API_KEY')) ? 'PRESENT' : 'ABSENT')."\n";
+        $storedKey = $vars['GEMINI_API_KEY'] ?? getenv('GEMINI_API_KEY');
+        echo 'ENV KEY: '.(is_string($storedKey) && trim($storedKey) !== '' ? 'PRESENT' : 'ABSENT')."\n";
         echo 'ACTIVE: '.(app(App\Services\Assistant\GeminiClient::class)->configured() ? 'CONFIGURED' : 'NOT CONFIGURED')."\n";
         exit;
     }
@@ -29,7 +30,7 @@ try {
         try { $key = trim((string) fgets(STDIN)); } finally { system('stty echo'); fwrite(STDOUT, "\n"); }
         if (! preg_match('/^[A-Za-z0-9_\-]{20,200}$/', $key)) throw new RuntimeException('Invalid API key format; no changes made.');
     }
-    if (! filled($key)) throw new RuntimeException('GEMINI_API_KEY absent. Use set-key in the SSH terminal. Do not send it in chat.');
+    if (! is_string($key) || trim($key) === '') throw new RuntimeException('GEMINI_API_KEY absent. Use set-key in the SSH terminal. Do not send it in chat.');
     $path = 'bootstrap/cache/config.php';
     if (! is_file($path) || is_link($path) || ! is_file('.env') || is_link('.env')) throw new RuntimeException('Expected regular .env and cached config files.');
     $old = require $path; $new = $old;
