@@ -107,4 +107,3 @@ Route::get('/mobile-draft-media/{import}/{index}', function (\App\Models\MobileD
 })->middleware('auth')->name('mobile-draft-media');
 
 require __DIR__.'/document-tools.php';
-require __DIR__.'/assistant.php';

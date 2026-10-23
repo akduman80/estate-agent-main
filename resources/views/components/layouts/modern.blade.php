@@ -165,6 +165,5 @@
     @livewireScripts
     @stack('scripts')
 @include('partials.documents-panel', ['documentDownload' => true])
-@include('partials.assistant')
 </body>
 </html>
