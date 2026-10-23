@@ -8,9 +8,18 @@ class AssistantService
 {
     public function __construct(private IntentAnalyzer $analyzer, private ListingTools $listings, private DocumentTools $documents, private IntentGateway $gateway) {}
 
-    public function reply(string $message, array &$context, array $allowed = ['search', 'compare', 'open', 'details', 'documents', 'create', 'calculator', 'help'], bool $useRemote = false): array
+    public function reply(string $message, array &$context, array $allowed = ['search', 'compare', 'open', 'details', 'documents', 'create', 'calculator', 'help'], bool $useRemote = false, array $history = []): array
     {
         $analysis = $this->analyzer->analyze($message, $context['filters'] ?? []);
+        if ($useRemote && app(GeminiClient::class)->configured() && ! app(GeminiPrivacy::class)->sensitive($message) && ! in_array($analysis['intent'], ['compare', 'open', 'details', 'calculator'], true)) {
+            $remote = app(GeminiAssistant::class)->reply($message, $context, $allowed, $history);
+            if ($analysis['intent'] === 'search' && empty($remote['tool_used']) && ! isset($remote['pagination']) && ! isset($remote['draft']) && ! isset($remote['documents'])) {
+                $local = $this->reply($message, $context, $allowed, false);
+                if (! isset($remote['provider'])) $local['message'] = $remote['message']."\n\nYerel arama kullanıldı. Yalnız tanınan il/ilçe, tür, kategori, oda ve üst fiyat filtreleri uygulanmış olabilir; diğer kriterleri ilanlardan kontrol edin.\n".$local['message'];
+                return $local;
+            }
+            return $remote;
+        }
         if ($useRemote && $analysis['intent'] === 'help') {
             try {
                 $remote = $this->gateway->analyze($message);
@@ -102,8 +111,15 @@ class AssistantService
                 $result['action'] = ['type' => 'link', 'url' => route('home').'#piyasalar', 'label' => 'Mevcut araçlara git'];
                 break;
             default:
+                $fold = Str::ascii(Str::lower($message), 'tr');
+                if (preg_match('/uyelik|uye ol|kayit|giris yap/', $fold)) {
+                    $result = array_merge($result, app(GeminiTools::class)->execute('site_guide', ['page' => str_contains($fold, 'giris') ? 'login' : 'register'], $context, $allowed, $message));
+                    break;
+                }
                 $result['sources'] = app(KnowledgeTool::class)->sources($message);
-                $result['message'] = 'İlan arayabilir, son sonuçları karşılaştırabilir veya mevcut belge ve ilan oluşturma ekranını açabilirim. Örnek: Osmaniye Merkez’de 3 milyon TL’ye kadar satılık 3+1 daire göster. Serbest yapay zekâ yanıt servisi henüz yapılandırılmadı.';
+                $result['message'] = app(GeminiClient::class)->configured()
+                    ? 'Bu soruyu Gemini ile yanıtlamak için “Gemini ile yanıtla” seçeneğini açın. İlan arama ve belge araçları bu seçenek kapalıyken de kullanılabilir.'
+                    : 'Gemini bağlantısı henüz etkin değil. İlan arayabilir, sonuçları karşılaştırabilir veya mevcut belge ekranını açabilirim. Örnek: Osmaniye satılık daire göster.';
         }
 
         return $result;

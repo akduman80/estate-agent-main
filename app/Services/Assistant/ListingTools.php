@@ -21,7 +21,7 @@ class ListingTools
     {
         $page = max(1, min(1000, $page));
         $query = $this->query();
-        foreach (['city' => 'city_id', 'district' => 'district_id', 'type' => 'type', 'category' => 'category', 'rooms' => 'room_count'] as $key => $column) {
+        foreach (['city' => 'city_id', 'district' => 'district_id', 'neighborhood' => 'neighborhood_id', 'type' => 'type', 'category' => 'category', 'rooms' => 'room_count', 'heating' => 'heating_type', 'floor' => 'floor_number', 'building_age' => 'building_age'] as $key => $column) {
             if (isset($filters[$key])) {
                 $query->where($column, $filters[$key]);
             }
@@ -31,6 +31,9 @@ class ListingTools
         }
         if (isset($filters['max_price'])) {
             $query->where('price', '<=', $filters['max_price']);
+        }
+        foreach (['min_price' => ['price', '>='], 'min_area' => ['square_meters', '>='], 'max_area' => ['square_meters', '<=']] as $key => [$column, $operator]) {
+            if (isset($filters[$key])) $query->where($column, $operator, $filters[$key]);
         }
         $records = $query->orderBy(($filters['sort'] ?? '') ? 'price' : 'id', ($filters['sort'] ?? '') === 'price_asc' ? 'asc' : 'desc')
             ->orderBy('id')->offset(($page - 1) * 12)->limit(13)->get();

@@ -1,0 +1,2468 @@
+{
+  "sources": {
+    "public/js/documents/workspace-model.js": "ed9f97a03989e45dfe3245c13b6a552238d9b6b56f19a1512ed2b06b54f3ae8e",
+    "public/js/documents/original-mappings.js": "f6f048efaf6723e6ef3cb9174bd7ec597a0f33d7d9ca0a623715abe8da9d91ad",
+    "public/js/documents/native-lease.js": "9a3d015788e75beb9975e1f86d014a862107f19709b1d09e69b434a96bfb2090",
+    "public/js/documents/guarantor-free.js": "6c662aefb8025d25c339ffaf4b053e00c3b17af28dba2a4d48a32356ddd5a2f1",
+    "public/js/documents/field-choices.js": "eb4e3a5218cf8f1a5bfcefd470de1996b22b6780fa22bebf20cc18ab58f1681c"
+  },
+  "templates": {
+    "1dc3d14ca5a5d05e0183893cb7c92adaf5b06f5a62481a52706f1364b2a2d60f": [
+      {
+        "key": "tenant",
+        "label": "Kiracının adı soyadı",
+        "kind": "name"
+      },
+      {
+        "key": "tenantIdentity",
+        "label": "Kiracının T.C. kimlik numarası",
+        "kind": "identity"
+      },
+      {
+        "key": "landlord",
+        "label": "Kiraya verenin adı soyadı",
+        "kind": "name"
+      },
+      {
+        "key": "landlordIdentity",
+        "label": "Kiraya verenin T.C. kimlik numarası",
+        "kind": "identity"
+      },
+      {
+        "key": "address",
+        "label": "Mecurun (kiralananın) adresi",
+        "kind": "address"
+      },
+      {
+        "key": "commitmentDate",
+        "label": "Taahhüt tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "vacateDate",
+        "label": "Tahliye tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "blank_1",
+        "label": "peşin ödeyeceğimi beyan, kabul ve taahhüt ederim. (s.1)",
+        "kind": "date"
+      }
+    ],
+    "e2b587ffe801f28da199bb89b3eecd904486cdf5b3042a802c265a1edc74c657": [
+      {
+        "key": "blank_1",
+        "label": "EMLAKÇI / PARAYI / Unvan / ADI SOYADI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_2",
+        "label": "ALAN / Vergi / T.C. no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_3",
+        "label": "ALAN / Vergi / T.C. no:  Yetki belgesi no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_4",
+        "label": "ALAN / İmzalayan yetkili: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_5",
+        "label": "ALAN / Adres / telefon: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_6",
+        "label": "KİRACI ADAYI / ADI SOYADI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_7",
+        "label": "KİRACI ADAYI / T.C. / pasaport no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_8",
+        "label": "KİRACI ADAYI / T.C. / pasaport no:  Telefon: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_9",
+        "label": "KİRACI ADAYI / Adres: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_10",
+        "label": "TAŞINMAZ / Adres: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_11",
+        "label": "TAŞINMAZ / İl / ilçe, ada / parsel, bağımsız bölüm: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_12",
+        "label": "TAŞINMAZ / Malikin adı / unvanı: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_13",
+        "label": "ALINAN KAPORA / Tutar: (s.1)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_14",
+        "label": "ALINAN KAPORA / Tutar:  TL (yazıyla: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_15",
+        "label": "ALINAN KAPORA / Alındığı tarih: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_16",
+        "label": "ALINAN KAPORA / Alındığı tarih:  /  /  Saat: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_17",
+        "label": "ALINAN KAPORA / Ödeme yöntemi / dekont no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_18",
+        "label": "SON TARİHLER / Kira sözleşmesi için: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_19",
+        "label": "SON TARİHLER / Kalan ödeme: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_20",
+        "label": "SON TARİHLER / Kalan ödeme:  TL; vadesi: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_21",
+        "label": "SON TARİHLER / Kapora iadesi için: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_22",
+        "label": "İade IBAN: TR (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_23",
+        "label": "İADE GECİKME / Bir defalık kararlaştırılan tutar: (s.1)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_24",
+        "label": "İMZALAR / İmza tarihi: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_25",
+        "label": "İMZALAR / İmza tarihi:  /  /  Yer: (s.1)",
+        "kind": "text"
+      }
+    ],
+    "7f3c54611fb5ed6158e39622e76aa2f2915d1084e14a118617deda630dd6aa61": [
+      {
+        "key": "blank_1",
+        "label": "EMLAKÇI / PARAYI / Unvan / ADI SOYADI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_2",
+        "label": "ALAN / Vergi / T.C. no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_3",
+        "label": "ALAN / Vergi / T.C. no:  Yetki belgesi no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_4",
+        "label": "ALAN / İmzalayan yetkili: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_5",
+        "label": "ALAN / Adres / telefon: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_6",
+        "label": "ALICI / ADI SOYADI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_7",
+        "label": "ALICI / T.C. / pasaport no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_8",
+        "label": "ALICI / T.C. / pasaport no:  Telefon: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_9",
+        "label": "ALICI / Adres: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_10",
+        "label": "TAŞINMAZ / Adres: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_11",
+        "label": "TAŞINMAZ / İl / ilçe, ada / parsel, bağımsız bölüm: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_12",
+        "label": "TAŞINMAZ / Malikin adı / unvanı: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_13",
+        "label": "ALINAN KAPORA / Tutar: (s.1)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_14",
+        "label": "ALINAN KAPORA / Tutar:  TL (yazıyla: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_15",
+        "label": "ALINAN KAPORA / Alındığı tarih: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_16",
+        "label": "ALINAN KAPORA / Alındığı tarih:  /  /  Saat: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_17",
+        "label": "ALINAN KAPORA / Ödeme yöntemi / dekont no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_18",
+        "label": "SON TARİHLER / Satış işlemi için: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_19",
+        "label": "SON TARİHLER / Kalan ödeme: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_20",
+        "label": "SON TARİHLER / Kalan ödeme:  TL; vadesi: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_21",
+        "label": "SON TARİHLER / Kapora iadesi için: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_22",
+        "label": "İade IBAN: TR (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_23",
+        "label": "İADE GECİKME / Bir defalık kararlaştırılan tutar: (s.1)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_24",
+        "label": "İMZALAR / İmza tarihi: (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_25",
+        "label": "İMZALAR / İmza tarihi:  /  /  Yer: (s.1)",
+        "kind": "text"
+      }
+    ],
+    "0b354332825d65b42717d973b2a26e67d2afdd8f3653513e26491e5fa93ddfe7": [
+      {
+        "key": "blank_1",
+        "label": "Kiranın yatırılacağı banka",
+        "kind": "text"
+      },
+      {
+        "key": "row_2_city",
+        "label": "İl seçimi",
+        "kind": "city"
+      },
+      {
+        "key": "row_2_county",
+        "label": "İlçe seçimi",
+        "kind": "district",
+        "dependsOn": "row_2_city"
+      },
+      {
+        "key": "row_2",
+        "label": "Tapu ili / ilçesi",
+        "kind": "text"
+      },
+      {
+        "key": "row_3",
+        "label": "Mahallesi / sitesi",
+        "kind": "neighborhood",
+        "dependsOn": "row_2_county"
+      },
+      {
+        "key": "row_4",
+        "label": "Cadde / sokak",
+        "kind": "text"
+      },
+      {
+        "key": "row_5",
+        "label": "Bina / iç kapı no",
+        "kind": "text"
+      },
+      {
+        "key": "row_6",
+        "label": "Kiralananın cinsi",
+        "kind": "text"
+      },
+      {
+        "key": "row_7",
+        "label": "Kiralayan",
+        "kind": "text"
+      },
+      {
+        "key": "row_8",
+        "label": "Kiralayan kimlik no",
+        "kind": "text"
+      },
+      {
+        "key": "row_9",
+        "label": "Kiralayan adresi",
+        "kind": "text"
+      },
+      {
+        "key": "row_10",
+        "label": "Kiracı",
+        "kind": "text"
+      },
+      {
+        "key": "row_11",
+        "label": "Kiracı kimlik / vergi no",
+        "kind": "text"
+      },
+      {
+        "key": "row_12",
+        "label": "Kiracı adresi",
+        "kind": "text"
+      },
+      {
+        "key": "row_13",
+        "label": "Başlangıç tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "row_14",
+        "label": "Süre",
+        "kind": "text"
+      },
+      {
+        "key": "row_15",
+        "label": "Yıllık kira",
+        "kind": "amount"
+      },
+      {
+        "key": "row_16",
+        "label": "Aylık kira",
+        "kind": "amount"
+      },
+      {
+        "key": "row_17",
+        "label": "Ödeme şekli",
+        "kind": "text"
+      },
+      {
+        "key": "row_18",
+        "label": "Kullanım şekli",
+        "kind": "text"
+      },
+      {
+        "key": "row_19",
+        "label": "Durumu",
+        "kind": "text"
+      },
+      {
+        "key": "row_20",
+        "label": "Demirbaşlar",
+        "kind": "text"
+      },
+      {
+        "key": "branch",
+        "label": "Banka şubesi",
+        "kind": "text"
+      },
+      {
+        "key": "bankAccount",
+        "label": "Banka hesap numarası",
+        "kind": "text"
+      },
+      {
+        "key": "deposit",
+        "label": "Teminat / depozito bedeli (TL)",
+        "kind": "amount"
+      },
+      {
+        "key": "property_block",
+        "label": "Ada",
+        "kind": "text"
+      },
+      {
+        "key": "property_parcel",
+        "label": "Parsel",
+        "kind": "text"
+      },
+      {
+        "key": "property_building",
+        "label": "Bina",
+        "kind": "text"
+      },
+      {
+        "key": "property_door",
+        "label": "Kapı",
+        "kind": "text"
+      },
+      {
+        "key": "property_unit",
+        "label": "Daire",
+        "kind": "text"
+      }
+    ],
+    "b2b8e04c0605a17eb228021e04bb02f0f4aa0198428236b3474edeca248701f6": [
+      {
+        "key": "blank_1",
+        "label": "SATICI / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_2",
+        "label": "SATICI / T.C. KİMLİK NO / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_3",
+        "label": "SATICI / ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_4",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_5",
+        "label": "ALICI / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_6",
+        "label": "ALICI / T.C. KİMLİK NO / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_7",
+        "label": "ALICI / ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_8",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_9_city",
+        "label": "İl seçimi",
+        "kind": "city"
+      },
+      {
+        "key": "blank_9_county",
+        "label": "İlçe seçimi",
+        "kind": "district",
+        "dependsOn": "blank_9_city"
+      },
+      {
+        "key": "blank_9_quarter",
+        "label": "Mahalle (manuel)",
+        "kind": "neighborhood",
+        "dependsOn": "blank_9_county"
+      },
+      {
+        "key": "blank_9",
+        "label": "İL / İLÇE / MAHALLE / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_10",
+        "label": "ADA / PARSEL / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_11",
+        "label": "BLOK / KAT / BAĞIMSIZ / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_12",
+        "label": "TAPU NİTELİĞİ / / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_13",
+        "label": "AÇIK ADRES / Bilgi (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_14",
+        "label": "YÜZÖLÇÜMÜ / ARSA PAYI / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_15",
+        "label": "TEMSİLCİ / YETKİ BELGESİ / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_16",
+        "label": "Toplam satış bedeli: (s.1)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_17",
+        "label": "Yazıyla: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_18",
+        "label": "ÖNCEKİ ÖDEME / TARİH / / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_19",
+        "label": "ÖNCEKİ ÖDEME / TARİH / /  TL / (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_20",
+        "label": "KALAN BEDEL / Bilgi (s.2)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_21",
+        "label": "1. ÖDEME TARİHİ / TUTAR / Bilgi (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_22",
+        "label": "1. ÖDEME TARİHİ / TUTAR /  /  /  (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_23",
+        "label": "2. ÖDEME TARİHİ / TUTAR / Bilgi (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_24",
+        "label": "2. ÖDEME TARİHİ / TUTAR /  /  /  (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_25",
+        "label": "DEVİR SIRASINDA ÖDEME / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_26",
+        "label": "SATICI HESAP SAHİBİ / / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_27",
+        "label": "GÜVENLİ ÖDEME YÖNTEMİ / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_28",
+        "label": "Mülkiyet devri en geç (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_29",
+        "label": "Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_30",
+        "label": "Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_31",
+        "label": "[ ] Bulunmamaktadır. [ ] Şunlardır: (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_32",
+        "label": "Kaldırılacak kayıtlar ve tarih: (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_33",
+        "label": "Teslim tarihi: (s.3)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_34",
+        "label": "Teslim durumu: [ ] Boş [ ] Kiracılı; ayrıntılar: (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_35",
+        "label": "Bilinen ayıplar / Ruhsat / İskân durumu: (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_36",
+        "label": "Demirbaşlar: (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_37",
+        "label": "NOTER GİDERLERİ / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_38",
+        "label": "TAPU HARCI / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_39",
+        "label": "DÖNER SERMAYE / DİĞER / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_40",
+        "label": "ŞERH GİDERLERİ / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_41",
+        "label": "Anlaşma: [ ] Şerh başvurusu yapılacaktır. [ ] Diğer: (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_42",
+        "label": "Başvuruyu takip edecek taraf / Başvuru için son tarih: (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_43",
+        "label": "bildirimle (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_44",
+        "label": "de yükümlülüğünün doğduğu günü izleyen ilk iş gününden başlayarak (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_45",
+        "label": "[ ] Diğer: (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_46",
+        "label": "Tutar ve son onay tarihi: (s.4)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_47",
+        "label": "Kredi çıkmazsa uygulanacak iade/devir koşulu: (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_48",
+        "label": "Bilgi (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_49",
+        "label": "DÜZENLEME TARİHİ / YERİ / Bilgi (s.4)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_50",
+        "label": "DÜZENLEME TARİHİ / YERİ /  /  /  (s.4)",
+        "kind": "text"
+      }
+    ],
+    "1e109265b3f7e0a3d71c10abc01ac49edac18abb55e9ebcd23d385dc30f12ed0": [
+      {
+        "key": "blank_1",
+        "label": "SATICI / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_2",
+        "label": "SATICI / T.C. KİMLİK / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_3",
+        "label": "AÇIK ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_4",
+        "label": "Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_5",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_6",
+        "label": "E-POSTA / KEP (VARSA): (s.1)",
+        "kind": "email"
+      },
+      {
+        "key": "blank_7",
+        "label": "MERSİS NO (VARSA): (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_8",
+        "label": "ALICI / TÜKETİCİ / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_9",
+        "label": "ALICI / TÜKETİCİ / T.C. KİMLİK / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_10",
+        "label": "AÇIK ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_11",
+        "label": "Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_12",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_13",
+        "label": "E-POSTA / KEP (VARSA): (s.1)",
+        "kind": "email"
+      },
+      {
+        "key": "blank_14",
+        "label": "SÖZLEŞME TARİHİ / / Bilgi (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_15",
+        "label": "NOTER BİLGİSİ / Noterlik / Yevmiye no: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_16",
+        "label": "TEMSİLCİ VE YETKİ / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_17_city",
+        "label": "İl seçimi",
+        "kind": "city"
+      },
+      {
+        "key": "blank_17_county",
+        "label": "İlçe seçimi",
+        "kind": "district",
+        "dependsOn": "blank_17_city"
+      },
+      {
+        "key": "blank_17_quarter",
+        "label": "Mahalle (manuel)",
+        "kind": "neighborhood",
+        "dependsOn": "blank_17_county"
+      },
+      {
+        "key": "blank_17",
+        "label": "İL / İLÇE / MAHALLE / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_18",
+        "label": "ADA / PARSEL / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_19",
+        "label": "BLOK / KAT / BAĞIMSIZ / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_20",
+        "label": "AÇIK ADRES / KONUM / / Bilgi (s.2)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_21",
+        "label": "CEPHE / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_22",
+        "label": "ARSA PAYI / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_23",
+        "label": "BAĞIMSIZ BÖLÜM NET / / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_24",
+        "label": "BAĞIMSIZ BÖLÜM NET / /  m² / (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_25",
+        "label": "PROJE ADI / / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_26",
+        "label": "YAPI RUHSATI TARİHİ / / Bilgi (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_27",
+        "label": "ARSA MALİKİ / / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_28",
+        "label": "SATICININ YETKİSİ / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_29",
+        "label": "TAPU/TAKYİDAT / Bilgi (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_30",
+        "label": "İPOTEK / HACİZ / DİĞER / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_31",
+        "label": "YÜKLER / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_32",
+        "label": "KALDIRILACAK YÜKLER / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_33",
+        "label": "/ SON TARİH / Bilgi (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_34",
+        "label": "ÖN BİLGİLENDİRME / Bilgi (s.3)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_35",
+        "label": "TESLİM YÖNTEMİ / / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_36",
+        "label": "EKLERİN LİSTESİ / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_37",
+        "label": "PEŞİN SATIŞ FİYATI / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_38",
+        "label": "TOPLAM TAKSİTLİ / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_39",
+        "label": "VERGİ TÜRÜ / TUTARI / Bilgi (s.3)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_40",
+        "label": "TESLİM VE DİĞER / Tür / Tutar / Ödeyecek taraf: (s.3)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_41",
+        "label": "MASRAFLAR / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_42",
+        "label": "ÖN ÖDEME TUTARI / / Bilgi (s.4)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_43",
+        "label": "ÖN ÖDEME TUTARI / /  TL / (s.4)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_44",
+        "label": "KALAN TOPLAM BEDEL / Bilgi (s.4)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_45",
+        "label": "TAKSİT SAYISI / ÖDEME / Bilgi (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_46",
+        "label": "BANKA / HESAP SAHİBİ / Bilgi (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_47",
+        "label": "/ IBAN / Bilgi (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_48",
+        "label": "TOPLAM FAİZ / VADE / Bilgi (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_49",
+        "label": "YILLIK AKDİ FAİZ ORANI / % (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_50",
+        "label": "YILLIK GECİKME FAİZ / % (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_51",
+        "label": "BAĞLI KREDİ BİLGİSİ / Kuruluş / Sözleşme no: (s.4)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_52",
+        "label": "KURULUŞ / POLİÇE / / Bilgi (s.5)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_53",
+        "label": "BELGE NO / Bilgi (s.5)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_54",
+        "label": "KAPSAM / TUTAR / / Bilgi (s.5)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_55",
+        "label": "SÜRE / Bilgi (s.5)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_56",
+        "label": "BELGE TESLİM TARİHİ / Bilgi (s.5)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_57",
+        "label": "DEVİR TARİHİ / TESLİM / Bilgi (s.5)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_58",
+        "label": "TESLİM ŞEKLİ / / Bilgi (s.5)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_59",
+        "label": "YÖNETİM PLANI / / Bilgi (s.5)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_60",
+        "label": "ORTAK GİDER ESASI / Bilgi (s.5)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_61",
+        "label": "SATICININ AÇIK / Bilgi (s.7)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_62",
+        "label": "BİLDİRİM ADRESİ / Bilgi (s.7)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_63",
+        "label": "TÜKETİCİNİN İADE / Bilgi (s.7)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_64",
+        "label": "[ ] Diğer özel koşullar: (s.8)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_65",
+        "label": "DÜZENLEME TARİHİ / YERİ / Bilgi (s.8)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_66",
+        "label": "DÜZENLEME TARİHİ / YERİ /  /  /  (s.8)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_69",
+        "label": "Ana sözleşme tarihi / Noter / Yevmiye no: (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_70",
+        "label": "Konut / Ada / Parsel / Bölüm: (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_71",
+        "label": "Seçilen toplam satış bedeli: (s.9)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_72",
+        "label": "Ön ödeme: (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_73",
+        "label": "Ön ödeme:  TL / Tarihi: (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_74",
+        "label": "1 / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_75",
+        "label": "1 / Bilgi (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_76",
+        "label": "2 / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_77",
+        "label": "2 / Bilgi (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_78",
+        "label": "3 / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_79",
+        "label": "3 / Bilgi (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_80",
+        "label": "4 / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_81",
+        "label": "4 / Bilgi (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_82",
+        "label": "5 / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_83",
+        "label": "5 / Bilgi (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_84",
+        "label": "6 / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_85",
+        "label": "6 / Bilgi (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_86",
+        "label": "7 / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_87",
+        "label": "7 / Bilgi (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_88",
+        "label": "8 / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_89",
+        "label": "8 / Bilgi (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_90",
+        "label": "DÜZENLEME TARİHİ / YERİ / Bilgi (s.9)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_91",
+        "label": "DÜZENLEME TARİHİ / YERİ /  /  /  (s.9)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_95",
+        "label": "AÇIK ADRES / TELEFON / Bilgi (s.10)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_96",
+        "label": "AÇIK ADRES / TELEFON / Bilgi (s.10)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_97",
+        "label": "MERSİS / DİĞER / Bilgi (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_98",
+        "label": "KONUTUN ADA / / Bilgi (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_99",
+        "label": "PARSEL / BLOK / KAT / / Bilgi (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_100",
+        "label": "KONUM / CEPHE / NET / Bilgi (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_101",
+        "label": "VE BRÜT ALAN / Bilgi (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_102",
+        "label": "VE BRÜT ALAN /  m² / (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_103",
+        "label": "VERGİLER DAHİL PEŞİN / Bilgi (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_104",
+        "label": "VERGİLER DAHİL / Bilgi (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_105",
+        "label": "FAİZ TUTARI / YILLIK / Bilgi (s.10)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_106",
+        "label": "FAİZ TUTARI / YILLIK /  TL / % (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_107",
+        "label": "TESLİM VE DİĞER / Tür / Tutar: (s.10)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_108",
+        "label": "MASRAFLAR / Bilgi (s.10)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_109",
+        "label": "KONUT TESLİM TARİHİ / Bilgi (s.10)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_110",
+        "label": "YAPI RUHSATI TARİHİ / / Bilgi (s.10)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_111",
+        "label": "TEMİNAT TÜRÜ / / Bilgi (s.11)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_112",
+        "label": "KURULUŞU / KAPSAMI / Bilgi (s.11)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_113",
+        "label": "YÖNETİM PLANI / / Bilgi (s.11)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_114",
+        "label": "ORTAK GİDER / Bilgi (s.11)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_115",
+        "label": "SATICININ / Bilgi (s.11)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_116",
+        "label": "CAYMA/DÖNME ADRESİ / Bilgi (s.11)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_117",
+        "label": "[ ] Diğer: (s.11)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_118",
+        "label": "FORM VE EKLERİN / Bilgi (s.11)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_119",
+        "label": "TESLİM YÖNTEMİ / / Bilgi (s.11)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_120",
+        "label": "DÜZENLEME TARİHİ / YERİ / Bilgi (s.11)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_121",
+        "label": "DÜZENLEME TARİHİ / YERİ /  /  /  (s.11)",
+        "kind": "text"
+      }
+    ],
+    "d34608c7809e740a1643c74fd1f33e30ce6a5f6a09261a832c544fbb6529976b": [
+      {
+        "key": "blank_1",
+        "label": "SATICI / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_2",
+        "label": "SATICI / T.C. KİMLİK / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_3",
+        "label": "AÇIK ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_4",
+        "label": "Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_5",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_6",
+        "label": "E-POSTA / KEP (VARSA): (s.1)",
+        "kind": "email"
+      },
+      {
+        "key": "blank_7",
+        "label": "MERSİS NO (VARSA): (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_8",
+        "label": "ALICI / TÜKETİCİ / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_9",
+        "label": "ALICI / TÜKETİCİ / T.C. KİMLİK / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_10",
+        "label": "AÇIK ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_11",
+        "label": "Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_12",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_13",
+        "label": "E-POSTA / KEP (VARSA): (s.1)",
+        "kind": "email"
+      },
+      {
+        "key": "blank_14",
+        "label": "GEÇERLİ ANA / Noterlik: (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_15",
+        "label": "SÖZLEŞME / Tarih: (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_16",
+        "label": "SÖZLEŞME / Yevmiye no: (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_17",
+        "label": "PROJE / ADA / PARSEL / / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_18",
+        "label": "BÖLÜM / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_19",
+        "label": "ÖN ÖDEME TUTARI / Bilgi (s.2)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_20",
+        "label": "YAZIYLA / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_21",
+        "label": "ÖDEME TARİHİ / / Bilgi (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_22",
+        "label": "HESAP SAHİBİ / BANKA / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_23",
+        "label": "/ IBAN / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_24",
+        "label": "TEMİNAT BİLGİSİ / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_25",
+        "label": "SATICININ / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_26",
+        "label": "CAYMA/DÖNME ADRESİ / Bilgi (s.3)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_27",
+        "label": "TÜKETİCİNİN İADE / Bilgi (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_28",
+        "label": "DÜZENLEME TARİHİ / YERİ / Bilgi (s.3)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_29",
+        "label": "DÜZENLEME TARİHİ / YERİ /  /  /  (s.3)",
+        "kind": "text"
+      }
+    ],
+    "ef13f33870f83236c4730926e6df8c2292a25d95d301ffc457daff4cd2f894e6": [
+      {
+        "key": "blank_1",
+        "label": "SATICI / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_2",
+        "label": "SATICI / T.C. KİMLİK NO / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_3",
+        "label": "SATICI / ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_4",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_5",
+        "label": "ALICI / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_6",
+        "label": "ALICI / T.C. KİMLİK NO / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_7",
+        "label": "ALICI / ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_8",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_9_city",
+        "label": "İl seçimi",
+        "kind": "city"
+      },
+      {
+        "key": "blank_9_county",
+        "label": "İlçe seçimi",
+        "kind": "district",
+        "dependsOn": "blank_9_city"
+      },
+      {
+        "key": "blank_9_quarter",
+        "label": "Mahalle (manuel)",
+        "kind": "neighborhood",
+        "dependsOn": "blank_9_county"
+      },
+      {
+        "key": "blank_9",
+        "label": "İL / İLÇE / MAHALLE / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_10",
+        "label": "ADA / PARSEL / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_11",
+        "label": "BLOK / KAT / BAĞIMSIZ / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_12",
+        "label": "TAPU NİTELİĞİ / / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_13",
+        "label": "AÇIK ADRES / Bilgi (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_14",
+        "label": "GÖRÜŞÜLEN SATIŞ / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_15",
+        "label": "ÖN ÖDEME TUTARI / Bilgi (s.1)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_16",
+        "label": "TUTARIN YAZIYLA / Bilgi (s.1)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_17",
+        "label": "TARİH / YÖNTEM / Bilgi (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_18",
+        "label": "HESAP SAHİBİ / IBAN / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_19",
+        "label": "DEKONT / MAKBUZ / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_20",
+        "label": "HEDEF TARİH / Bilgi (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_21",
+        "label": "İADE SÜRESİ / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_22",
+        "label": "İADE HESABI SAHİBİ / IBAN / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_23",
+        "label": "Ekler: [ ] Dekont / Makbuz [ ] Tapu örneği [ ] Diğer: (s.3)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_24",
+        "label": "DÜZENLEME TARİHİ / YERİ / Bilgi (s.3)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_25",
+        "label": "DÜZENLEME TARİHİ / YERİ /  /  /  (s.3)",
+        "kind": "text"
+      }
+    ],
+    "76103fdac113837397191f26b457bcb394fbc89dfb4bbd0c395da1f868ed9019": [
+      {
+        "key": "blank_1",
+        "label": "SATICI / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_2",
+        "label": "SATICI / T.C. KİMLİK NO / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_3",
+        "label": "SATICI / ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_4",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_5",
+        "label": "ALICI / ADI SOYADI / TİCARET UNVANI: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_6",
+        "label": "ALICI / T.C. KİMLİK NO / VERGİ NO: (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_7",
+        "label": "ALICI / ADRES: (s.1)",
+        "kind": "address"
+      },
+      {
+        "key": "blank_8",
+        "label": "TELEFON: (s.1)",
+        "kind": "phone"
+      },
+      {
+        "key": "blank_9",
+        "label": "NOTERLİK / TARİH / / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_10",
+        "label": "YEVMİYE NO / Bilgi (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_11",
+        "label": "İL / İLÇE / ADA / PARSEL / / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_12",
+        "label": "DEVREDİLECEK PAY / / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_13",
+        "label": "DEVREDİLECEK PAY / /  /  (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_14",
+        "label": "CAYMA PARASI TUTARI / Bilgi (s.1)",
+        "kind": "amount"
+      },
+      {
+        "key": "blank_15",
+        "label": "YAZIYLA / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_16",
+        "label": "ÖDEME TARİHİ / DEKONT / Bilgi (s.1)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_17",
+        "label": "SATICI HESABI / IBAN / Bilgi (s.1)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_18",
+        "label": "CAYMA İÇİN SON TARİH / Bilgi (s.2)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_19",
+        "label": "ALICI İADE HESABI / IBAN / Bilgi (s.2)",
+        "kind": "text"
+      },
+      {
+        "key": "blank_20",
+        "label": "DÜZENLEME TARİHİ / YERİ / Bilgi (s.3)",
+        "kind": "date"
+      },
+      {
+        "key": "blank_21",
+        "label": "DÜZENLEME TARİHİ / YERİ /  /  /  (s.3)",
+        "kind": "text"
+      }
+    ],
+    "8a3acae0bc3168a5a171af3ddd698460d4b6af812e7bf637139c1bee6beaa2ad": [
+      {
+        "key": "note_0_1",
+        "label": "1. senet: Düzenleme tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_0_2",
+        "label": "1. senet: Vade tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_0_3",
+        "label": "1. senet: Tutar",
+        "kind": "amount"
+      },
+      {
+        "key": "note_0_4",
+        "label": "1. senet: Senet no",
+        "kind": "text"
+      },
+      {
+        "key": "note_0_5",
+        "label": "1. senet: Para birimi",
+        "kind": "text"
+      },
+      {
+        "key": "note_0_6",
+        "label": "1. senet: Ödeme tarihi (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_0_7",
+        "label": "1. senet: Alacaklı",
+        "kind": "name"
+      },
+      {
+        "key": "note_0_8",
+        "label": "1. senet: Tutar (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_0_9",
+        "label": "1. senet: Bedeli",
+        "kind": "text"
+      },
+      {
+        "key": "note_0_10",
+        "label": "1. senet: Yetkili yer",
+        "kind": "text"
+      },
+      {
+        "key": "note_0_11",
+        "label": "1. senet: Borçlu adı / adresi",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_12",
+        "label": "2. senet: Düzenleme tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_1_13",
+        "label": "2. senet: Vade tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_1_14",
+        "label": "2. senet: Tutar",
+        "kind": "amount"
+      },
+      {
+        "key": "note_1_15",
+        "label": "2. senet: Senet no",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_16",
+        "label": "2. senet: Para birimi",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_17",
+        "label": "2. senet: Ödeme tarihi (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_18",
+        "label": "2. senet: Alacaklı",
+        "kind": "name"
+      },
+      {
+        "key": "note_1_19",
+        "label": "2. senet: Tutar (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_20",
+        "label": "2. senet: Bedeli",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_21",
+        "label": "2. senet: Yetkili yer",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_22",
+        "label": "2. senet: Borçlu adı / adresi",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_23",
+        "label": "3. senet: Düzenleme tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_2_24",
+        "label": "3. senet: Vade tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_2_25",
+        "label": "3. senet: Tutar",
+        "kind": "amount"
+      },
+      {
+        "key": "note_2_26",
+        "label": "3. senet: Senet no",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_27",
+        "label": "3. senet: Para birimi",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_28",
+        "label": "3. senet: Ödeme tarihi (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_29",
+        "label": "3. senet: Alacaklı",
+        "kind": "name"
+      },
+      {
+        "key": "note_2_30",
+        "label": "3. senet: Tutar (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_31",
+        "label": "3. senet: Bedeli",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_32",
+        "label": "3. senet: Yetkili yer",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_33",
+        "label": "3. senet: Borçlu adı / adresi",
+        "kind": "text"
+      }
+    ],
+    "a9b0bb7d30e1edf619114d4a6359771d4d41130e0f3087847964b0aee8971c6e": [
+      {
+        "key": "note_1_1",
+        "label": "2. senet: Düzenleme tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_1_2",
+        "label": "2. senet: Vade tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_1_3",
+        "label": "2. senet: Tutar",
+        "kind": "amount"
+      },
+      {
+        "key": "note_1_4",
+        "label": "2. senet: Senet no",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_5",
+        "label": "2. senet: Para birimi",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_6",
+        "label": "2. senet: Ödeme tarihi (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_7",
+        "label": "2. senet: Alacaklı",
+        "kind": "name"
+      },
+      {
+        "key": "note_1_8",
+        "label": "2. senet: Tutar (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_9",
+        "label": "2. senet: Bedeli",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_10",
+        "label": "2. senet: Yetkili yer",
+        "kind": "text"
+      },
+      {
+        "key": "note_1_11",
+        "label": "2. senet: Borçlu adı / adresi",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_12",
+        "label": "3. senet: Düzenleme tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_2_13",
+        "label": "3. senet: Vade tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "note_2_14",
+        "label": "3. senet: Tutar",
+        "kind": "amount"
+      },
+      {
+        "key": "note_2_15",
+        "label": "3. senet: Senet no",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_16",
+        "label": "3. senet: Para birimi",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_17",
+        "label": "3. senet: Ödeme tarihi (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_18",
+        "label": "3. senet: Alacaklı",
+        "kind": "name"
+      },
+      {
+        "key": "note_2_19",
+        "label": "3. senet: Tutar (yazıyla)",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_20",
+        "label": "3. senet: Bedeli",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_21",
+        "label": "3. senet: Yetkili yer",
+        "kind": "text"
+      },
+      {
+        "key": "note_2_22",
+        "label": "3. senet: Borçlu adı / adresi",
+        "kind": "text"
+      }
+    ],
+    "587a3231f34efb34064cf0de74caa675f4916eb4597929c0a0fcf06373f86595": [
+      {
+        "key": "city",
+        "label": "İl",
+        "kind": "city"
+      },
+      {
+        "key": "county",
+        "label": "İlçe",
+        "kind": "district",
+        "dependsOn": "city"
+      },
+      {
+        "key": "district",
+        "label": "Mahalle",
+        "kind": "neighborhood",
+        "dependsOn": "county"
+      },
+      {
+        "key": "street",
+        "label": "Cadde / sokak",
+        "kind": "address"
+      },
+      {
+        "key": "number",
+        "label": "Bina / daire numarası",
+        "kind": "text"
+      },
+      {
+        "key": "propertyType",
+        "label": "Kiralananın cinsi",
+        "kind": "text"
+      },
+      {
+        "key": "landlord",
+        "label": "Kiraya verenin adı soyadı",
+        "kind": "name"
+      },
+      {
+        "key": "landlordIdentity",
+        "label": "Kiraya verenin T.C. kimlik numarası",
+        "kind": "identity"
+      },
+      {
+        "key": "landlordAddress",
+        "label": "Kiraya verenin adresi",
+        "kind": "address"
+      },
+      {
+        "key": "tenant",
+        "label": "Kiracının adı soyadı",
+        "kind": "name"
+      },
+      {
+        "key": "tenantIdentity",
+        "label": "Kiracının T.C. kimlik numarası",
+        "kind": "identity"
+      },
+      {
+        "key": "tenantAddress",
+        "label": "Kiracının adresi",
+        "kind": "address"
+      },
+      {
+        "key": "startDate",
+        "label": "Kira başlangıç tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "duration",
+        "label": "Kira süresi",
+        "kind": "text"
+      },
+      {
+        "key": "annualRent",
+        "label": "Yıllık kira bedeli (TL)",
+        "kind": "amount"
+      },
+      {
+        "key": "monthlyRent",
+        "label": "Aylık kira bedeli (TL)",
+        "kind": "amount"
+      },
+      {
+        "key": "paymentMethod",
+        "label": "Kiranın ödeme şekli",
+        "kind": "text"
+      },
+      {
+        "key": "usage",
+        "label": "Kiralananın kullanım şekli",
+        "kind": "text"
+      },
+      {
+        "key": "condition",
+        "label": "Kiralananın durumu",
+        "kind": "text"
+      },
+      {
+        "key": "inventory",
+        "label": "Demirbaşlar",
+        "kind": "description"
+      },
+      {
+        "key": "bank",
+        "label": "Banka",
+        "kind": "text"
+      },
+      {
+        "key": "branch",
+        "label": "Banka şubesi",
+        "kind": "text"
+      },
+      {
+        "key": "bankAccount",
+        "label": "Hesap / IBAN",
+        "kind": "text"
+      },
+      {
+        "key": "court",
+        "label": "Mahkeme yeri",
+        "kind": "text"
+      },
+      {
+        "key": "contractDate",
+        "label": "Sözleşme tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "property_block",
+        "label": "Ada",
+        "kind": "text"
+      },
+      {
+        "key": "property_parcel",
+        "label": "Parsel",
+        "kind": "text"
+      },
+      {
+        "key": "property_building",
+        "label": "Bina",
+        "kind": "text"
+      },
+      {
+        "key": "property_door",
+        "label": "Kapı",
+        "kind": "text"
+      },
+      {
+        "key": "property_unit",
+        "label": "Daire",
+        "kind": "text"
+      }
+    ],
+    "0e443659a570790c6c2613967671466d2e4a49846b811bf935acb2a775ce9088": [
+      {
+        "key": "blank_1",
+        "label": "Kiranın yatırılacağı banka",
+        "kind": "text"
+      },
+      {
+        "key": "row_2_city",
+        "label": "İl seçimi",
+        "kind": "city"
+      },
+      {
+        "key": "row_2_county",
+        "label": "İlçe seçimi",
+        "kind": "district",
+        "dependsOn": "row_2_city"
+      },
+      {
+        "key": "row_2",
+        "label": "Tapu ili / ilçesi",
+        "kind": "text"
+      },
+      {
+        "key": "row_3",
+        "label": "Mahallesi / sitesi",
+        "kind": "neighborhood",
+        "dependsOn": "row_2_county"
+      },
+      {
+        "key": "row_4",
+        "label": "Cadde / sokak",
+        "kind": "text"
+      },
+      {
+        "key": "row_5",
+        "label": "Bina / iç kapı no",
+        "kind": "text"
+      },
+      {
+        "key": "row_6",
+        "label": "Kiralananın cinsi",
+        "kind": "text"
+      },
+      {
+        "key": "row_7",
+        "label": "Kiralayan",
+        "kind": "text"
+      },
+      {
+        "key": "row_8",
+        "label": "Kiralayan kimlik no",
+        "kind": "text"
+      },
+      {
+        "key": "row_9",
+        "label": "Kiralayan adresi",
+        "kind": "text"
+      },
+      {
+        "key": "row_10",
+        "label": "Kiracı",
+        "kind": "text"
+      },
+      {
+        "key": "row_11",
+        "label": "Kiracı kimlik / vergi no",
+        "kind": "text"
+      },
+      {
+        "key": "row_12",
+        "label": "Kiracı adresi",
+        "kind": "text"
+      },
+      {
+        "key": "row_13",
+        "label": "Başlangıç tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "row_14",
+        "label": "Süre",
+        "kind": "text"
+      },
+      {
+        "key": "row_15",
+        "label": "Yıllık kira",
+        "kind": "amount"
+      },
+      {
+        "key": "row_16",
+        "label": "Aylık kira",
+        "kind": "amount"
+      },
+      {
+        "key": "row_17",
+        "label": "Ödeme şekli",
+        "kind": "text"
+      },
+      {
+        "key": "row_18",
+        "label": "Kullanım şekli",
+        "kind": "text"
+      },
+      {
+        "key": "row_19",
+        "label": "Durumu",
+        "kind": "text"
+      },
+      {
+        "key": "row_20",
+        "label": "Demirbaşlar",
+        "kind": "text"
+      },
+      {
+        "key": "branch",
+        "label": "Banka şubesi",
+        "kind": "text"
+      },
+      {
+        "key": "bankAccount",
+        "label": "Banka hesap numarası",
+        "kind": "text"
+      },
+      {
+        "key": "deposit",
+        "label": "Teminat / depozito bedeli (TL)",
+        "kind": "amount"
+      },
+      {
+        "key": "property_block",
+        "label": "Ada",
+        "kind": "text"
+      },
+      {
+        "key": "property_parcel",
+        "label": "Parsel",
+        "kind": "text"
+      },
+      {
+        "key": "property_building",
+        "label": "Bina",
+        "kind": "text"
+      },
+      {
+        "key": "property_door",
+        "label": "Kapı",
+        "kind": "text"
+      },
+      {
+        "key": "property_unit",
+        "label": "Daire",
+        "kind": "text"
+      }
+    ],
+    "f7e7ea2e3d9a703650a8f6d55b7dec2f49c67fc574051607f076189309369924": [
+      {
+        "key": "city",
+        "label": "İl",
+        "kind": "city"
+      },
+      {
+        "key": "county",
+        "label": "İlçe",
+        "kind": "district",
+        "dependsOn": "city"
+      },
+      {
+        "key": "district",
+        "label": "Mahalle",
+        "kind": "neighborhood",
+        "dependsOn": "county"
+      },
+      {
+        "key": "street",
+        "label": "Cadde / sokak",
+        "kind": "address"
+      },
+      {
+        "key": "number",
+        "label": "Bina / daire numarası",
+        "kind": "text"
+      },
+      {
+        "key": "propertyType",
+        "label": "Kiralananın cinsi",
+        "kind": "text"
+      },
+      {
+        "key": "landlord",
+        "label": "Kiraya verenin adı soyadı",
+        "kind": "name"
+      },
+      {
+        "key": "landlordIdentity",
+        "label": "Kiraya verenin T.C. kimlik numarası",
+        "kind": "identity"
+      },
+      {
+        "key": "landlordAddress",
+        "label": "Kiraya verenin adresi",
+        "kind": "address"
+      },
+      {
+        "key": "tenant",
+        "label": "Kiracının adı soyadı",
+        "kind": "name"
+      },
+      {
+        "key": "tenantIdentity",
+        "label": "Kiracının T.C. kimlik numarası",
+        "kind": "identity"
+      },
+      {
+        "key": "tenantAddress",
+        "label": "Kiracının adresi",
+        "kind": "address"
+      },
+      {
+        "key": "startDate",
+        "label": "Kira başlangıç tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "duration",
+        "label": "Kira süresi",
+        "kind": "text"
+      },
+      {
+        "key": "annualRent",
+        "label": "Yıllık kira bedeli (TL)",
+        "kind": "amount"
+      },
+      {
+        "key": "monthlyRent",
+        "label": "Aylık kira bedeli (TL)",
+        "kind": "amount"
+      },
+      {
+        "key": "paymentMethod",
+        "label": "Kiranın ödeme şekli",
+        "kind": "text"
+      },
+      {
+        "key": "usage",
+        "label": "Kiralananın kullanım şekli",
+        "kind": "text"
+      },
+      {
+        "key": "condition",
+        "label": "Kiralananın durumu",
+        "kind": "text"
+      },
+      {
+        "key": "inventory",
+        "label": "Demirbaşlar",
+        "kind": "description"
+      },
+      {
+        "key": "bank",
+        "label": "Banka",
+        "kind": "text"
+      },
+      {
+        "key": "branch",
+        "label": "Banka şubesi",
+        "kind": "text"
+      },
+      {
+        "key": "bankAccount",
+        "label": "Hesap / IBAN",
+        "kind": "text"
+      },
+      {
+        "key": "court",
+        "label": "Mahkeme yeri",
+        "kind": "text"
+      },
+      {
+        "key": "contractDate",
+        "label": "Sözleşme tarihi",
+        "kind": "date"
+      },
+      {
+        "key": "property_block",
+        "label": "Ada",
+        "kind": "text"
+      },
+      {
+        "key": "property_parcel",
+        "label": "Parsel",
+        "kind": "text"
+      },
+      {
+        "key": "property_building",
+        "label": "Bina",
+        "kind": "text"
+      },
+      {
+        "key": "property_door",
+        "label": "Kapı",
+        "kind": "text"
+      },
+      {
+        "key": "property_unit",
+        "label": "Daire",
+        "kind": "text"
+      }
+    ]
+  }
+}

@@ -12,7 +12,7 @@ class IntentAnalyzer
         $text = Str::lower($message);
         $fold = Str::ascii($text, 'tr');
         $filters = $previous;
-        if (str_contains($fold, 'yeni arama')) {
+        if (str_contains($fold, 'yeni arama') || preg_match('/tum\s+(?:aktif\s+)?ilan/', $fold)) {
             $filters = [];
         }
         foreach (TurkeyAddressService::getCities() as $city) {

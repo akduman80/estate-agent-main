@@ -79,4 +79,15 @@ class ManageAssistant extends Page
     {
         return ['helpful' => (int) Cache::get('assistant:feedback:helpful:'.now()->format('Y-m-d'), 0), 'unhelpful' => (int) Cache::get('assistant:feedback:unhelpful:'.now()->format('Y-m-d'), 0), 'requests' => (int) Cache::get('assistant:requests:'.now()->format('Y-m-d'), 0), 'errors' => (int) Cache::get('assistant:errors:'.now()->format('Y-m-d'), 0)];
     }
+
+    public function geminiCounts(): array
+    {
+        $day = now()->format('Y-m-d');
+        $out = [];
+        foreach (['calls','errors','input','output','thought','reserved'] as $name) $out[$name] = (int) Cache::get('assistant:gemini:'.$name.':'.$day, 0);
+        $in = config('assistant.gemini.input_usd_per_million'); $output = config('assistant.gemini.output_usd_per_million');
+        $out['estimated_usd'] = is_numeric($in) && is_numeric($output) && $in >= 0 && $output >= 0
+            ? round(($out['input'] * $in + ($out['output'] + $out['thought']) * $output) / 1000000, 6) : null;
+        return $out;
+    }
 }

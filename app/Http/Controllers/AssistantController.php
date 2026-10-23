@@ -12,7 +12,7 @@ class AssistantController extends Controller
     public function __invoke(Request $request, AssistantService $assistant)
     {
         abort_unless(config('assistant.enabled') && Setting::get('assistant_enabled', true), 503, 'Asistan şu anda kapalı.');
-        $input = $request->validate(['message' => ['required', 'string', 'max:2000'], 'reset' => ['sometimes', 'boolean'], 'use_remote' => ['sometimes', 'boolean']]);
+        $input = $request->validate(['message' => ['required', 'string', 'max:2000'], 'reset' => ['sometimes', 'boolean'], 'use_remote' => ['sometimes', 'boolean'], 'history' => ['sometimes', 'array', 'max:6'], 'history.*' => ['array:text,user'], 'history.*.text' => ['required', 'string', 'max:1000'], 'history.*.user' => ['required', 'boolean']]);
         $key = 'assistant:daily:'.hash('sha256', $request->session()->getId()).':'.now()->format('Y-m-d');
         Cache::add($key, 0, now()->addDay());
         abort_if(Cache::increment($key) > (int) Setting::get('assistant_daily_limit', config('assistant.daily_limit', 200)), 429);
@@ -21,7 +21,7 @@ class AssistantController extends Controller
         Cache::add($countKey, 0, now()->addDays(2));
         Cache::increment($countKey);
         try {
-            $result = $assistant->reply($input['message'], $context, Setting::get('assistant_tools', ['search', 'compare', 'open', 'details', 'documents', 'create', 'calculator', 'help']), $request->boolean('use_remote'));
+            $result = $assistant->reply($input['message'], $context, Setting::get('assistant_tools', ['search', 'compare', 'open', 'details', 'documents', 'create', 'calculator', 'help']), $request->boolean('use_remote'), $input['history'] ?? []);
         } catch (\Throwable) {
             $errorKey = 'assistant:errors:'.now()->format('Y-m-d');
             Cache::add($errorKey, 0, now()->addDays(2));

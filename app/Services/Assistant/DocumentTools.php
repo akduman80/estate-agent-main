@@ -13,12 +13,30 @@ class DocumentTools
         $documents = collect(Setting::get('user_documents', []))
             ->filter(fn ($d) => is_array($d) && ($d['is_active'] ?? true) && filled($d['title'] ?? null) && filled($d['file'] ?? null))
             ->sortBy(fn ($d) => (int) ($d['sort'] ?? 0))->values()
-            ->map(fn ($d, $index) => ['title' => $d['title'], 'url' => route('documents.download', ['index' => $index])])->all();
+            ->map(fn ($d, $index) => ['title' => $d['title'], 'url' => route('documents.download', ['index' => $index]), 'fields' => $this->schema((string) $d['file'])])->all();
         foreach (app(DocumentTemplateStore::class)->publishedCatalog() as $d) {
-            $documents[] = ['title' => $d['title'], 'url' => $d['url']];
+            $documents[] = ['title' => $d['title'], 'url' => $d['url'], 'fields' => $this->metadata($d['mapping']['fields'] ?? [])];
         }
 
         return $documents;
+    }
+
+    private function metadata(array $fields): array
+    {
+        return array_values(array_map(fn ($field) => array_intersect_key($field, array_flip(['key','label','kind','required','dependsOn'])), array_filter($fields, fn ($field) => is_array($field) && ! ($field['locked'] ?? false))));
+    }
+
+    private function schema(string $file): array
+    {
+        $disk = \Illuminate\Support\Facades\Storage::disk('public');
+        if (! $disk->exists($file) || $disk->size($file) > 10000000) return [];
+        $hash = hash('sha256', $disk->get($file));
+        $path = resource_path('data/assistant-document-fields.json');
+        $registry = is_file($path) ? json_decode(file_get_contents($path), true) : [];
+        foreach ($registry['sources'] ?? [] as $source => $expected) {
+            if (! is_file(base_path($source)) || ! hash_equals($expected, hash('sha256', str_replace("\r\n", "\n", file_get_contents(base_path($source)))))) return [];
+        }
+        return $this->metadata($registry['templates'][$hash] ?? []);
     }
 
     public function kind(string $message): ?string
@@ -79,6 +97,9 @@ class DocumentTools
         $fold = Str::ascii(Str::lower($message), 'tr');
         if (preg_match('/baslangic(?: tarihi)?\s+(\d{1,2})\s+('.implode('|', array_keys($months)).')\s+(\d{4})/', $fold, $m) && checkdate($months[$m[2]], (int) $m[1], (int) $m[3])) {
             $fields['startDate'] = sprintf('%02d.%02d.%04d', $m[1], $months[$m[2]], $m[3]);
+        }
+        foreach (['city' => 'il', 'county' => 'ilçe', 'district' => 'mahalle', 'street' => 'sokak', 'number' => 'bina numarası', 'duration' => 'kira süresi', 'paymentMethod' => 'ödeme şekli', 'landlordAddress' => 'kiraya veren adresi', 'tenantAddress' => 'kiracı adresi', 'inventory' => 'demirbaşlar'] as $key => $label) {
+            if (preg_match('/(?:^|[,;\n])\s*'.preg_quote($label, '/').'\s*[:=]\s*([^,;\n]{1,200})/iu', $message, $m)) $fields[$key] = trim($m[1]);
         }
 
         return $fields;

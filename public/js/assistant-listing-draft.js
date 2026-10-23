@@ -1,5 +1,5 @@
 const key='zyd-assistant-listing-draft';
-const allowed=new Set(['city_id','district_id','type','price','square_meters','title','description']);
+const allowed=new Set(['city_id','district_id','category','type','price','square_meters','title','description']);
 function initialize(){
     let stored;try{stored=JSON.parse(sessionStorage.getItem(key));}catch{return;}
     if(!stored || !stored.fields)return;
@@ -10,7 +10,7 @@ function initialize(){
     if(!wire)return;
     const preview=document.createElement('section');preview.style.cssText='padding:16px;border:1px solid #f97316;border-radius:12px;margin-bottom:16px';
     const heading=document.createElement('h2');heading.textContent='Asistan ilan taslağı — kaydedilmedi';preview.append(heading);
-    const text=document.createElement('pre');text.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere';text.textContent=Object.entries(stored.fields).filter(([k])=>allowed.has(k)).map(([k,v])=>`${({city_id:'İl',district_id:'İlçe',type:'İşlem türü',price:'Fiyat',square_meters:'Metrekare',title:'Başlık',description:'Açıklama'})[k]}: ${String(v).replace(/<[^>]*>/g,'')}`).join('\n');preview.append(text);
+    const text=document.createElement('pre');text.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere';text.textContent=Object.entries(stored.fields).filter(([k])=>allowed.has(k)).map(([k,v])=>`${({city_id:'İl',district_id:'İlçe',category:'Kategori',type:'İşlem türü',price:'Fiyat',square_meters:'Metrekare',title:'Başlık',description:'Açıklama'})[k]}: ${String(v).replace(/<[^>]*>/g,'')}`).join('\n');preview.append(text);
     const status=document.createElement('p');status.textContent='Alanları kontrol edip mevcut forma aktarın. Kayıt ve yayın işlemlerini panelden kendiniz tamamlayın.';
     const apply=document.createElement('button');apply.type='button';apply.textContent='Kontrol ettim, forma aktar';
     apply.onclick=async()=>{apply.disabled=true;try{for(const [name,value]of Object.entries(stored.fields)){if(!allowed.has(name))continue;await wire.$set(`data.${name}`,value);}sessionStorage.removeItem(key);status.textContent='Taslak forma aktarıldı. Kaydedilmedi veya yayınlanmadı. Eksik alanları panelde tamamlayın.';}catch{status.textContent='Aktarım tamamlanamadı. Formu kontrol edin veya bilgileri elle girin.';apply.disabled=false;}};
