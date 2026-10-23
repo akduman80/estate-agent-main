@@ -33,12 +33,6 @@ class AssistantService
                     break;
                 }
                 $context['filters'] = $analysis['filters'];
-                $all = preg_match('/tum\s+(?:aktif\s+)?ilan/', Str::ascii(Str::lower($message), 'tr')) === 1;
-                if (! $all && (! isset($analysis['filters']['city']) || ! isset($analysis['filters']['type']))) {
-                    unset($context['ids'],$context['selected'],$context['page']);
-                    $result['message'] = ! isset($analysis['filters']['city']) ? 'Hangi il veya ilçede gayrimenkul arıyorsunuz?' : 'Satılık mı, kiralık mı arıyorsunuz?';
-                    break;
-                }
                 $page = ($analysis['next'] ?? false) ? min(1000, ($context['page'] ?? 0) + 1) : 1;
                 $search = $this->listings->searchPage($analysis['filters'], $page);
                 $result['listings'] = $search['items'];
@@ -46,7 +40,7 @@ class AssistantService
                 $context['page'] = $search['page'];
                 $context['ids'] = array_column($result['listings'], 'id');
                 unset($context['selected']);
-                $result['message'] = $result['listings'] ? 'Kayıtlı kriterlere uygun ilanlar (en fazla 12 sonuç):' : 'Belirttiğiniz kriterlere uygun aktif ilan bulunamadı. Dilerseniz fiyat aralığını genişletebilir veya yakın bölgelerde arama yapabiliriz.';
+                $result['message'] = $result['listings'] ? 'Kayıtlı kriterlere uygun ilanlar (en fazla 12 sonuç). İl, ilçe, satılık/kiralık veya bütçe belirterek sonuçları daraltabilirsiniz:' : 'Belirttiğiniz kriterlere uygun aktif ilan bulunamadı. Dilerseniz fiyat aralığını genişletebilir veya yakın bölgelerde arama yapabiliriz.';
                 break;
             case 'compare':
                 $result['listings'] = $this->listings->details(array_slice($context['ids'] ?? [], 0, $analysis['count'] ?? 3));

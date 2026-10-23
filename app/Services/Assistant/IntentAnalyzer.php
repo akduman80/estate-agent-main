@@ -78,7 +78,7 @@ class IntentAnalyzer
             str_contains($fold, 'hesapla'), str_contains($fold, 'masraf'), str_contains($fold, 'kira artisi'), str_contains($fold, 'kira getirisi'), str_contains($fold, 'geri donus') => 'calculator',
             preg_match('/(ikincisini|birincisini|ucuncusunu|\d+\.?\s*ilani)\s*ac/', $fold) === 1 => 'open',
             str_contains($fold, 'metrekaresi') => 'details',
-            str_contains($fold, 'ara'), str_contains($fold, 'bul'), str_contains($fold, 'goster'), str_contains($fold, 'sirala'), str_contains($fold, 'sonraki'), str_contains($fold, 'daha fazla'), str_contains($fold, 'devamini'), $filters !== $previous => 'search',
+            preg_match('/\bilan(?:lar[ai]?|lari|i)?\b/', $fold) === 1, str_contains($fold, 'listele'), str_contains($fold, 'ara'), str_contains($fold, 'bul'), str_contains($fold, 'goster'), str_contains($fold, 'sirala'), str_contains($fold, 'sonraki'), str_contains($fold, 'daha fazla'), str_contains($fold, 'devamini'), $filters !== $previous => 'search',
             default => 'help',
         };
         $ordinal = str_contains($fold, 'ikincisini') ? 2 : (str_contains($fold, 'ucuncusunu') ? 3 : 1);
