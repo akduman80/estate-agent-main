@@ -30,7 +30,8 @@ class IntentAnalyzer
                 break;
             }
         }
-        $location = app(LocationResolver::class)->resolve($fold, $filters, $explicitCity);
+        $locationText = preg_replace('/\byeni arama\b|\bbaska (?:bir )?arama\b/', '', $fold);
+        $location = app(LocationResolver::class)->resolve($locationText, $filters, $explicitCity);
         $ambiguous = $location['ambiguous'];
         if ($location['filters']) {
             if (isset($location['filters']['city']) && ($filters['city'] ?? null) !== $location['filters']['city']) unset($filters['district'], $filters['neighborhood']);
