@@ -10,15 +10,27 @@ class AssistantService
 
     public function reply(string $message, array &$context, array $allowed = ['search', 'compare', 'open', 'details', 'documents', 'create', 'calculator', 'help'], bool $useRemote = false, array $history = []): array
     {
+        $broadened = false;
+        $answer = trim(Str::ascii(Str::lower($message), 'tr'), " .!?\t\n\r");
+        if (isset($context['suggested_removal']) && in_array($answer, ['evet', 'olur', 'kabul', 'genislet'], true)) {
+            if (!in_array('search', $allowed, true)) return ['message' => 'Bu araç yönetici tarafından devre dışı bırakıldı.', 'listings' => [], 'action' => null];
+            foreach ($context['suggested_removal'] as $key) unset($context['filters'][$key]);
+            unset($context['suggested_removal'], $context['cheapest']);
+            $message = 'İlanları göster';
+            $broadened = true;
+        } else {
+            unset($context['suggested_removal']);
+        }
         if (preg_match('/yeni arama|tum\s+(?:aktif\s+)?ilan/', Str::ascii(Str::lower($message), 'tr'))) $context = [];
         $analysis = $this->analyzer->analyze($message, $context['filters'] ?? []);
-        if ($useRemote && ! ($analysis['unsupported'] ?? false) && app(GeminiClient::class)->configured() && ! app(GeminiPrivacy::class)->sensitive($message) && ! in_array($analysis['intent'], ['compare', 'open', 'details', 'calculator'], true)) {
+        $fold = Str::ascii(Str::lower($message), 'tr');
+        $detailField = null;
+        foreach (['isitma' => 'heating', 'bina yasi' => 'building_age', 'hangi kat' => 'floor', 'kac metrekare' => 'gross_area', 'metrekaresi' => 'gross_area', 'musait' => 'availability', 'eids' => 'eids', 'tapusu' => 'deed'] as $word => $field) {
+            if (str_contains($fold, $word) && ! empty($context['ids'])) { $analysis['intent'] = 'details'; $detailField = $field; break; }
+        }
+        if (! in_array($analysis['intent'], $allowed, true)) return ['message' => 'Bu araç yönetici tarafından devre dışı bırakıldı.', 'listings' => [], 'action' => null];
+        if ($useRemote && ! ($analysis['unsupported'] ?? false) && app(GeminiClient::class)->configured() && ! app(GeminiPrivacy::class)->sensitive($message) && ! in_array($analysis['intent'], ['search', 'compare', 'open', 'details', 'calculator'], true)) {
             $remote = app(GeminiAssistant::class)->reply($message, $context, $allowed, $history);
-            if ($analysis['intent'] === 'search' && empty($remote['tool_used']) && ! isset($remote['pagination']) && ! isset($remote['draft']) && ! isset($remote['documents'])) {
-                $local = $this->reply($message, $context, $allowed, false);
-                if (! isset($remote['provider'])) $local['message'] = $remote['message']."\n\nYerel arama kullanıldı. Yalnız tanınan il/ilçe, tür, kategori, oda ve üst fiyat filtreleri uygulanmış olabilir; diğer kriterleri ilanlardan kontrol edin.\n".$local['message'];
-                return $local;
-            }
             return $remote;
         }
         if ($useRemote && $analysis['intent'] === 'help') {
@@ -38,19 +50,59 @@ class AssistantService
         $result = ['message' => '', 'listings' => [], 'action' => null];
         switch ($analysis['intent']) {
             case 'search':
-                if ($analysis['unsupported'] ?? false) {
-                    $result['message'] = 'İstediğiniz bahçe, havuz, otopark veya manzara özelliği için kayıtlı bir filtre alanı bulunmuyor. Bu özelliği doğrulanmış gibi süzmeden önce ilan açıklamasından kontrol etmelisiniz.';
+                if ($analysis['ambiguous'] ?? false) {
+                    $context['filters'] = $analysis['filters'];
+                    unset($context['ids'], $context['selected']);
+                    $result['message'] = 'Hangi il veya ilçedeki konumu kastediyorsunuz?';
                     break;
                 }
+                if ($analysis['unsupported'] ?? false) {
+                    $context['filters'] = $analysis['filters'];
+                    $context['filters']['unsupported_condition'] = true;
+                    unset($context['ids'], $context['selected']);
+                    $result['message'] = 'İstenen özellik için doğrulanabilir arama alanı bulunmuyor. Bu koşul kaldırılmadan kesin eşleşme gösteremiyorum.';
+                    break;
+                }
+                foreach ([['min_price', 'max_price'], ['min_area', 'max_area']] as [$min, $max]) {
+                    if (isset($analysis['filters'][$min], $analysis['filters'][$max]) && $analysis['filters'][$min] > $analysis['filters'][$max]) {
+                        return ['message' => 'Alt sınır üst sınırdan büyük. Hangi aralığı kullanayım?', 'listings' => [], 'action' => null];
+                    }
+                }
+                if (str_contains($fold, 'daha ucuz') || str_contains($fold, 'daha uygun fiyat')) {
+                    if (isset($context['cheapest'])) $analysis['filters']['price_lt'] = min($analysis['filters']['price_lt'] ?? INF, $context['cheapest']);
+                }
                 $context['filters'] = $analysis['filters'];
+                $result['criteria'] = $analysis['filters'];
                 $page = ($analysis['next'] ?? false) ? min(1000, ($context['page'] ?? 0) + 1) : 1;
-                $search = $this->listings->searchPage($analysis['filters'], $page);
+                try {
+                    $search = $this->listings->searchPage($analysis['filters'], $page);
+                } catch (\Throwable) {
+                    $result['message'] = 'İlan arama hizmetine şu anda ulaşılamıyor. Lütfen tekrar deneyin.';
+                    $result['error'] = 'search_unavailable';
+                    unset($context['ids'], $context['selected']);
+                    break;
+                }
                 $result['listings'] = $search['items'];
                 $result['pagination'] = ['page' => $search['page'], 'has_more' => $search['has_more']];
+                if ($result['listings']) {
+                    $prices = array_filter(array_column($result['listings'], 'price'), 'is_numeric');
+                    if ($prices) $context['cheapest'] = min($prices);
+                }
                 $context['page'] = $search['page'];
                 $context['ids'] = array_column($result['listings'], 'id');
                 unset($context['selected']);
-                $result['message'] = $result['listings'] ? 'Kayıtlı kriterlere uygun ilanlar (en fazla 12 sonuç). İl, ilçe, satılık/kiralık veya bütçe belirterek sonuçları daraltabilirsiniz:' : 'Belirttiğiniz kriterlere uygun aktif ilan bulunamadı. Dilerseniz fiyat aralığını genişletebilir veya yakın bölgelerde arama yapabiliriz.';
+                $result['message'] = $result['listings'] ? 'Uygun ilanlar:' : 'Bu koşullarda ilan bulunamadı.';
+                if ($broadened && $result['listings']) $result['message'] = 'Genişletilen aramanın sonuçları:';
+                if (!$result['listings']) {
+                    if (array_intersect(['max_price', 'price_lt'], array_keys($analysis['filters']))) {
+                        $context['suggested_removal'] = ['max_price', 'price_lt'];
+                        $result['message'] .= ' Fiyat üst sınırını kaldırayım mı?';
+                    } elseif (isset($analysis['filters']['district']) || isset($analysis['filters']['neighborhood'])) {
+                        $context['suggested_removal'] = ['district', 'neighborhood'];
+                        $result['message'] .= ' İlçe ve mahalle koşulunu kaldırayım mı?';
+                    }
+                }
+
                 break;
             case 'compare':
                 $result['listings'] = $this->listings->details(array_slice($context['ids'] ?? [], 0, $analysis['count'] ?? 3));
@@ -66,12 +118,21 @@ class AssistantService
                 break;
             case 'open':
             case 'details':
-                $id = $analysis['intent'] === 'details' ? ($context['selected'] ?? null) : ($context['ids'][$analysis['ordinal'] - 1] ?? null);
+                if ($analysis['intent'] === 'details' && ! isset($context['selected']) && count($context['ids'] ?? []) > 1 && ! preg_match('/birinci|ikinci|ucuncu|\d+\.?\s*ilan/', $fold)) {
+                    $result['message'] = 'Hangi ilanı kastediyorsunuz?';
+                    break;
+                }
+                if ($analysis['intent'] === 'details' && preg_match('/birinci|ikinci|ucuncu|\d+\.?\s*ilan/', $fold)) $context['selected'] = $context['ids'][$analysis['ordinal'] - 1] ?? null;
+                $id = $analysis['intent'] === 'details' ? ($context['selected'] ?? ($context['ids'][0] ?? null)) : ($context['ids'][$analysis['ordinal'] - 1] ?? null);
                 $result['listings'] = $id ? $this->listings->details([$id]) : [];
                 if ($result['listings']) {
                     $context['selected'] = $id;
                     $result['action'] = ['type' => $analysis['intent'] === 'open' ? 'navigate' : 'link', 'url' => $result['listings'][0]['url'], 'label' => 'İlanı aç'];
                     $result['message'] = 'İlanın güncel kayıt bilgileri:';
+                    if ($detailField) {
+                        $value = $result['listings'][0][$detailField] ?? null;
+                        $result['message'] = filled($value) ? 'İlandaki bilgi: '.$value.($detailField === 'gross_area' ? ' m² (brüt).' : '.') : 'Bu bilgi ilanda belirtilmemiş';
+                    }
                 } else {
                     $result['message'] = 'İlan bulunamadı veya artık erişime açık değil. Önce ilan arayabilirsiniz.';
                 }
@@ -119,7 +180,7 @@ class AssistantService
                 }
                 $result['sources'] = app(KnowledgeTool::class)->sources($message);
                 $result['message'] = app(GeminiClient::class)->configured()
-                    ? 'Bu soruyu Gemini ile yanıtlamak için “Gemini ile yanıtla” seçeneğini açın. İlan arama ve belge araçları bu seçenek kapalıyken de kullanılabilir.'
+                    ? 'Ne aradığınızı biraz daha açık yazar mısınız?'
                     : 'Gemini bağlantısı henüz etkin değil. İlan arayabilir, sonuçları karşılaştırabilir veya mevcut belge ekranını açabilirim. Örnek: Osmaniye satılık daire göster.';
         }
 

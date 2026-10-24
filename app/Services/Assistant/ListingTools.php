@@ -21,7 +21,7 @@ class ListingTools
     {
         $page = max(1, min(1000, $page));
         $query = $this->query();
-        foreach (['city' => 'city_id', 'district' => 'district_id', 'neighborhood' => 'neighborhood_id', 'type' => 'type', 'category' => 'category', 'rooms' => 'room_count', 'heating' => 'heating_type', 'floor' => 'floor_number', 'building_age' => 'building_age'] as $key => $column) {
+        foreach (['city' => 'city_id', 'district' => 'district_id', 'neighborhood' => 'neighborhood_id', 'type' => 'type', 'category' => 'category', 'rooms' => 'room_count', 'heating' => 'heating_type', 'building_age' => 'building_age', 'total_floors' => 'total_floors', 'currency' => 'currency'] as $key => $column) {
             if (isset($filters[$key])) {
                 $query->where($column, $filters[$key]);
             }
@@ -32,13 +32,25 @@ class ListingTools
         if (isset($filters['max_price'])) {
             $query->where('price', '<=', $filters['max_price']);
         }
-        foreach (['min_price' => ['price', '>='], 'min_area' => ['square_meters', '>='], 'max_area' => ['square_meters', '<=']] as $key => [$column, $operator]) {
+        foreach (['min_price' => ['price', '>='], 'min_area' => ['square_meters', '>='], 'max_area' => ['square_meters', '<='], 'min_net_area' => ['net_square_meters', '>='], 'max_net_area' => ['net_square_meters', '<='], 'price_lt' => ['price', '<'], 'price_gt' => ['price', '>']] as $key => [$column, $operator]) {
             if (isset($filters[$key])) $query->where($column, $operator, $filters[$key]);
         }
+        // Unknown amenities must never turn title/description mentions into confirmed matches.
+        if (!empty($filters['features'])) throw new \InvalidArgumentException('Unsupported amenity filter');
+        $floorValues = static fn ($n) => [(string) $n, $n.'. Kat', $n.'. kat', $n.' Kat', $n.' kat'];
+        if (isset($filters['floor'])) $query->whereIn('floor_number', $filters['floor'] === '0' ? ['0', 'Zemin', 'Zemin Kat', 'Giriş', 'Giriş Kat'] : $floorValues($filters['floor']));
+        if (!empty($filters['exclude_ground'])) {
+            // Free-text floor fields must contain a recognised non-ground value;
+            // missing or unrecognised values cannot prove a negative constraint.
+            $knownFloors = ['Bodrum', 'Bodrum Kat', 'Çatı Katı'];
+            foreach (range(-10, 200) as $floor) if ($floor !== 0) $knownFloors = array_merge($knownFloors, $floorValues($floor));
+            $query->whereIn('floor_number', $knownFloors);
+        }
+        if (!empty($filters['exclude_shared'])) $query->whereIn('deed_status', ['Müstakil Parsel', 'Kat Mülkiyeti', 'Kat İrtifakı', 'Tam Tapu']);
         $records = $query->orderBy(($filters['sort'] ?? '') ? 'price' : 'id', ($filters['sort'] ?? '') === 'price_asc' ? 'asc' : 'desc')
-            ->orderBy('id')->offset(($page - 1) * 12)->limit(13)->get();
+            ->orderBy('id')->offset(($page - 1) * 4)->limit(5)->get();
 
-        return ['items' => $records->take(12)->map(fn ($listing) => $this->card($listing))->all(), 'page' => $page, 'has_more' => $records->count() > 12];
+        return ['items' => $records->take(4)->map(fn ($listing) => $this->card($listing))->all(), 'page' => $page, 'has_more' => $records->count() > 4];
     }
 
     public function details(array $ids): array
@@ -56,7 +68,7 @@ class ListingTools
 
         return [
             'id' => $listing->id, 'title' => $listing->title, 'url' => route('listings.show', $listing->slug),
-            'price' => $price > 0 ? $price : null, 'type' => $listing->type, 'category' => $listing->category, 'currency' => $listing->currency, 'city' => $listing->city_name, 'district' => $listing->district_name,
+            'price' => $price > 0 ? $price : null, 'type' => $listing->type, 'category' => $listing->category, 'currency' => $listing->currency, 'city' => $listing->city_name, 'district' => $listing->district_name, 'neighborhood' => $listing->neighborhood_id,
             'gross_area' => $gross > 0 ? $gross : null, 'net_area' => $net > 0 ? $net : null,
             'gross_unit_price' => $gross > 0 && $price > 0 ? round($price / $gross, 2) : null,
             'net_unit_price' => $net > 0 && $price > 0 ? round($price / $net, 2) : null,

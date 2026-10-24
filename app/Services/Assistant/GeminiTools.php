@@ -46,7 +46,7 @@ class GeminiTools
                 'district' => ['sometimes', 'string', 'max:80'], 'neighborhood' => ['sometimes', 'string', 'max:120'],
                 'type' => ['sometimes', Rule::in(['Satılık', 'Kiralık'])],
                 'category' => ['sometimes', Rule::in(['Daire', 'Müstakil Ev', 'Villa', 'Konut', 'Arsa', 'Tarla', 'İşyeri'])],
-                'rooms' => ['sometimes', 'string', 'max:20'], 'sort' => ['sometimes', Rule::in(['price_asc', 'price_desc'])],
+                'rooms' => ['sometimes', 'regex:/^\d{1,2}\+\d{1,2}$/'], 'sort' => ['sometimes', Rule::in(['price_asc', 'price_desc'])],
             ];
             foreach (['min_price', 'max_price', 'min_area', 'max_area'] as $key) $rules[$key] = ['sometimes', 'numeric', 'min:0', 'max:1000000000000'];
             foreach (['heating', 'floor', 'building_age'] as $key) $rules[$key] = ['sometimes', 'string', 'max:80'];
@@ -59,9 +59,7 @@ class GeminiTools
             if (isset($filters['district']) && (! isset($filters['city']) || ! in_array($filters['district'], array_values(TurkeyAddressService::getDistricts($filters['city'])), true))) return ['message' => 'İlçenin bağlı olduğu ili belirtin veya ilçe adını kontrol edin.'];
             if (isset($filters['neighborhood']) && (! isset($filters['city'], $filters['district']) || ! in_array($filters['neighborhood'], array_values(TurkeyAddressService::getNeighborhoods($filters['city'], $filters['district'])), true))) return ['message' => 'Mahalle adı için il ve ilçeyi belirtin; mevcut konum listesindeki adı kullanın.'];
             foreach ([['min_price','max_price'], ['min_area','max_area']] as [$min,$max]) if (isset($filters[$min],$filters[$max]) && $filters[$min] > $filters[$max]) return ['message' => 'Alt sınır üst sınırdan büyük olamaz. Aralığı kontrol edin.'];
-            $search = app(ListingTools::class)->searchPage($filters);
-            $context['filters'] = $filters; $context['ids'] = array_column($search['items'], 'id'); $context['page'] = 1; unset($context['selected']);
-            return ['message' => $search['items'] ? 'İsteğinize uygun yayındaki gerçek ilanlar:' : 'Bu kriterlere uygun yayındaki ilan bulunamadı. Bütçeyi veya bölgeyi genişleterek tekrar arayabilirsiniz.', 'listings' => $search['items'], 'pagination' => ['page' => 1, 'has_more' => $search['has_more']]];
+            return app(AssistantService::class)->reply($message, $context, $allowed, false);
         }
         if ($name === 'listing_details') {
             $ids = Validator::make($args, ['ids' => ['required', 'array', 'max:12'], 'ids.*' => ['integer', 'min:1']])->validate()['ids'];
