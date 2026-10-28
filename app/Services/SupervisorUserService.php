@@ -181,21 +181,6 @@ class SupervisorUserService
 
     private function businessAttributes(array $data, ?BusinessProfile $profile = null): array
     {
-        $reference = [];
-        $city = $data['business_tax_office_city_code'] ?? null;
-        $code = $data['business_tax_office_code'] ?? null;
-        if (filled($city) || filled($code)) {
-            $office = is_string($city) && is_string($code)
-                ? app(TaxOfficeDirectory::class)->find($city, $code) : null;
-            if (! $office) {
-                throw ValidationException::withMessages(['business_tax_office_code' => 'Seçtiğiniz ile bağlı geçerli bir vergi dairesi seçin.']);
-            }
-            $data['business_tax_office'] = $office['name'];
-            $reference = ['tax_office_city_code' => $city, 'tax_office_code' => $code];
-        } elseif ($profile && array_key_exists('business_tax_office_city_code', $data)) {
-            // A cleared picker must not leave a stale structured reference.
-            $reference = ['tax_office_city_code' => null, 'tax_office_code' => null];
-        }
         $required = [
             'business_office_name' => 'Şirket / Ticari Unvan',
             'business_license_number' => 'Yetki Belgesi Numarası',
@@ -228,7 +213,7 @@ class SupervisorUserService
             throw ValidationException::withMessages(['business_approval_status' => 'Geçerli bir işletme onay durumu seçmelisiniz.']);
         }
 
-        $attributes = $reference + [
+        $attributes = [
             'office_name' => trim((string) $data['business_office_name']),
             'license_number' => $licenseNumber,
             'tax_office' => trim((string) $data['business_tax_office']),

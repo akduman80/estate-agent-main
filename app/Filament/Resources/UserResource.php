@@ -157,20 +157,7 @@ class UserResource extends Resource
                     Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         TextInput::make('business_office_name')->label('Şirket / Ticari Unvan')->required()->maxLength(255),
                         TextInput::make('business_license_number')->label('Yetki Belgesi Numarası')->required()->maxLength(100),
-                        Forms\Components\Hidden::make('business_tax_office'),
-                        Forms\Components\Select::make('business_tax_office_city_code')->label('Vergi Dairesi İli')
-                            ->options(fn () => app(\App\Services\TaxOfficeDirectory::class)->cities())
-                            ->searchable()->live()
-                            ->required(fn (?User $record): bool => blank($record?->businessProfile?->tax_office))
-                            ->afterStateUpdated(fn (Set $set) => $set('business_tax_office_code', null)),
-                        Forms\Components\Select::make('business_tax_office_code')->label('Vergi Dairesi')
-                            ->options(fn (Get $get): array => array_column(app(\App\Services\TaxOfficeDirectory::class)->offices((string) $get('business_tax_office_city_code')), 'name', 'code'))
-                            ->searchable()->disabled(fn (Get $get): bool => blank($get('business_tax_office_city_code')))
-                            ->required(fn (Get $get): bool => filled($get('business_tax_office_city_code'))),
-                        Forms\Components\Placeholder::make('legacy_tax_office')->label('Mevcut vergi dairesi kaydı')
-                            ->content(fn (Get $get): string => $get('business_tax_office') ?: '-')
-                            ->visible(fn (Get $get): bool => blank($get('business_tax_office_city_code')) && filled($get('business_tax_office')))
-                            ->helperText('Eski metin kaydı korunur. Yeni seçim yaparsanız il ve daire kodu birlikte kaydedilir.'),
+                        TextInput::make('business_tax_office')->label('Vergi Dairesi')->required()->maxLength(150),
                         TextInput::make('business_tax_number')
                             ->label('Yeni Vergi Numarası')
                             ->password()
