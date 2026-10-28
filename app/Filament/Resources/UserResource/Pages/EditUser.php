@@ -26,6 +26,8 @@ class EditUser extends EditRecord
             'business_office_name' => $profile?->office_name,
             'business_license_number' => $profile?->license_number,
             'business_tax_office' => $profile?->tax_office,
+            'business_tax_office_city_code' => $profile?->tax_office_city_code,
+            'business_tax_office_code' => $profile?->tax_office_code,
             'business_tax_number' => null,
             'business_phone' => $profile?->business_phone,
             'business_address' => $profile?->address,
