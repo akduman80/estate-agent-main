@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Listing extends Model
 {
     protected $fillable = [
+        'form_details', 'private_note',
         'latitude', 'longitude', 'mapped_address', 'extra_fields', 'mobile_video_paths',
         'user_id',
         'created_by_id',
@@ -78,6 +79,7 @@ class Listing extends Model
     protected function casts(): array
     {
         return [
+            'form_details' => 'array', 'private_note' => 'encrypted',
             'latitude' => 'decimal:7', 'longitude' => 'decimal:7', 'extra_fields' => 'array', 'mobile_video_paths' => 'array',
             'eids_document_no' => 'string',
             'price' => ListingDecimalCast::class,
@@ -94,6 +96,19 @@ class Listing extends Model
             'immutable_snapshot' => 'array',
             'facades' => 'array',
         ];
+    }
+
+    protected $hidden = ['private_note', 'form_details'];
+
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+        if (! empty($this->form_details['hide_phone'])) {
+            unset($data['user']['phone'], $data['business_profile']['business_phone'], $data['user']['business_profile']['business_phone']);
+        }
+
+        if (!empty($this->form_details['hide_location'])) { unset($data['latitude'], $data['longitude'], $data['mapped_address']); }
+        return $data;
     }
 
     public function getSelectedFacadesAttribute(): array

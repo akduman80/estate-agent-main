@@ -1,3 +1,4 @@
+@props(['hideContact' => false])
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -136,7 +137,7 @@
                     <h2 class="mb-4 border-l-2 border-orange-500 pl-2 text-sm font-bold text-white">İletişim</h2>
                     <div class="space-y-3 text-xs text-slate-400">
                         <p><i class="fa-solid fa-location-dot mr-2 text-orange-500"></i>Osmaniye, Türkiye</p>
-                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $sitePhone) }}" class="block hover:text-orange-400"><i class="fa-solid fa-phone mr-2 text-orange-500"></i>{{ $sitePhone }}</a>
+                        @unless($hideContact)<a href="tel:{{ preg_replace('/[^0-9+]/', '', $sitePhone) }}" class="block hover:text-orange-400"><i class="fa-solid fa-phone mr-2 text-orange-500"></i>{{ $sitePhone }}</a>@endunless
                         <a href="mailto:{{ $siteEmail }}" class="block hover:text-orange-400"><i class="fa-solid fa-envelope mr-2 text-orange-500"></i>{{ $siteEmail }}</a>
                     </div>
                 </div>

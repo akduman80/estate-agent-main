@@ -42,6 +42,7 @@ class EidsAndLocationStep
                 ->maxLength(255)
                 ->validationMessages(['regex' => 'Taşınmaz ID yalnızca rakamlardan oluşmalıdır.'])
                 ->helperText('EİDS kontrolü “İlanı Onaya Gönder” seçildiğinde yapılır.')
+                ->disabled(fn (?Listing $record): bool => $record?->eids_status === 'verified')
                 ->required(fn (Get $get, ?Listing $record): bool => ! Listing::formIsEidsExempt($get('type'), $record))
                 ->visible(fn (Get $get, ?Listing $record): bool => ! Listing::formIsEidsExempt($get('type'), $record)),
 
@@ -102,7 +103,7 @@ class EidsAndLocationStep
             return '<div style="padding:10px;border-radius:6px;background:#eff6ff;color:#1e40af;">Tapusuz ilan: EİDS doğrulaması ve Tapu Taşınmaz ID gerekmiyor. Yayın için yönetici onayı gereklidir.</div>';
         }
 
-        $status = $get('eids_status') ?: 'pending';
+        $status = $record?->eids_status ?: 'pending';
         $labels = [
             'pending' => ['Beklemede', '#92400e', '#fffbeb'],
             'verified' => ['Doğrulandı', '#166534', '#f0fdf4'],

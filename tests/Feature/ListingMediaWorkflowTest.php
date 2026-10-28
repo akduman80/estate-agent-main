@@ -152,7 +152,7 @@ class ListingMediaWorkflowTest extends TestCase
     {
         Livewire::test(CreateListing::class)
             ->fillForm([...$this->formData(), 'uploaded_images' => array_map(
-                fn ($i) => UploadedFile::fake()->image("photo-$i.jpg"), range(1, 31),
+                fn ($i) => UploadedFile::fake()->image("photo-$i.jpg"), range(1, 36),
             )])->call('create')->assertHasFormErrors(['uploaded_images' => 'max']);
         Livewire::test(CreateListing::class)
             ->fillForm([...$this->formData(), 'uploaded_images' => [UploadedFile::fake()->image('big.jpg')->size(15361)]])
@@ -160,13 +160,13 @@ class ListingMediaWorkflowTest extends TestCase
         $this->assertSame(0, Listing::count());
     }
 
-    public function test_thirty_photos_at_the_existing_size_limit_are_accepted(): void
+    public function test_thirty_five_photos_at_the_existing_size_limit_are_accepted(): void
     {
         $page = Livewire::test(CreateListing::class)
             ->fillForm([...$this->formData(), 'uploaded_images' => array_map(
-                fn ($i) => UploadedFile::fake()->image("photo-$i.jpg")->size(15360), range(1, 30),
+                fn ($i) => UploadedFile::fake()->image("photo-$i.jpg")->size(15360), range(1, 35),
             )])->call('create')->assertHasNoFormErrors();
-        $this->assertCount(30, $page->instance()->getRecord()->images()->get());
+        $this->assertCount(35, $page->instance()->getRecord()->images()->get());
     }
 
     public function test_existing_konut_category_supports_the_same_fields_without_changing_settings(): void

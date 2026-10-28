@@ -73,6 +73,7 @@
                     });
 
                     if (duration === null || ! Number.isFinite(duration) || duration <= 0) {
+                        if (['video/quicktime', 'video/3gpp'].includes(item.file.type)) return true; // Server probe and conversion validate these containers.
                         message.textContent = 'Video süresi okunamadı. MP4 (H.264) veya WebM (VP8/VP9) dosyası seçin.';
                     } else if (duration > videoLimits.maxSeconds) {
                         message.textContent = 'Video en fazla 60 saniye olabilir. Videoyu kısaltıp tekrar seçin.';

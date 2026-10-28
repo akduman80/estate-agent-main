@@ -14,7 +14,7 @@ class ListingMediaService
     {
         $paths = array_values(array_unique($paths));
         if (count($paths) > config('listings.photos.max_files')) {
-            throw ValidationException::withMessages(['data.uploaded_images' => 'En fazla 30 fotoğraf yükleyebilirsiniz.']);
+            throw ValidationException::withMessages(['data.uploaded_images' => 'En fazla '.config('listings.photos.max_files').' fotoğraf yükleyebilirsiniz.']);
         }
 
         DB::transaction(function () use ($listing, $paths): void {

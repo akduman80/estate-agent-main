@@ -37,7 +37,7 @@ class ListingObserver
     public function updated(Listing $listing): void
     {
         foreach ($listing->getChanges() as $field => $newValue) {
-            if (in_array($field, ['updated_at'], true)) {
+            if (in_array($field, ['updated_at', 'private_note', 'form_details'], true)) {
                 continue;
             }
 

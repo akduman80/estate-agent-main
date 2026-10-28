@@ -4,30 +4,77 @@
 
 namespace App\Filament\Portal\Resources\ListingResource\Schemas;
 
+use App\Enums\UserRole;
 use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\BasicInfoStep;
+use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\EidsAndLocationStep;
 use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\MediaStep;
 use App\Filament\Portal\Resources\ListingResource\Schemas\Steps\RealEstateDetailsStep;
 use App\Models\Listing;
 use App\Models\Setting;
-use App\Rules\ListingDecimalPrecision;
-use App\Services\TurkeyAddressService;
-use Filament\Forms\Components\FileUpload;
+use App\Models\User;
+use App\Support\ListingCategories;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\View;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Illuminate\Support\HtmlString;
 
 class ListingFormSchema
 {
     public static function make(): array
     {
+        $basic = BasicInfoStep::make()->getChildComponents();
+        $classification = $basic[4]->getChildComponents();
+        $details = RealEstateDetailsStep::make()->getChildComponents();
+        $measurements = $details[0]->getChildComponents();
+        $official = EidsAndLocationStep::fields();
+        $section = fn (string $title, array $fields, string $id) => Section::make($title)
+            ->schema($fields)->id($id)->columnSpanFull();
+
         return [
-            \Filament\Forms\Components\Section::make('Harita konumu ve ek bilgiler')->schema([
+            View::make('filament.listing-form-guide')->columnSpanFull(),
+            $section('Kategori ve işlem türü', [
+                $basic[0], $basic[1],
+                View::make('filament.listing-quick-categories'),
+                Select::make('category_group')->label('Ana kategori')->options(array_combine(array_keys(ListingCategories::groups()), array_keys(ListingCategories::groups())))
+                    ->dehydrated(false)->live()->searchable()
+                    ->disabled(fn (?Listing $record): bool => (bool) $record?->published_at)
+                    ->afterStateHydrated(fn (Set $set, Get $get) => $set('category_group', ListingCategories::group($get('category'))))
+                    ->afterStateUpdated(fn (Set $set) => $set('category', null)),
+                Grid::make(['default' => 1, 'md' => 3])->schema([$classification[0], $classification[2], $classification[1]]),
+                Placeholder::make('category_path')->label('Seçilen kategori')
+                    ->content(fn (Get $get): string => implode(' › ', array_filter(['Emlak', ListingCategories::group($get('category')), $get('type'), $get('category')]))),
+            ], 'listing-category'),
+            $section('İlan başlığı, açıklama ve fiyat', [
+                $basic[2]->placeholder('Taşınmazınızı anlatan bir başlık yazın'), $basic[3],
+                Grid::make(['default' => 1, 'md' => 2])->schema([
+                    $classification[3]->label('Fiyat')->suffix(null),
+                    Select::make('currency')->label('Para birimi')->options(fn (?Listing $record): array => ['TRY' => 'TL', 'USD' => 'USD', 'EUR' => 'EUR'] + ($record?->currency ? [$record->currency => $record->currency] : []))->default('TRY')->required(),
+                ]),
+            ], 'listing-description'),
+            $section('Taşınmaz bilgileri', [
+                Grid::make(['default' => 1, 'md' => 2])->schema(array_slice($measurements, 0, 2)),
+                $details[1], $details[2], $details[3],
+                Grid::make(['default' => 1, 'md' => 3])->visible(fn (Get $get): bool => in_array($get('category'), ListingCategories::HOMES, true))->schema([
+                    TextInput::make('form_details.open_area')->label('Açık alan m²')->numeric()->minValue(0),
+                    TextInput::make('form_details.bathrooms')->label('Banyo sayısı')->integer()->minValue(0)->maxValue(50),
+                    Select::make('form_details.kitchen')->label('Mutfak tipi')->options(['Açık' => 'Açık', 'Kapalı' => 'Kapalı']),
+                    Select::make('form_details.balcony')->label('Balkon')->options(['Var' => 'Var', 'Yok' => 'Yok']),
+                    Select::make('form_details.energy_class')->label('Enerji kimlik belgesi')->options(array_combine(range('A', 'G'), range('A', 'G'))),
+                    Toggle::make('form_details.in_site')->label('Site içerisinde mi?')->live(),
+                ]),
+                TextInput::make('form_details.rental_period')->label('Kira dönemi')->maxLength(100)->visible(fn (Get $get): bool => $get('type') === 'Kiralık'),
+            ], 'listing-property'),
+            $section('Tapu, taşınmaz ve yetki bilgileri', [...array_slice($measurements, 2), $details[4], $details[5], $official[0], $official[1]], 'listing-deed'),
+            $section('Adres ve harita', [
+                $official[3],
+                \Filament\Forms\Components\Section::make('Mevcut harita kaydı ve ek bilgiler')->schema([
                 \Filament\Forms\Components\Hidden::make('latitude')->rules(['nullable', 'numeric', 'between:-90,90']),
                 \Filament\Forms\Components\Hidden::make('longitude')->rules(['nullable', 'numeric', 'between:-180,180']),
                 \Filament\Forms\Components\ViewField::make('location_picker')->view('filament.forms.components.project-location-picker'),
@@ -38,12 +85,47 @@ class ListingFormSchema
                     \Filament\Forms\Components\RichEditor::make('deger')->label('Değer')->required()->maxLength(2000),
                 ])->columns(2),
             ])->collapsed(),
-            Wizard::make([
-                BasicInfoStep::make(),
-                RealEstateDetailsStep::make(),
-                MediaStep::make(),
-            ])->columnSpanFull(),
+                Textarea::make('form_details.address')->label('Açık adres (yalnız yetkili panelde)')->maxLength(1000)->rows(2),
+                Grid::make(['default' => 1, 'md' => 2])->schema([
+                    TextInput::make('form_details.latitude')->label('Enlem')->numeric()->minValue(-90)->maxValue(90),
+                    TextInput::make('form_details.longitude')->label('Boylam')->numeric()->minValue(-180)->maxValue(180),
+                ]),
+                View::make('filament.listing-location-picker'),
+                Toggle::make('form_details.hide_location')->label('Haritadaki kesin konumu gizle')->helperText('Koordinatlar ve açık adres ziyaretçilerle paylaşılmaz.'),
+            ], 'listing-address'),
+            $section('Detaylı özellikler', static::featureGroups(), 'listing-features'),
+            $section('Fotoğraflar, video ve sanal tur', MediaStep::make()->getChildComponents(), 'listing-media'),
+            $section('İlan Notum', [Textarea::make('private_note')->label('Özel not')->rows(3)->maxLength(10000)->helperText('Yalnız bu ilanı yönetmeye yetkili kişiler görebilir. İlan ziyaretçilerine ve önizlemeye aktarılmaz.')], 'listing-note'),
+            $section('İletişim ve görünürlük tercihleri', [
+                Placeholder::make('account_contact')->label('Hesap iletişim bilgileri')->content(function (Get $get, ?Listing $record): string {
+                    $owner = $record?->user ?? (auth()->user()?->role === UserRole::SUPERVISOR ? User::find($get('user_id')) : auth()->user());
+
+                    return implode(' · ', array_filter([$owner?->name, $owner?->businessProfile?->business_phone, $owner?->phone])) ?: 'Önce ilan sahibini seçin.';
+                })->helperText('Telefon değişikliği için Hesap Güvenliği sayfasındaki mevcut doğrulama sürecini kullanın.'),
+                Toggle::make('form_details.hide_phone')->label('Telefon numaram ilanda yayınlanmasın'),
+                Placeholder::make('messaging_information')->label('Mesajlar')->content('Bu projede kullanıcılar arası ilan mesajlaşması bulunmuyor. Telefonu gizlediğinizde WhatsApp bağlantısı da gösterilmez.'),
+            ], 'listing-contact'),
+            $section('Doğrulama ve yayın durumu', [$official[2], $official[4]], 'listing-verification'),
         ];
+    }
+
+    private static function featureGroups(): array
+    {
+        $fields = [Toggle::make('form_details.facade_declined')
+            ->label('Cephe seçimi yapmak istemiyorum')->live()
+            ->afterStateUpdated(fn (Set $set, $state) => $state ? $set('facades', []) : null)];
+        foreach (['interior' => 'İç özellikler', 'exterior' => 'Dış özellikler', 'neighborhood' => 'Muhit', 'transport' => 'Ulaşım', 'view' => 'Manzara', 'housing' => 'Konut tipi', 'accessible' => 'Engelliye ve yaşlıya uygunluk'] as $key => $label) {
+            $fields[] = Section::make($label)->collapsible()->collapsed()->schema([
+                Toggle::make('form_details.features.'.$key.'.declined')->label('Seçim yapmak istemiyorum')->live()
+                    ->afterStateUpdated(fn (Set $set, $state) => $state ? $set('form_details.features.'.$key.'.values', []) : null),
+                TagsInput::make('form_details.features.'.$key.'.values')->label($label)
+                    ->suggestions(fn (): array => array_values(static::getDynamicOptions('options_listing_'.$key, [])))
+                    ->disabled(fn (Get $get): bool => (bool) $get('form_details.features.'.$key.'.declined'))
+                    ->helperText('Taşınmazın gerçek özelliklerini yazıp Enter ile ekleyin. Varsa sitenin tanımlı önerileri gösterilir.'),
+            ]);
+        }
+
+        return $fields;
     }
 
     protected static function getDynamicOptions(string $key, array $defaultOptions): array
@@ -59,204 +141,5 @@ class ListingFormSchema
         }
 
         return $formatted;
-    }
-
-    private static function getBasicInfoStep(): Wizard\Step
-    {
-        return Wizard\Step::make('Temel Bilgiler')
-            ->schema([
-                TextInput::make('title')
-                    ->label('İlan Başlığı')
-                    ->placeholder('Örn: ZİYADE EMLAKTAN SUMBAS GAFFARLI KESMESUR YAYLASINDA YAYLALIK')
-                    ->required()
-                    ->maxLength(255)
-                    ->columnSpanFull(),
-
-                RichEditor::make('description')
-                    ->label('Açıklama')
-                    ->columnSpanFull(),
-
-                Grid::make(['default' => 1, 'md' => 2])
-                    ->schema([
-                        Select::make('type')
-                            ->label('İlan Tipi')
-                            ->options(static::getDynamicOptions('options_type', ['Satılık', 'Kiralık']))
-                            ->required(),
-
-                        TextInput::make('price')
-                            ->label('Fiyat (TL)')
-                            ->numeric()
-                            ->rules([new ListingDecimalPrecision])
-                            ->required()
-                            ->suffix('TL'),
-                    ]),
-
-                Placeholder::make('eids_price_warning')
-                    ->label('')
-                    ->content(new HtmlString('
-                    <div style="background-color: #fff8e1; border-left: 4px solid #ffa000; padding: 10px; font-size: 12px; color: #555; border-radius: 4px; margin-top: 5px;">
-                        <strong>Ticaret Bakanlığı</strong>, ilgili mevzuat gereğince ilanlardaki fiyat artışlarını yakından takip etmektedir.
-                        <strong>Piyasa koşullarına uygun olmayan fiyat artışı yapılan ilanlara ilişkin bilgilerin</strong> Ticaret Bakanlığı tarafından talep edildiğini ve
-                        <strong>aykırılık tespit edilen ilanlar için 858.620 TL\'ye varan idari para cezası uygulanabileceğini</strong> önemle hatırlatırız.
-                    </div>
-                '))
-                    ->columnSpanFull(),
-            ]);
-    }
-
-    private static function getRealEstateDetailsStep(): Wizard\Step
-    {
-        return Wizard\Step::make('Gayrimenkul & İmar Detayları')
-            ->schema([
-                Grid::make(['default' => 1, 'md' => 3])
-                    ->schema([
-                        Select::make('zoning_status')
-                            ->label('İmar Durumu')
-                            ->options(static::getDynamicOptions('options_zoning_status', [
-                                'Tarla', 'Konut İmarlı', 'Ticari İmarlı', 'Sanayi İmarlı', 'Bağ & Bahçe', 'Zeytinlik',
-                            ])),
-
-                        TextInput::make('square_meters')
-                            ->label('m² (Alan)')
-                            ->numeric()
-                            ->rules([new ListingDecimalPrecision])
-                            ->suffix('m²'),
-
-                        Select::make('deed_status')
-                            ->label('Tapu Durumu')
-                            ->options(static::getDynamicOptions('options_deed_status', [
-                                'Hisseli Tapu', 'Müstakil Parsel', 'Tahsis Tapu', 'Zilliyet',
-                            ])),
-                    ]),
-
-                Grid::make(['default' => 1, 'md' => 3])
-                    ->schema([
-                        TextInput::make('block_number')->label('Ada No'),
-                        TextInput::make('parcel_number')->label('Parsel No'),
-                        TextInput::make('sheet_number')->label('Pafta No'),
-                    ]),
-
-                Grid::make(['default' => 1, 'md' => 2])
-                    ->schema([
-                        TextInput::make('kaks_emsal')->label('Kaks (Emsal)')->placeholder('Örn: 0.20 / 0.40'),
-                        TextInput::make('gabari')->label('Gabari')->placeholder('Örn: Serbest / 6.50 m'),
-                    ]),
-
-                Grid::make(['default' => 1, 'md' => 3])
-                    ->schema([
-                        Select::make('credit_eligibility')
-                            ->label('Krediye Uygunluk')
-                            ->options(static::getDynamicOptions('options_credit_eligibility', [
-                                'Evet', 'Hayır', 'Bilinmiyor',
-                            ]))
-                            ->default('Bilinmiyor'),
-
-                        Select::make('owner_nationality')
-                            ->label('Gayrimenkul Sahibi')
-                            ->options(static::getDynamicOptions('options_owner_nationality', [
-                                'T.C. Vatandaşı', 'Yabancı',
-                            ]))
-                            ->default('T.C. Vatandaşı'),
-
-                        Select::make('from_who')
-                            ->label('Kimden')
-                            ->options(static::getDynamicOptions('options_from_who', [
-                                'Emlak Ofisinden', 'Sahibinden', 'İnşaat Firmasından',
-                            ]))
-                            ->default('Emlak Ofisinden'),
-                    ]),
-
-                Select::make('swap_option')
-                    ->label('Takaslı')
-                    ->options(static::getDynamicOptions('options_swap_option', [
-                        'Evet', 'Hayır',
-                    ]))
-                    ->default('Hayır'),
-            ]);
-    }
-
-    private static function getEidsAndLocationStep(): Wizard\Step
-    {
-        return Wizard\Step::make('EİDS & Konum')
-            ->schema([
-                TextInput::make('eids_document_no')
-                    ->label('Taşınmaz Numarası / EİDS Belge No')
-                    ->placeholder('Örn: 94536593')
-                    ->type('text')
-                    ->inputMode('numeric')
-                    ->regex('/\A[0-9]+\z/')
-                    ->maxLength(255)
-                    ->validationMessages(['regex' => 'Taşınmaz ID yalnızca rakamlardan oluşmalıdır.'])
-                    ->required(),
-
-                Grid::make(['default' => 1, 'md' => 3])
-                    ->schema([
-                        Select::make('city_id')
-                            ->label('İl')
-                            ->options(TurkeyAddressService::getCities())
-                            ->searchable()
-                            ->live() // İl değiştiğinde formu reaktif olarak günceller
-                            ->afterStateUpdated(function (Set $set): void {
-                                $set('district_id', null);
-                                $set('neighborhood_id', null);
-                            })
-                            ->required(),
-
-                        Select::make('district_id')
-                            ->label('İlçe')
-                            ->options(fn (Get $get) => TurkeyAddressService::getDistricts($get('city_id')))
-                            ->searchable()
-                            ->live()
-                            ->afterStateUpdated(fn (Set $set) => $set('neighborhood_id', null))
-                            ->required(),
-
-                        Select::make('neighborhood_id')
-                            ->label('Mahalle / Köy')
-                            ->options(fn (Get $get) => TurkeyAddressService::getNeighborhoods(
-                                $get('city_id'),
-                                $get('district_id'),
-                            ))
-                            ->searchable(),
-                    ]),
-            ]);
-    }
-
-    private static function getMediaStep(): Wizard\Step
-    {
-        return Wizard\Step::make('Görsel ve Video')
-            ->schema([
-                FileUpload::make('uploaded_images')
-                    ->label('İlan Fotoğrafları')
-                    ->multiple()
-                    ->image()
-                    ->directory('listings')
-                    ->maxFiles(30)
-                    ->maxSize(15360)
-                    ->reorderable()
-                    ->dehydrated(false)
-                    ->loadStateFromRelationshipsUsing(function (FileUpload $component, Listing $record) {
-                        $images = $record->images()->pluck('image_path')->toArray();
-                        $component->state($images);
-                    })
-                    ->saveRelationshipsUsing(function (Listing $record, $state) {
-                        if (is_array($state)) {
-                            $record->images()->delete();
-
-                            foreach (array_values($state) as $index => $path) {
-                                $record->images()->create([
-                                    'image_path' => $path,
-                                    'is_main' => $index === 0,
-                                    'sort_order' => $index,
-                                ]);
-                            }
-                        }
-                    })
-                    ->columnSpanFull(),
-
-                TextInput::make('video_url')
-                    ->label('YouTube Video Linki')
-                    ->placeholder('https://www.youtube.com/watch?v=...')
-                    ->url(),
-            ]);
     }
 }

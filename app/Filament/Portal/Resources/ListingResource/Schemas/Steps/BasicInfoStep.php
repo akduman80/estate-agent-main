@@ -9,12 +9,15 @@ use App\Models\Listing;
 use App\Models\Setting;
 use App\Models\User;
 use App\Rules\ListingDecimalPrecision;
+use App\Support\ListingCategories;
+use App\Support\ListingFormData;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
+use Filament\Forms\Get;
 use Illuminate\Support\HtmlString;
 
 class BasicInfoStep
@@ -69,9 +72,18 @@ class BasicInfoStep
                     ->schema([
                         Select::make('category')
                             ->label('Gayrimenkul Türü')
-                            ->options(static::getDynamicOptions('options_category', [
-                                'Daire', 'Müstakil Ev', 'Arsa', 'Tarla', 'İşyeri',
-                            ]))
+                            ->options(function (Get $get, ?Listing $record): array {
+                                $groups = ListingCategories::options();
+                                $group = $get('category_group');
+                                $options = $group && isset($groups[$group]) ? $groups[$group] : $groups;
+                                if ($record?->category && $group && ! isset($options[$record->category])) {
+                                    $options[$record->category] = $record->category;
+                                }
+
+                                return $options;
+                            })
+                            ->searchable()
+                            ->extraAlpineAttributes(['x-on:change.capture' => 'if (!confirm("Kategoriye özgü alanlar yeni seçime göre değişir. Ortak bilgiler korunur. Devam edilsin mi?")) { $event.stopImmediatePropagation(); $event.preventDefault(); }'])
                             ->live() // Seçim yapıldığında diğer adımları reaktif etkiler
                             ->disabled(fn (?Listing $record): bool => (bool) $record?->published_at)
                             ->required(),
@@ -86,14 +98,17 @@ class BasicInfoStep
 
                         Select::make('type')
                             ->label('İlan Tipi')
-                            ->options(static::getDynamicOptions('options_type', ['Satılık', 'Kiralık']))
+                            ->options(fn (Get $get) => ListingCategories::types($get('category')))
                             ->live() // Kiralık/Satılık durumuna göre de reaktif tetikleme
                             ->disabled(fn (?Listing $record): bool => (bool) $record?->published_at)
                             ->required(),
 
                         TextInput::make('price')
                             ->label('Fiyat (TL)')
-                            ->numeric()
+                            ->type('text')->inputMode('decimal')
+                            ->dehydrateStateUsing(fn ($state) => ListingFormData::decimal($state))
+                            ->mutateStateForValidationUsing(fn ($state) => ListingFormData::decimal($state))
+                            ->rule('numeric')->minValue(0)
                             ->rules([new ListingDecimalPrecision])
                             ->required()
                             ->suffix('TL'),

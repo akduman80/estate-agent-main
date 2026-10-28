@@ -14,7 +14,10 @@
 
     $profile = $listing->businessProfile ?: $listing->user?->businessProfile;
     $contactName = $profile?->office_name ?: $listing->user?->name ?: \App\Models\Setting::get('contact_company_name', 'ZYDEMLAK');
-    $contactPhone = $profile?->business_phone ?: $listing->user?->phone ?: (\App\Models\Setting::get('site_phone', '0530 360 77 69') ?: '0530 360 77 69');
+    $details = $listing->form_details ?? [];
+    $details['latitude'] ??= $listing->latitude;
+    $details['longitude'] ??= $listing->longitude;
+    $contactPhone = !empty($details['hide_phone']) ? null : ($profile?->business_phone ?: $listing->user?->phone ?: (\App\Models\Setting::get('site_phone', '0530 360 77 69') ?: '0530 360 77 69'));
     $phoneHref = preg_replace('/[^0-9+]/', '', (string) $contactPhone);
     $whatsappNumber = preg_replace('/\D/', '', (string) $contactPhone);
     $whatsappNumber = str_starts_with($whatsappNumber, '0') ? '90'.substr($whatsappNumber, 1) : $whatsappNumber;
@@ -55,7 +58,7 @@
     }
 @endphp
 
-<x-layouts.modern :title="$listing->title.' | ZYDEMLAK'" :description="\Illuminate\Support\Str::limit(strip_tags($listing->description ?: $listing->title), 155)">
+<x-layouts.modern :hide-contact="!empty($details['hide_phone'])" :title="$listing->title.' | ZYDEMLAK'" :description="\Illuminate\Support\Str::limit(strip_tags($listing->description ?: $listing->title), 155)">
     @push('head')
         <meta property="og:type" content="product">
         <meta property="og:title" content="{{ $listing->title }}">
@@ -81,7 +84,7 @@
                     <div class="mb-3 flex flex-wrap items-center gap-2 text-xs font-bold">
                         <span class="rounded bg-orange-500 px-2.5 py-1">{{ $listing->type }}</span>
                         <span class="rounded border border-white/25 bg-white/10 px-2.5 py-1">{{ $listing->source_label }}</span>
-                        <span class="rounded bg-emerald-500/20 px-2.5 py-1 text-emerald-200"><i class="fa-solid fa-shield-check mr-1"></i>{{ $listing->eids_exempt ? 'Tapusuz İlan' : 'EİDS Doğrulandı' }}</span>
+                        <span class="rounded bg-emerald-500/20 px-2.5 py-1 text-emerald-200"><i class="fa-solid fa-shield-check mr-1"></i>{{ !empty($isPreview) ? 'Önizleme — yayınlanmadı' : ($listing->eids_exempt ? 'Tapusuz İlan' : 'EİDS Doğrulandı') }}</span>
                     </div>
                     <h1 class="max-w-4xl text-2xl font-extrabold leading-tight sm:text-3xl">{{ $listing->title }}</h1>
                     @if($location)
@@ -141,6 +144,7 @@
                     </section>
 
                     <x-listing-eids-card :card="$eidsCard" />
+                    <x-listing-extra-details :listing="$listing" />
 
                     @if($listing->video_path)
                         <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
@@ -189,14 +193,19 @@
                         @if($location)
                             <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($location) }}" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-2 text-sm font-bold text-orange-600 hover:text-orange-700"><i class="fa-solid fa-map-location-dot"></i>Haritada görüntüle</a>
                         @endif
+                        @if(empty($details['hide_location']) && isset($details['latitude'], $details['longitude']))
+                            <a href="https://www.google.com/maps/search/?api=1&amp;query={{ rawurlencode($details['latitude'].','.$details['longitude']) }}" target="_blank" rel="noopener noreferrer" class="mt-3 block text-sm font-bold text-orange-600">Seçilen harita noktasını aç</a>
+                        @endif
                     </section>
 
+                    @if(empty($isPreview))
                     <section class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900">
                         <div class="flex gap-3">
                             <i class="fa-solid fa-shield-check mt-0.5 text-xl text-emerald-600"></i>
                             <div><strong class="block">{{ $listing->eids_exempt ? 'Tapusuz ilan' : 'EİDS doğrulamalı ilan' }}</strong><span class="mt-1 block text-xs leading-5 text-emerald-700">{{ $listing->eids_exempt ? 'Bu ilan tapusuz olduğu için EİDS doğrulaması uygulanmadan yönetici onayıyla yayınlanmıştır.' : 'Bu ilanın yetki ve taşınmaz bilgileri yayınlanmadan önce doğrulanmıştır.' }}</span></div>
                         </div>
                     </section>
+                    @endif
                 </aside>
             </div>
 
@@ -217,7 +226,7 @@
                 </section>
             @endif
         </div>
-        @include('partials.mobile-selected-details', ['item' => $listing])
+        @includeIf('partials.mobile-selected-details', ['item' => $listing])
     </main>
 
     @push('scripts')

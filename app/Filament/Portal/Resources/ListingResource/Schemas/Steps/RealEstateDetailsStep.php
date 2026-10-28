@@ -5,6 +5,8 @@ namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 use App\Models\Listing;
 use App\Models\Setting;
 use App\Rules\ListingDecimalPrecision;
+use App\Support\ListingCategories;
+use App\Support\ListingFormData;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -24,14 +26,18 @@ class RealEstateDetailsStep
                     ->schema([
                         TextInput::make('square_meters')
                             ->label('m² (Alan)')
-                            ->numeric()
+                            ->type('text')->inputMode('decimal')->rule('numeric')->minValue(0)
+                            ->mutateStateForValidationUsing(fn ($state) => ListingFormData::decimal($state))
+                            ->dehydrateStateUsing(fn ($state) => ListingFormData::decimal($state))
                             ->rules([new ListingDecimalPrecision])
                             ->required()
                             ->suffix('m²'),
 
                         TextInput::make('net_square_meters')
                             ->label('Net m²')
-                            ->numeric()
+                            ->type('text')->inputMode('decimal')->rule('numeric')->minValue(0)
+                            ->mutateStateForValidationUsing(fn ($state) => ListingFormData::decimal($state))
+                            ->dehydrateStateUsing(fn ($state) => ListingFormData::decimal($state))
                             ->rules([new ListingDecimalPrecision])
                             ->suffix('m²'),
 
@@ -52,7 +58,7 @@ class RealEstateDetailsStep
 
                 // --- 1. KONUT / EV DETAYLARI (Daire, Müstakil Ev vb. Seçilince Çıkar) ---
                 Grid::make(['default' => 1, 'md' => 3])
-                    ->visible(fn (Get $get) => in_array($get('category'), ['Konut', 'Daire', 'Müstakil Ev', 'Ev', 'İşyeri']))
+                    ->visible(fn (Get $get) => in_array($get('category'), [...ListingCategories::HOMES, 'İşyeri', 'Dükkan & Mağaza']))
                     ->schema([
                         Select::make('room_count')
                             ->label('Oda Sayısı')
@@ -87,6 +93,7 @@ class RealEstateDetailsStep
                         Select::make('facades')
                             ->label('Cephe')
                             ->multiple()
+                            ->disabled(fn (Get $get): bool => (bool) $get('form_details.facade_declined'))
                             ->rules(['array'])
                             ->options(fn (?Listing $record): array => static::getDynamicOptions('options_facade', [
                                 'Kuzey', 'Güney', 'Doğu', 'Batı',
@@ -107,22 +114,27 @@ class RealEstateDetailsStep
 
                         TextInput::make('site_name')
                             ->label('Site Adı')
-                            ->maxLength(255),
+                            ->maxLength(255)->visible(fn (Get $get): bool => (bool) $get('form_details.in_site') || filled($get('site_name'))),
                     ]),
 
                 // --- 2. KİRALIK İLANLARA ÖZEL EKLER (Kiralık Seçilince Çıkar) ---
                 Grid::make(['default' => 1, 'md' => 2])
-                    ->visible(fn (Get $get) => $get('type') === 'Kiralık')
+                    ->visible(fn (Get $get) => filled($get('category')))
                     ->schema([
                         TextInput::make('deposit_price')
                             ->label('Depozito (TL)')
-                            ->numeric()
+                            ->type('text')->inputMode('decimal')->rule('numeric')->minValue(0)
+                            ->visible(fn (Get $get): bool => $get('type') === 'Kiralık')
+                            ->mutateStateForValidationUsing(fn ($state) => ListingFormData::decimal($state))
+                            ->dehydrateStateUsing(fn ($state) => ListingFormData::decimal($state))
                             ->rules([new ListingDecimalPrecision])
                             ->suffix('TL'),
 
                         TextInput::make('dues_price')
                             ->label('Aidat (TL)')
-                            ->numeric()
+                            ->type('text')->inputMode('decimal')->rule('numeric')->minValue(0)
+                            ->mutateStateForValidationUsing(fn ($state) => ListingFormData::decimal($state))
+                            ->dehydrateStateUsing(fn ($state) => ListingFormData::decimal($state))
                             ->rules([new ListingDecimalPrecision])
                             ->suffix('TL'),
                     ]),

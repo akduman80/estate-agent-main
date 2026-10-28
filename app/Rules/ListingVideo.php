@@ -19,7 +19,7 @@ class ListingVideo implements ValidationRule
         }
 
         if (! in_array($value->getMimeType(), config('listings.video.mime_types'), true)) {
-            $fail('Video MP4 (H.264) veya WebM (VP8/VP9) formatında olmalıdır.');
+            $fail('Video MP4, WebM, MOV veya 3GP formatında olmalıdır.');
 
             return;
         }
@@ -46,7 +46,10 @@ class ListingVideo implements ValidationRule
         }
 
         $videoStreams = collect($metadata['streams'] ?? [])->where('codec_type', 'video');
-        $codecs = $value->getMimeType() === 'video/mp4' ? ['h264'] : ['vp8', 'vp9'];
+        $codecs = match ($value->getMimeType()) {
+            'video/mp4' => ['h264'], 'video/webm' => ['vp8', 'vp9'],
+            default => ['h264', 'mpeg4', 'h263'],
+        };
 
         if ($videoStreams->isEmpty() || $videoStreams->contains(fn (array $stream): bool => ! in_array($stream['codec_name'] ?? null, $codecs, true))) {
             $fail('Tarayıcı uyumluluğu için MP4 (H.264) veya WebM (VP8/VP9) video seçin.');

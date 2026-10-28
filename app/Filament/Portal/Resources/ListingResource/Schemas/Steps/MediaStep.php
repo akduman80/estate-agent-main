@@ -5,11 +5,13 @@ namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 use App\Filament\Forms\Components\ListingMediaUpload;
 use App\Models\Listing;
 use App\Rules\ListingVideo;
+use App\Services\ListingFormDraftService;
 use App\Services\ListingMediaService;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\View;
 use Filament\Forms\Components\Wizard;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -26,12 +28,14 @@ class MediaStep
                     ->label('İlan Fotoğrafları')
                     ->multiple()
                     ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->saveUploadedFileUsing(fn (UploadedFile $file): string => app(ListingFormDraftService::class)->storeImage($file))
                     ->disk('public')
                     ->directory(fn (): string => 'listings/images/'.auth()->id())
                     ->maxFiles(config('listings.photos.max_files'))
                     ->maxSize(config('listings.photos.max_size_kb'))
                     ->maxParallelUploads(2)
-                    ->helperText('En fazla 30 fotoğraf, fotoğraf başına 15 MB. İlk fotoğraf kapak görselidir.')
+                    ->helperText(fn (): string => 'En fazla '.config('listings.photos.max_files').' fotoğraf, fotoğraf başına '.(config('listings.photos.max_size_kb') / 1024).' MB. İlk fotoğraf kapak görselidir.')
                     ->extraAlpineAttributes([
                         'x-init' => '$el.addEventListener("FilePond:init", () => window.zydListingMedia.setup($data.pond, $data))',
                     ])
@@ -54,8 +58,9 @@ class MediaStep
                     ->disk('public')
                     ->directory(fn (): string => 'listings/videos/'.auth()->id())
                     ->acceptedFileTypes(config('listings.video.mime_types'))
-                    ->mimeTypeMap(['mp4' => 'video/mp4', 'webm' => 'video/webm'])
-                    ->extraInputAttributes(['accept' => 'video/mp4,video/webm,.mp4,.webm'])
+                    ->mimeTypeMap(['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime', '3gp' => 'video/3gpp'])
+                    ->extraInputAttributes(['accept' => 'video/mp4,video/webm,video/quicktime,video/3gpp,.mp4,.webm,.mov,.3gp'])
+                    ->saveUploadedFileUsing(fn (UploadedFile $file): string => app(ListingFormDraftService::class)->storeVideo($file))
                     ->maxSize(config('listings.video.max_size_kb'))
                     ->rules([new ListingVideo])
                     ->getUploadedFileUsing(fn (string $file): ?array => static::fileInformation($file))
@@ -66,7 +71,7 @@ class MediaStep
                             'maxBytes' => config('listings.video.max_size_kb') * 1024,
                         ]).'))',
                     ])
-                    ->helperText(fn (): string => 'En fazla 60 saniye ve '.(config('listings.video.max_size_kb') / 1024).' MB. MP4 (H.264) veya WebM (VP8/VP9). YouTube bağlantısını da kullanabilirsiniz.')
+                    ->helperText(fn (): string => 'En fazla 60 saniye ve '.(config('listings.video.max_size_kb') / 1024).' MB. MP4 (H.264), WebM (VP8/VP9), MOV veya 3GP. MOV/3GP için sunucuda FFmpeg gerekir. YouTube bağlantısını da kullanabilirsiniz.')
                     ->openable()
                     ->dehydrateStateUsing(function ($state, ?Listing $record): ?string {
                         $path = array_values($state ?? [])[0] ?? null;
@@ -85,6 +90,10 @@ class MediaStep
                     ->label('YouTube Video Linki')
                     ->placeholder('https://www.youtube.com/watch?v=...')
                     ->url(),
+                TextInput::make('form_details.virtual_tour')
+                    ->label('Sanal tur bağlantısı (isteğe bağlı)')
+                    ->helperText('HTTPS Matterport veya Immoviewer bağlantısı. Boş bırakarak tursuz devam edebilirsiniz.')
+                    ->url()->maxLength(2048),
             ]);
     }
 
