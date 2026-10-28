@@ -15,6 +15,27 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    protected static function booted(): void
+    {
+        static::updating(function (User $user): void {
+            if ($user->isDirty(['identity_number_hash', 'role'])
+                || ($user->isDirty('identity_number') && $user->identity_number !== $user->getOriginal('identity_number'))) {
+                $user->eids_user_code = null;
+                $user->eids_identity_verified_at = null;
+            }
+        });
+    }
+
+    public function hasValidEidsIdentity(): bool
+    {
+        $code = $this->eids_user_code;
+
+        return $this->eids_identity_verified_at !== null
+            && is_string($code)
+            && \Illuminate\Support\Str::isUuid($code)
+            && $code !== '00000000-0000-0000-0000-000000000000';
+    }
+
     /**
      * The attributes that are mass assignable.
      *

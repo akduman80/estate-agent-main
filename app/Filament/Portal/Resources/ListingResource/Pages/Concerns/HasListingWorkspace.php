@@ -203,7 +203,11 @@ trait HasListingWorkspace
             }
             Notification::make()->success()->title('İlan #'.$record->id.' yönetici onayına gönderildi')->send();
         } catch (ValidationException $exception) {
-            Notification::make()->warning()->title('İlan taslakta kaldı')->body(implode(' ', Arr::flatten($exception->errors())))->send();
+            Notification::make()->warning()->title('İlan taslakta kaldı')->body(implode(' ', Arr::flatten($exception->errors())))
+                ->actions(isset($exception->errors()['eids_identity']) ? [
+                    \Filament\Notifications\Actions\Action::make('renewEidsIdentity')
+                        ->label('EİDS Kimliğimi Doğrula')->url(route('account.eids.start')),
+                ] : [])->send();
             $this->record = $record->fresh();
             $this->recordStamp = $this->listingStamp($this->record);
             $this->data['eids_status'] = $this->record->eids_status;

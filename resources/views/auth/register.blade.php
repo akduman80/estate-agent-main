@@ -71,7 +71,23 @@
                             <label class="block sm:col-span-2"><span class="text-xs font-bold text-slate-700">T.C. Kimlik Numarası <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="identity_number" inputmode="numeric" autocomplete="off" maxlength="11" value="{{ old('identity_number') }}" required><span class="mt-1.5 block text-[11px] leading-4 text-slate-400">İşletme yetkilisinin 11 haneli T.C. Kimlik Numarası güvenli şekilde saklanır.</span></label>
                             <label class="block sm:col-span-2"><span class="text-xs font-bold text-slate-700">İşletme / Ofis Adı <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="office_name" value="{{ old('office_name') }}" required></label>
                             <label class="block"><span class="text-xs font-bold text-slate-700">Yetki Belgesi Numarası <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="license_number" value="{{ old('license_number') }}" required></label>
-                            <label class="block"><span class="text-xs font-bold text-slate-700">Vergi Dairesi <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="tax_office" value="{{ old('tax_office') }}" required></label>
+                            <div class="min-w-0 sm:col-span-2 grid gap-5 sm:grid-cols-2" data-tax-offices>
+                                <div class="min-w-0"><label for="tax-office-city" class="text-xs font-bold text-slate-700">Vergi Dairesi İli <b class="text-red-500">*</b></label>
+                                    <input type="search" class="{{ $inputClass }}" data-tax-city-search aria-label="Vergi dairesi ili ara" placeholder="İl adıyla ara" autocomplete="off">
+                                    <select id="tax-office-city" name="tax_office_city_code" style="min-width:0;max-width:100%" class="{{ $inputClass }}" data-tax-city required>
+                                        <option value="">İl seçin</option>
+                                        @foreach($taxDirectory->cities() as $code => $name)
+                                            <option value="{{ $code }}" @selected(old('tax_office_city_code') === (string) $code)>{{ $name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="min-w-0"><label for="tax-office" class="text-xs font-bold text-slate-700">Vergi Dairesi <b class="text-red-500">*</b></label>
+                                    <input type="search" class="{{ $inputClass }}" data-tax-office-search aria-label="Vergi dairesi ara" placeholder="Vergi dairesi adıyla ara" autocomplete="off" disabled>
+                                    <select id="tax-office" name="tax_office_code" style="min-width:0;max-width:100%" class="{{ $inputClass }}" data-tax-office data-selected="{{ old('tax_office_code') }}" required disabled><option value="">Önce il seçin</option></select>
+                                </div>
+                                <p class="text-xs text-slate-500 sm:col-span-2" data-tax-status aria-live="polite">GİB listesi: {{ $taxDirectory->data()['source_date'] }}. Listede kodu bulunan vergi daireleri gösterilir.</p>
+                                <script type="application/json" data-tax-directory>@json($taxDirectory->data()['offices'])</script>
+                            </div>
                             <label class="block"><span class="text-xs font-bold text-slate-700">Vergi Numarası <b class="text-red-500">*</b></span><input class="{{ $inputClass }}" name="tax_number" inputmode="numeric" maxlength="10" value="{{ old('tax_number') }}" required></label>
                             <label class="block"><span class="text-xs font-bold text-slate-700">İşletme Telefonu</span><input class="{{ $inputClass }}" type="tel" name="business_phone" value="{{ old('business_phone') }}"></label>
                             <label class="block sm:col-span-2"><span class="text-xs font-bold text-slate-700">İşletme Adresi <b class="text-red-500">*</b></span><textarea name="address" rows="4" class="{{ $inputClass }}" required>{{ old('address') }}</textarea></label>
@@ -126,4 +142,7 @@
         </div>
     </main>
 
+@if($isBusiness)
+        <script src="{{ asset('js/tax-offices.js') }}" defer></script>
+    @endif
 </x-layouts.modern>

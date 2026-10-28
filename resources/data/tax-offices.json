@@ -1,0 +1,6029 @@
+{
+  "source_url": "https://cdn.gib.gov.tr/api/gibportal-file/file/getFileResources?objectKey=arsiv%2Fyardim-kaynaklar%2Fyararli-bilgiler%2FDefterdarl%C4%B1kveVergiDaireleriListesi.pdf",
+  "source_date": "2026-06-18",
+  "retrieved_at": "2026-10-29",
+  "source_sha256": "793e8866543811f5f8ab7982a3d322dece4406a3f01437f59cff56330720408b",
+  "note": "GİB listesindeki kodlu 859 vergi dairesi ve vergi dairesi sıfatlı Eskişehir Defterdarlığı. Kodsuz şubeler ayrı vergi dairesi değildir. Kaynak ayrı aktiflik alanı yayımlamaz.",
+  "offices": [
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01250",
+      "name": "Adana İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01251",
+      "name": "5 Ocak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01252",
+      "name": "Yüreğir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01253",
+      "name": "Seyhan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01254",
+      "name": "Ziyapaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01255",
+      "name": "Çukurova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01201",
+      "name": "Ceyhan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01203",
+      "name": "Kozan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01205",
+      "name": "Karataş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01256",
+      "name": "Pozantı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01257",
+      "name": "İmamoğlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01258",
+      "name": "Karaisalı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01259",
+      "name": "Yumurtalık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01260",
+      "name": "Tufanbeyli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01261",
+      "name": "Feke Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01262",
+      "name": "Saimbeyli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "01",
+      "city_name": "ADANA",
+      "code": "01263",
+      "name": "Aladağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "02",
+      "city_name": "ADIYAMAN",
+      "code": "02260",
+      "name": "Adıyaman Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "02",
+      "city_name": "ADIYAMAN",
+      "code": "02266",
+      "name": "Karakuş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "02",
+      "city_name": "ADIYAMAN",
+      "code": "02261",
+      "name": "Kahta Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "02",
+      "city_name": "ADIYAMAN",
+      "code": "02262",
+      "name": "Besni Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "02",
+      "city_name": "ADIYAMAN",
+      "code": "02263",
+      "name": "Gölbaşı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "02",
+      "city_name": "ADIYAMAN",
+      "code": "02264",
+      "name": "Çelikhan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "02",
+      "city_name": "ADIYAMAN",
+      "code": "02265",
+      "name": "Sincik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03201",
+      "name": "Tınaztepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03280",
+      "name": "Kocatepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03273",
+      "name": "Çiğiltepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03260",
+      "name": "Dinar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03261",
+      "name": "Bolvadin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03262",
+      "name": "Emirdağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03263",
+      "name": "Sandıklı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03264",
+      "name": "İscehisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03202",
+      "name": "Çay Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03265",
+      "name": "Sinanpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03266",
+      "name": "Şuhut Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03267",
+      "name": "İhsaniye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03268",
+      "name": "Sultandağı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03269",
+      "name": "Çobanlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03270",
+      "name": "Dazkırı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03271",
+      "name": "Başmakçı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "03",
+      "city_name": "AFYONKARAHİSAR",
+      "code": "03272",
+      "name": "Evciler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "04",
+      "city_name": "AĞRI",
+      "code": "04260",
+      "name": "Ağrı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "04",
+      "city_name": "AĞRI",
+      "code": "04266",
+      "name": "İshakpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "04",
+      "city_name": "AĞRI",
+      "code": "04261",
+      "name": "Doğubeyazıt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "04",
+      "city_name": "AĞRI",
+      "code": "04262",
+      "name": "Patnos Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "04",
+      "city_name": "AĞRI",
+      "code": "04263",
+      "name": "Diyadin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "04",
+      "city_name": "AĞRI",
+      "code": "04264",
+      "name": "Eleşkirt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "04",
+      "city_name": "AĞRI",
+      "code": "04265",
+      "name": "Tutak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "05",
+      "city_name": "AMASYA",
+      "code": "05260",
+      "name": "Amasya Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "05",
+      "city_name": "AMASYA",
+      "code": "05261",
+      "name": "Merzifon Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "05",
+      "city_name": "AMASYA",
+      "code": "05262",
+      "name": "Gümüşhacıköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "05",
+      "city_name": "AMASYA",
+      "code": "05263",
+      "name": "Taşova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "05",
+      "city_name": "AMASYA",
+      "code": "05264",
+      "name": "Suluova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "05",
+      "city_name": "AMASYA",
+      "code": "05265",
+      "name": "Göynücek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06280",
+      "name": "Anadolu İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06281",
+      "name": "Ankara İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06282",
+      "name": "Harçlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06283",
+      "name": "Ankara Kurumlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06284",
+      "name": "İvedik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06285",
+      "name": "100. Yıl İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06252",
+      "name": "Veraset ve İntikal Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06253",
+      "name": "Kavaklıdere Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06254",
+      "name": "Maltepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06255",
+      "name": "Yenimahalle Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06257",
+      "name": "Çankaya Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06258",
+      "name": "Kızılbey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06259",
+      "name": "Mithatpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06260",
+      "name": "Ulus Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06261",
+      "name": "Yıldırım Beyazıt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06262",
+      "name": "Seğmenler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06264",
+      "name": "Dikimevi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06265",
+      "name": "Doğanbey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06266",
+      "name": "Yeğenbey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06268",
+      "name": "Hitit Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06269",
+      "name": "Yahya Galip Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06270",
+      "name": "Muhammet Karagüzel Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06271",
+      "name": "Ostim Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06272",
+      "name": "Gölbaşı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06273",
+      "name": "Sincan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06274",
+      "name": "Dışkapı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06275",
+      "name": "Etimesgut Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06276",
+      "name": "Başkent Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06277",
+      "name": "Cumhuriyet Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06278",
+      "name": "Keçiören Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06292",
+      "name": "Beytepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06279",
+      "name": "Kahramankazan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06205",
+      "name": "Polatlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06207",
+      "name": "Şereflikoçhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06209",
+      "name": "Beypazarı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06211",
+      "name": "Çubuk Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06213",
+      "name": "Haymana Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06215",
+      "name": "Elmadağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06286",
+      "name": "Akyurt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06287",
+      "name": "Kızılcahamam Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06288",
+      "name": "Nallıhan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06289",
+      "name": "Ayaş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06290",
+      "name": "Bala Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "06",
+      "city_name": "ANKARA",
+      "code": "06291",
+      "name": "Kalecik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07251",
+      "name": "Üçkapılar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07252",
+      "name": "Kalekapı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07253",
+      "name": "Muratpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07254",
+      "name": "Düden Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07255",
+      "name": "Antalya Kurumlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07256",
+      "name": "Antalya İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07263",
+      "name": "Falez Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07257",
+      "name": "Korkuteli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07201",
+      "name": "Alanya Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07202",
+      "name": "Serik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07203",
+      "name": "Manavgat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07204",
+      "name": "Elmalı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07205",
+      "name": "Kemer Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07206",
+      "name": "Kumluca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07259",
+      "name": "Finike Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07260",
+      "name": "Gazipaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07258",
+      "name": "Kaş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07261",
+      "name": "Demre Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "07",
+      "city_name": "ANTALYA",
+      "code": "07262",
+      "name": "Akseki Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "08",
+      "city_name": "ARTVİN",
+      "code": "08260",
+      "name": "Artvin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "08",
+      "city_name": "ARTVİN",
+      "code": "08261",
+      "name": "Hopa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "08",
+      "city_name": "ARTVİN",
+      "code": "08262",
+      "name": "Arhavi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "08",
+      "city_name": "ARTVİN",
+      "code": "08263",
+      "name": "Borçka Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "08",
+      "city_name": "ARTVİN",
+      "code": "08264",
+      "name": "Yusufeli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "08",
+      "city_name": "ARTVİN",
+      "code": "08265",
+      "name": "Şavşat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "08",
+      "city_name": "ARTVİN",
+      "code": "08266",
+      "name": "Ardanuç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09201",
+      "name": "Efeler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09280",
+      "name": "Güzelhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09260",
+      "name": "Nazilli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09261",
+      "name": "Söke Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09262",
+      "name": "Çine Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09263",
+      "name": "Germencik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09265",
+      "name": "Kuşadası Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09281",
+      "name": "Didim Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09282",
+      "name": "İncirliova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09283",
+      "name": "Kuyucak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09284",
+      "name": "Bozdoğan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09285",
+      "name": "Sultanhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09286",
+      "name": "Karacasu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09287",
+      "name": "Koçarlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09288",
+      "name": "Buharkent Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09289",
+      "name": "Köşk Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09290",
+      "name": "Yenipazar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "09",
+      "city_name": "AYDIN",
+      "code": "09291",
+      "name": "Karpuzlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10201",
+      "name": "Karesi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10280",
+      "name": "Kurtdereli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10277",
+      "name": "Koca Seyit Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10260",
+      "name": "Ayvalık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10261",
+      "name": "Bandırma Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10262",
+      "name": "Burhaniye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10263",
+      "name": "Edremit Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10264",
+      "name": "Gönen Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10265",
+      "name": "Susurluk Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10266",
+      "name": "Erdek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10267",
+      "name": "Bigadiç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10268",
+      "name": "Sındırgı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10269",
+      "name": "Dursunbey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10270",
+      "name": "Gömeç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10271",
+      "name": "Havran Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10272",
+      "name": "İvrindi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10273",
+      "name": "Manyas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10274",
+      "name": "Kepsut Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10275",
+      "name": "Marmara Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "10",
+      "city_name": "BALIKESİR",
+      "code": "10276",
+      "name": "Savaştepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "11",
+      "city_name": "BİLECİK",
+      "code": "11260",
+      "name": "Bilecik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "11",
+      "city_name": "BİLECİK",
+      "code": "11265",
+      "name": "Kayı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "11",
+      "city_name": "BİLECİK",
+      "code": "11261",
+      "name": "Bozüyük Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "11",
+      "city_name": "BİLECİK",
+      "code": "11262",
+      "name": "Osmaneli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "11",
+      "city_name": "BİLECİK",
+      "code": "11263",
+      "name": "Söğüt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "11",
+      "city_name": "BİLECİK",
+      "code": "11264",
+      "name": "Gölpazarı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "12",
+      "city_name": "BİNGÖL",
+      "code": "12260",
+      "name": "Bingöl Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "12",
+      "city_name": "BİNGÖL",
+      "code": "12264",
+      "name": "Yüzen Ada Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "12",
+      "city_name": "BİNGÖL",
+      "code": "12261",
+      "name": "Solhan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "12",
+      "city_name": "BİNGÖL",
+      "code": "12262",
+      "name": "Genç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "12",
+      "city_name": "BİNGÖL",
+      "code": "12263",
+      "name": "Karlıova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "13",
+      "city_name": "BİTLİS",
+      "code": "13260",
+      "name": "Bitlis Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "13",
+      "city_name": "BİTLİS",
+      "code": "13261",
+      "name": "Tatvan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "13",
+      "city_name": "BİTLİS",
+      "code": "13262",
+      "name": "Ahlat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "13",
+      "city_name": "BİTLİS",
+      "code": "13263",
+      "name": "Güroymak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "13",
+      "city_name": "BİTLİS",
+      "code": "13264",
+      "name": "Hizan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "13",
+      "city_name": "BİTLİS",
+      "code": "13265",
+      "name": "Adilcevaz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "14",
+      "city_name": "BOLU",
+      "code": "14260",
+      "name": "Bolu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "14",
+      "city_name": "BOLU",
+      "code": "14267",
+      "name": "Köroğlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "14",
+      "city_name": "BOLU",
+      "code": "14262",
+      "name": "Gerede Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "14",
+      "city_name": "BOLU",
+      "code": "14263",
+      "name": "Göynük Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "14",
+      "city_name": "BOLU",
+      "code": "14264",
+      "name": "Mudurnu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "14",
+      "city_name": "BOLU",
+      "code": "14265",
+      "name": "Mengen Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "14",
+      "city_name": "BOLU",
+      "code": "14266",
+      "name": "Yeniçağa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "15",
+      "city_name": "BURDUR",
+      "code": "15260",
+      "name": "Burdur Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "15",
+      "city_name": "BURDUR",
+      "code": "15267",
+      "name": "Salda Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "15",
+      "city_name": "BURDUR",
+      "code": "15261",
+      "name": "Bucak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "15",
+      "city_name": "BURDUR",
+      "code": "15262",
+      "name": "Gölhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "15",
+      "city_name": "BURDUR",
+      "code": "15263",
+      "name": "Çavdır Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "15",
+      "city_name": "BURDUR",
+      "code": "15264",
+      "name": "Yeşilova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "15",
+      "city_name": "BURDUR",
+      "code": "15265",
+      "name": "Tefenni Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "15",
+      "city_name": "BURDUR",
+      "code": "15266",
+      "name": "Karamanlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16250",
+      "name": "Bursa İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16251",
+      "name": "Osmangazi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16252",
+      "name": "Yıldırım Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16253",
+      "name": "Çekirge Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16254",
+      "name": "Setbaşı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16255",
+      "name": "Uludağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16256",
+      "name": "Yeşil Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16257",
+      "name": "Nilüfer Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16258",
+      "name": "Ertuğrulgazi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16259",
+      "name": "Gökdere Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16260",
+      "name": "Bursa Veraset ve Harçlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16262",
+      "name": "Kozahan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16201",
+      "name": "Gemlik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16202",
+      "name": "İnegöl Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16203",
+      "name": "Karacabey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16204",
+      "name": "Mustafakemalpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16205",
+      "name": "Mudanya Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16206",
+      "name": "Orhangazi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16207",
+      "name": "İznik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16208",
+      "name": "Yenişehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "16",
+      "city_name": "BURSA",
+      "code": "16261",
+      "name": "Orhaneli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17260",
+      "name": "Çanakkale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17261",
+      "name": "Biga Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17262",
+      "name": "Çan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17263",
+      "name": "Gelibolu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17265",
+      "name": "Ezine Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17264",
+      "name": "Ayvacık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17266",
+      "name": "Lapseki Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17267",
+      "name": "Gökçeada Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17268",
+      "name": "Bayramiç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17269",
+      "name": "Yenice Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17270",
+      "name": "Eceabat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "17",
+      "city_name": "ÇANAKKALE",
+      "code": "17271",
+      "name": "Bozcaada Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "18",
+      "city_name": "ÇANKIRI",
+      "code": "18260",
+      "name": "Çankırı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "18",
+      "city_name": "ÇANKIRI",
+      "code": "18265",
+      "name": "Karatekin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "18",
+      "city_name": "ÇANKIRI",
+      "code": "18261",
+      "name": "Çerkeş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "18",
+      "city_name": "ÇANKIRI",
+      "code": "18262",
+      "name": "Ilgaz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "18",
+      "city_name": "ÇANKIRI",
+      "code": "18263",
+      "name": "Orta Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "18",
+      "city_name": "ÇANKIRI",
+      "code": "18264",
+      "name": "Şabanözü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19260",
+      "name": "Çorum Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19262",
+      "name": "Hasanpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19269",
+      "name": "Akşemseddin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19261",
+      "name": "Sungurlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19263",
+      "name": "Osmancık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19264",
+      "name": "İskilip Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19265",
+      "name": "Alaca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19266",
+      "name": "Kargı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19267",
+      "name": "Mecitözü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "19",
+      "city_name": "ÇORUM",
+      "code": "19268",
+      "name": "Bayat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20201",
+      "name": "Saraylar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20202",
+      "name": "Çınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20203",
+      "name": "Gökpınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20250",
+      "name": "Denizli İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20280",
+      "name": "Pamukkale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20275",
+      "name": "Bayramyeri Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20260",
+      "name": "Sarayköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20261",
+      "name": "Acıpayam Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20262",
+      "name": "Tavas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20263",
+      "name": "Buldan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20264",
+      "name": "Çal Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20265",
+      "name": "Çivril Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20266",
+      "name": "Honaz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20267",
+      "name": "Kale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20268",
+      "name": "Serinhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20269",
+      "name": "Çameli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20270",
+      "name": "Babadağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20271",
+      "name": "Bozkurt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20272",
+      "name": "Çardak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20273",
+      "name": "Güney Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "20",
+      "city_name": "DENİZLİ",
+      "code": "20274",
+      "name": "Bekilli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21251",
+      "name": "Gökalp Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21281",
+      "name": "Süleyman Nazif Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21282",
+      "name": "Cahit Sıtkı Tarancı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21290",
+      "name": "Kayapınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21283",
+      "name": "Ergani Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21284",
+      "name": "Bismil Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21285",
+      "name": "Silvan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21286",
+      "name": "Çınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21287",
+      "name": "Çermik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21288",
+      "name": "Hani Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "21",
+      "city_name": "DİYARBAKIR",
+      "code": "21289",
+      "name": "Lice Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22201",
+      "name": "Arda Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22260",
+      "name": "Kırkpınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22267",
+      "name": "Tunca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22261",
+      "name": "Keşan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22262",
+      "name": "Uzunköprü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22263",
+      "name": "Havsa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22264",
+      "name": "İpsala Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22265",
+      "name": "Enez Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "22",
+      "city_name": "EDİRNE",
+      "code": "22266",
+      "name": "Meriç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "23",
+      "city_name": "ELAZIĞ",
+      "code": "23201",
+      "name": "Harput Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "23",
+      "city_name": "ELAZIĞ",
+      "code": "23280",
+      "name": "Hazar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "23",
+      "city_name": "ELAZIĞ",
+      "code": "23284",
+      "name": "Elazığ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "23",
+      "city_name": "ELAZIĞ",
+      "code": "23281",
+      "name": "Karakoçan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "23",
+      "city_name": "ELAZIĞ",
+      "code": "23282",
+      "name": "Kovancılar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "23",
+      "city_name": "ELAZIĞ",
+      "code": "23283",
+      "name": "Palu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "24",
+      "city_name": "ERZİNCAN",
+      "code": "24260",
+      "name": "Fevzipaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "24",
+      "city_name": "ERZİNCAN",
+      "code": "24262",
+      "name": "Ergan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "24",
+      "city_name": "ERZİNCAN",
+      "code": "24261",
+      "name": "Tercan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25251",
+      "name": "Aziziye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25280",
+      "name": "Kazımkarabekir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25287",
+      "name": "Palandöken Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25281",
+      "name": "Horasan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25252",
+      "name": "Oltu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25282",
+      "name": "Pasinler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25283",
+      "name": "Aşkale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25284",
+      "name": "Hınıs Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25285",
+      "name": "İspir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "25",
+      "city_name": "ERZURUM",
+      "code": "25286",
+      "name": "Karayazı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "26",
+      "city_name": "ESKİŞEHİR",
+      "code": "26250",
+      "name": "Eskişehir Defterdarlığı (*)",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27250",
+      "name": "Gaziantep İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27252",
+      "name": "Şehitkamil Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27253",
+      "name": "Şahinbey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27254",
+      "name": "Gazikent Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27255",
+      "name": "Kozanlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27251",
+      "name": "Suburcu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27202",
+      "name": "Nizip Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27203",
+      "name": "İslahiye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27256",
+      "name": "Oğuzeli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27257",
+      "name": "Nurdağı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27258",
+      "name": "Araban Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "27",
+      "city_name": "GAZİANTEP",
+      "code": "27259",
+      "name": "Yavuzeli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28260",
+      "name": "Giresun Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28271",
+      "name": "Ada Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28261",
+      "name": "Bulancak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28262",
+      "name": "Tirebolu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28264",
+      "name": "Espiye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28263",
+      "name": "Görele Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28265",
+      "name": "Dereli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28266",
+      "name": "Keşap Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28267",
+      "name": "Şebinkarahisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28268",
+      "name": "Eynesil Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28269",
+      "name": "Piraziz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "28",
+      "city_name": "GİRESUN",
+      "code": "28270",
+      "name": "Yağlıdere Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "29",
+      "city_name": "GÜMÜŞHANE",
+      "code": "29260",
+      "name": "Gümüşhane Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "29",
+      "city_name": "GÜMÜŞHANE",
+      "code": "29261",
+      "name": "Kelkit Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "29",
+      "city_name": "GÜMÜŞHANE",
+      "code": "29262",
+      "name": "Şiran Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "29",
+      "city_name": "GÜMÜŞHANE",
+      "code": "29263",
+      "name": "Torul Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "29",
+      "city_name": "GÜMÜŞHANE",
+      "code": "29264",
+      "name": "Kürtün Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "30",
+      "city_name": "HAKKARİ",
+      "code": "30260",
+      "name": "Hakkari Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "30",
+      "city_name": "HAKKARİ",
+      "code": "30261",
+      "name": "Yüksekova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "30",
+      "city_name": "HAKKARİ",
+      "code": "30262",
+      "name": "Şemdinli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31201",
+      "name": "23 Temmuz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31203",
+      "name": "Antakya Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31280",
+      "name": "Şükrükanatlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31202",
+      "name": "Sahil Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31281",
+      "name": "Akdeniz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31290",
+      "name": "Asım Gündüz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31260",
+      "name": "Dörtyol Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31261",
+      "name": "Kırıkhan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31262",
+      "name": "Reyhanlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31263",
+      "name": "Samandağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31264",
+      "name": "Hassa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31282",
+      "name": "Erzin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31265",
+      "name": "Yayladağı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31267",
+      "name": "Altınözü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31268",
+      "name": "Belen Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "31",
+      "city_name": "HATAY",
+      "code": "31283",
+      "name": "Kumlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32201",
+      "name": "Davraz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32260",
+      "name": "Kaymakkapı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32267",
+      "name": "Gülkent Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32261",
+      "name": "Eğirdir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32262",
+      "name": "Yalvaç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32263",
+      "name": "Şarkikaraağaç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32264",
+      "name": "Keçiborlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32265",
+      "name": "Senirkent Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "32",
+      "city_name": "ISPARTA",
+      "code": "32266",
+      "name": "Gelendost Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33250",
+      "name": "İstiklal Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33252",
+      "name": "Uray Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33254",
+      "name": "Liman Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33255",
+      "name": "Toros Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33256",
+      "name": "Mersin İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33201",
+      "name": "Erdemli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33202",
+      "name": "Silifke Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33203",
+      "name": "Anamur Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33204",
+      "name": "Kızılmurat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33205",
+      "name": "Şehitkerim Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33257",
+      "name": "Mut Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33258",
+      "name": "Bozyazı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33259",
+      "name": "Gülnar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "33",
+      "city_name": "MERSİN",
+      "code": "33260",
+      "name": "Aydıncık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34220",
+      "name": "Haliç İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34221",
+      "name": "Vatan İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34222",
+      "name": "Çamlıca İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34223",
+      "name": "Alemdağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34224",
+      "name": "Yenikapı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34207",
+      "name": "Büyük Mükellefler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34231",
+      "name": "Boğaziçi Kurumlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34232",
+      "name": "Marmara Kurumlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34234",
+      "name": "Davutpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34235",
+      "name": "Esenler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34236",
+      "name": "Fatih Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34237",
+      "name": "Küçükköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34239",
+      "name": "Merter Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34242",
+      "name": "Sultanbeyli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34244",
+      "name": "Anadolu Kurumlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34245",
+      "name": "Tuzla Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34246",
+      "name": "Kozyatağı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34247",
+      "name": "Maslak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34248",
+      "name": "Zincirlikuyu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34249",
+      "name": "İkitelli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34251",
+      "name": "Beşiktaş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34252",
+      "name": "Ümraniye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34253",
+      "name": "Yeditepe Veraset ve Harçlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34254",
+      "name": "Kasımpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34255",
+      "name": "Erenköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34256",
+      "name": "Hisar Veraset ve Harçlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34257",
+      "name": "Tuna Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34258",
+      "name": "Rıhtım Veraset ve Harçlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34259",
+      "name": "Güngören Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34260",
+      "name": "Kocasinan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34261",
+      "name": "Güneşli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34262",
+      "name": "Küçükyalı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34263",
+      "name": "Pendik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34264",
+      "name": "Bayrampaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34265",
+      "name": "Beyazıt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34266",
+      "name": "Beyoğlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34269",
+      "name": "Gaziosmanpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34270",
+      "name": "Göztepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34271",
+      "name": "Hocapaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34272",
+      "name": "Kadıköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34273",
+      "name": "Kocamustafapaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34274",
+      "name": "Mecidiyeköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34276",
+      "name": "Şişli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34277",
+      "name": "Üsküdar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34278",
+      "name": "Halkalı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34279",
+      "name": "Kağıthane Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34280",
+      "name": "Zeytinburnu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34281",
+      "name": "Beykoz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34283",
+      "name": "Sarıyer Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34284",
+      "name": "Bakırköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34285",
+      "name": "Kartal Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34287",
+      "name": "Nakil Vasıtaları Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34288",
+      "name": "Sarıgazi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34291",
+      "name": "Atışalanı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34292",
+      "name": "Yakacık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34293",
+      "name": "Yenibosna Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34294",
+      "name": "Avcılar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34295",
+      "name": "Adalar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34296",
+      "name": "Küçükçekmece Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34297",
+      "name": "Beylikdüzü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34298",
+      "name": "Esenyurt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34299",
+      "name": "Başakşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34203",
+      "name": "Silivri Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34204",
+      "name": "Büyükçekmece Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "34",
+      "city_name": "İSTANBUL",
+      "code": "34205",
+      "name": "Şile Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35250",
+      "name": "İzmir İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35251",
+      "name": "9 Eylül Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35252",
+      "name": "Yamanlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35254",
+      "name": "Belkahve Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35256",
+      "name": "Karşıyaka Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35257",
+      "name": "Kemeraltı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35258",
+      "name": "Konak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35259",
+      "name": "Kordon Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35260",
+      "name": "Şirinyer Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35261",
+      "name": "Kadifekale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35262",
+      "name": "Taşıtlar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35263",
+      "name": "Hasan Tahsin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35264",
+      "name": "Bornova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35266",
+      "name": "Balçova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35267",
+      "name": "Gaziemir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35268",
+      "name": "Ege Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35269",
+      "name": "Çiğli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35270",
+      "name": "Çakabey İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35201",
+      "name": "Bayındır Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35202",
+      "name": "Bergama Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35203",
+      "name": "Menemen Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35204",
+      "name": "Ödemiş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35205",
+      "name": "Tire Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35206",
+      "name": "Torbalı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35207",
+      "name": "Kemalpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35208",
+      "name": "Urla Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35209",
+      "name": "Selçuk Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35210",
+      "name": "Kınık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35211",
+      "name": "Kiraz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35212",
+      "name": "Çeşme Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35213",
+      "name": "Aliağa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35215",
+      "name": "Menderes Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35271",
+      "name": "Dikili Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35272",
+      "name": "Seferihisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35273",
+      "name": "Foça Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35274",
+      "name": "Karaburun Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "35",
+      "city_name": "İZMİR",
+      "code": "35275",
+      "name": "Beydağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "36",
+      "city_name": "KARS",
+      "code": "36260",
+      "name": "Kars Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "36",
+      "city_name": "KARS",
+      "code": "36264",
+      "name": "Kafkas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "36",
+      "city_name": "KARS",
+      "code": "36261",
+      "name": "Sarıkamış Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "36",
+      "city_name": "KARS",
+      "code": "36262",
+      "name": "Kağızman Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "36",
+      "city_name": "KARS",
+      "code": "36263",
+      "name": "Selim Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37260",
+      "name": "Kastamonu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37270",
+      "name": "Atabey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37261",
+      "name": "Tosya Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37262",
+      "name": "Taşköprü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37263",
+      "name": "Cide Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37264",
+      "name": "İnebolu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37265",
+      "name": "Araç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37266",
+      "name": "Devrekani Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37267",
+      "name": "Azdavay Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37268",
+      "name": "Bozkurt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "37",
+      "city_name": "KASTAMONU",
+      "code": "37269",
+      "name": "Daday Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38250",
+      "name": "Kayseri İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38251",
+      "name": "Mimar Sinan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38252",
+      "name": "Erciyes Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38253",
+      "name": "Kaleönü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38254",
+      "name": "Gevher Nesibe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38260",
+      "name": "Kültepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38201",
+      "name": "Develi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38202",
+      "name": "Pınarbaşı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38203",
+      "name": "Bünyan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38255",
+      "name": "Yahyalı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38256",
+      "name": "İncesu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38257",
+      "name": "Tomarza Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38258",
+      "name": "Yeşilhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "38",
+      "city_name": "KAYSERİ",
+      "code": "38259",
+      "name": "Sarız Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "39",
+      "city_name": "KIRKLARELİ",
+      "code": "39260",
+      "name": "Kırklareli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "39",
+      "city_name": "KIRKLARELİ",
+      "code": "39266",
+      "name": "Kırk Şehitler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "39",
+      "city_name": "KIRKLARELİ",
+      "code": "39261",
+      "name": "Lüleburgaz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "39",
+      "city_name": "KIRKLARELİ",
+      "code": "39262",
+      "name": "Babaeski Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "39",
+      "city_name": "KIRKLARELİ",
+      "code": "39263",
+      "name": "Pınarhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "39",
+      "city_name": "KIRKLARELİ",
+      "code": "39264",
+      "name": "Vize Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "39",
+      "city_name": "KIRKLARELİ",
+      "code": "39265",
+      "name": "Demirköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "40",
+      "city_name": "KIRŞEHİR",
+      "code": "40260",
+      "name": "Kırşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "40",
+      "city_name": "KIRŞEHİR",
+      "code": "40264",
+      "name": "Cacabey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "40",
+      "city_name": "KIRŞEHİR",
+      "code": "40261",
+      "name": "Kaman Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "40",
+      "city_name": "KIRŞEHİR",
+      "code": "40262",
+      "name": "Mucur Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "40",
+      "city_name": "KIRŞEHİR",
+      "code": "40263",
+      "name": "Çiçekdağı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41250",
+      "name": "Kocaeli İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41252",
+      "name": "Tepecik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41253",
+      "name": "Alemdar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41290",
+      "name": "Acısu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41254",
+      "name": "Gebze İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41202",
+      "name": "Uluçınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41203",
+      "name": "İlyasbey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41204",
+      "name": "Gölcük Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41205",
+      "name": "Karamürsel Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41206",
+      "name": "Körfez Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41207",
+      "name": "Derince Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "41",
+      "city_name": "KOCAELİ",
+      "code": "41255",
+      "name": "Kandıra Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42250",
+      "name": "Konya İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42251",
+      "name": "Selçuk Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42252",
+      "name": "Mevlana Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42253",
+      "name": "Meram Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42254",
+      "name": "Alaaddin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42262",
+      "name": "Karatay Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42201",
+      "name": "Akşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42202",
+      "name": "Ereğli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42204",
+      "name": "Beyşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42205",
+      "name": "Cihanbeyli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42206",
+      "name": "Çumra Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42207",
+      "name": "Seydişehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42208",
+      "name": "Ilgın Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42209",
+      "name": "Kulu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42210",
+      "name": "Karapınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42211",
+      "name": "Kadınhanı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42255",
+      "name": "Sarayönü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42256",
+      "name": "Bozkır Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42257",
+      "name": "Yunak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42258",
+      "name": "Hüyük Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42259",
+      "name": "Altınekin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42260",
+      "name": "Emirgazi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "42",
+      "city_name": "KONYA",
+      "code": "42261",
+      "name": "Doğanhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43201",
+      "name": "30 Ağustos Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43280",
+      "name": "Çinili Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43267",
+      "name": "Çaltepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43260",
+      "name": "Gediz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43261",
+      "name": "Simav Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43262",
+      "name": "Tavşanlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43263",
+      "name": "Emet Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43264",
+      "name": "Altıntaş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43265",
+      "name": "Domaniç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "43",
+      "city_name": "KÜTAHYA",
+      "code": "43266",
+      "name": "Hisarcık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "44",
+      "city_name": "MALATYA",
+      "code": "44251",
+      "name": "Fırat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "44",
+      "city_name": "MALATYA",
+      "code": "44252",
+      "name": "Beydağı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "44",
+      "city_name": "MALATYA",
+      "code": "44258",
+      "name": "Battalgazi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "44",
+      "city_name": "MALATYA",
+      "code": "44253",
+      "name": "Doğanşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "44",
+      "city_name": "MALATYA",
+      "code": "44254",
+      "name": "Darende Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "44",
+      "city_name": "MALATYA",
+      "code": "44255",
+      "name": "Akçadağ Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "44",
+      "city_name": "MALATYA",
+      "code": "44256",
+      "name": "Arapgir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "44",
+      "city_name": "MALATYA",
+      "code": "44257",
+      "name": "Hekimhan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45250",
+      "name": "Manisa İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45251",
+      "name": "Şehit Cihan Güneş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45252",
+      "name": "Mesir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45201",
+      "name": "Akhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45202",
+      "name": "Alaşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45203",
+      "name": "Demirci Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45204",
+      "name": "Kırkağaç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45205",
+      "name": "Salihli Adil Oral Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45206",
+      "name": "Sarıgöl Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45207",
+      "name": "Saruhanlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45208",
+      "name": "Soma Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45209",
+      "name": "Turgutlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45210",
+      "name": "Gördes Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45211",
+      "name": "Kula Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45253",
+      "name": "Ahmetli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45254",
+      "name": "Gölmarmara Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45255",
+      "name": "Selendi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "45",
+      "city_name": "MANİSA",
+      "code": "45256",
+      "name": "Köprübaşı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46280",
+      "name": "Aksu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46201",
+      "name": "Aslanbey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46260",
+      "name": "Elbistan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46261",
+      "name": "Afşin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46262",
+      "name": "Pazarcık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46264",
+      "name": "Göksun Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46263",
+      "name": "Andırın Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46265",
+      "name": "Türkoğlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46266",
+      "name": "Çağlayancerit Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "46",
+      "city_name": "KAHRAMANMARAŞ",
+      "code": "46267",
+      "name": "Nurhak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47260",
+      "name": "Mardin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47261",
+      "name": "Kızıltepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47262",
+      "name": "Nusaybin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47263",
+      "name": "Midyat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47264",
+      "name": "Derik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47265",
+      "name": "Mazıdağı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47266",
+      "name": "Ömerli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47268",
+      "name": "Savur Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "47",
+      "city_name": "MARDİN",
+      "code": "47269",
+      "name": "Dargeçit Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48260",
+      "name": "Muğla Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48261",
+      "name": "Bodrum Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48262",
+      "name": "Fethiye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48263",
+      "name": "Köyceğiz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48264",
+      "name": "Milas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48265",
+      "name": "Marmaris Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48266",
+      "name": "Yatağan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48267",
+      "name": "Ortaca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48268",
+      "name": "Datça Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48269",
+      "name": "Dalaman Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48270",
+      "name": "Seydikemer Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48271",
+      "name": "Ula Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "48",
+      "city_name": "MUĞLA",
+      "code": "48272",
+      "name": "Kavaklıdere Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "49",
+      "city_name": "MUŞ",
+      "code": "49260",
+      "name": "Muş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "49",
+      "city_name": "MUŞ",
+      "code": "49261",
+      "name": "Bulanık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "49",
+      "city_name": "MUŞ",
+      "code": "49262",
+      "name": "Malazgirt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "49",
+      "city_name": "MUŞ",
+      "code": "49263",
+      "name": "Varto Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "49",
+      "city_name": "MUŞ",
+      "code": "49264",
+      "name": "Hasköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "49",
+      "city_name": "MUŞ",
+      "code": "49265",
+      "name": "Korkut Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "50",
+      "city_name": "NEVŞEHİR",
+      "code": "50260",
+      "name": "Nevşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "50",
+      "city_name": "NEVŞEHİR",
+      "code": "50261",
+      "name": "Ürgüp Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "50",
+      "city_name": "NEVŞEHİR",
+      "code": "50262",
+      "name": "Derinkuyu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "50",
+      "city_name": "NEVŞEHİR",
+      "code": "50263",
+      "name": "Avanos Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "50",
+      "city_name": "NEVŞEHİR",
+      "code": "50264",
+      "name": "Gülşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "50",
+      "city_name": "NEVŞEHİR",
+      "code": "50265",
+      "name": "Hacıbektaş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "50",
+      "city_name": "NEVŞEHİR",
+      "code": "50266",
+      "name": "Acıgöl Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "50",
+      "city_name": "NEVŞEHİR",
+      "code": "50267",
+      "name": "Kozaklı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "51",
+      "city_name": "NİĞDE",
+      "code": "51260",
+      "name": "Niğde Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "51",
+      "city_name": "NİĞDE",
+      "code": "51262",
+      "name": "Bor Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "51",
+      "city_name": "NİĞDE",
+      "code": "51263",
+      "name": "Ulukışla Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "51",
+      "city_name": "NİĞDE",
+      "code": "51264",
+      "name": "Çiftlik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "51",
+      "city_name": "NİĞDE",
+      "code": "51265",
+      "name": "Altunhisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "51",
+      "city_name": "NİĞDE",
+      "code": "51266",
+      "name": "Çamardı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52201",
+      "name": "Boztepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52260",
+      "name": "Köprübaşı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52274",
+      "name": "Altınordu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52261",
+      "name": "Fatsa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52262",
+      "name": "Ünye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52264",
+      "name": "Aybastı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52263",
+      "name": "Gölköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52265",
+      "name": "Korgan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52266",
+      "name": "Kumru Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52267",
+      "name": "Perşembe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52268",
+      "name": "Akkuş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52269",
+      "name": "Çatalpınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52270",
+      "name": "Ulubey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52271",
+      "name": "Gürgentepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52272",
+      "name": "Çaybaşı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "52",
+      "city_name": "ORDU",
+      "code": "52273",
+      "name": "Kabataş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "53",
+      "city_name": "RİZE",
+      "code": "53201",
+      "name": "Kaçkar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "53",
+      "city_name": "RİZE",
+      "code": "53260",
+      "name": "Yeşilçay Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "53",
+      "city_name": "RİZE",
+      "code": "53266",
+      "name": "Rize Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "53",
+      "city_name": "RİZE",
+      "code": "53261",
+      "name": "Çayeli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "53",
+      "city_name": "RİZE",
+      "code": "53262",
+      "name": "Pazar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "53",
+      "city_name": "RİZE",
+      "code": "53263",
+      "name": "Ardeşen Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "53",
+      "city_name": "RİZE",
+      "code": "53264",
+      "name": "Fındıklı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "53",
+      "city_name": "RİZE",
+      "code": "53265",
+      "name": "Çamlıhemşin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54250",
+      "name": "Sakarya İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54252",
+      "name": "Ali Fuat Cebesoy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54251",
+      "name": "Gümrükönü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54253",
+      "name": "Sapanca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54201",
+      "name": "Akyazı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54202",
+      "name": "Geyve Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54203",
+      "name": "Hendek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54204",
+      "name": "Karasu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54254",
+      "name": "Pamukova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54255",
+      "name": "Kaynarca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54256",
+      "name": "Kocaali Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "54",
+      "city_name": "SAKARYA",
+      "code": "54257",
+      "name": "Karapürçek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55251",
+      "name": "19 Mayıs Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55290",
+      "name": "Zafer Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55252",
+      "name": "Gaziler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55202",
+      "name": "Bafra Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55203",
+      "name": "Çarşamba Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55204",
+      "name": "Terme Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55205",
+      "name": "Havza Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55291",
+      "name": "Vezirköprü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55254",
+      "name": "19 Mayıs Ballıca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55253",
+      "name": "Kavak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55255",
+      "name": "Salıpazarı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55256",
+      "name": "Alaçam Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55257",
+      "name": "Ladik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55258",
+      "name": "Asarcık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "55",
+      "city_name": "SAMSUN",
+      "code": "55259",
+      "name": "Yakakent Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "56",
+      "city_name": "SİİRT",
+      "code": "56260",
+      "name": "Siirt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "56",
+      "city_name": "SİİRT",
+      "code": "56263",
+      "name": "Deliklitaş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "56",
+      "city_name": "SİİRT",
+      "code": "56261",
+      "name": "Kurtalan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "56",
+      "city_name": "SİİRT",
+      "code": "56262",
+      "name": "Baykan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "57",
+      "city_name": "SİNOP",
+      "code": "57260",
+      "name": "Sinop Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "57",
+      "city_name": "SİNOP",
+      "code": "57261",
+      "name": "Boyabat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "57",
+      "city_name": "SİNOP",
+      "code": "57263",
+      "name": "Ayancık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "57",
+      "city_name": "SİNOP",
+      "code": "57262",
+      "name": "Gerze Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "57",
+      "city_name": "SİNOP",
+      "code": "57264",
+      "name": "Türkeli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "57",
+      "city_name": "SİNOP",
+      "code": "57265",
+      "name": "Durağan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "57",
+      "city_name": "SİNOP",
+      "code": "57266",
+      "name": "Erfelek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58201",
+      "name": "Kale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58280",
+      "name": "Site Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58268",
+      "name": "4 Eylül Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58260",
+      "name": "Şarkışla Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58261",
+      "name": "Suşehri Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58262",
+      "name": "Yıldızeli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58263",
+      "name": "Kangal Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58264",
+      "name": "Zara Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58265",
+      "name": "Gemerek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58266",
+      "name": "Gürün Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "58",
+      "city_name": "SİVAS",
+      "code": "58267",
+      "name": "Divriği Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59201",
+      "name": "Süleymanpaşa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59260",
+      "name": "Namık Kemal Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59250",
+      "name": "Çorlu İhtisas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59261",
+      "name": "Çerkezköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59262",
+      "name": "Çorlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59263",
+      "name": "Hayrabolu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59264",
+      "name": "Malkara Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59265",
+      "name": "Muratlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59266",
+      "name": "Şarköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59267",
+      "name": "Kapaklı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59268",
+      "name": "Saray Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "59",
+      "city_name": "TEKİRDAĞ",
+      "code": "59269",
+      "name": "Marmaraereğlisi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60260",
+      "name": "Tokat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60268",
+      "name": "Topçam Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60261",
+      "name": "Erbaa Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60262",
+      "name": "Niksar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60263",
+      "name": "Turhal Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60264",
+      "name": "Zile Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60265",
+      "name": "Reşadiye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60266",
+      "name": "Almus Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "60",
+      "city_name": "TOKAT",
+      "code": "60267",
+      "name": "Pazar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61201",
+      "name": "Hızırbey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61280",
+      "name": "Karadeniz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61292",
+      "name": "Ortahisar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61260",
+      "name": "Akçaabat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61261",
+      "name": "Of Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61262",
+      "name": "Vakfıkebir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61281",
+      "name": "Araklı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61282",
+      "name": "Yomra Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61283",
+      "name": "Sürmene Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61284",
+      "name": "Arsin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61285",
+      "name": "Çaykara Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61286",
+      "name": "Maçka Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61287",
+      "name": "Beşikdüzü Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61288",
+      "name": "Çarşıbaşı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61289",
+      "name": "Tonya Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61290",
+      "name": "Şalpazarı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "61",
+      "city_name": "TRABZON",
+      "code": "61291",
+      "name": "Düzköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "62",
+      "city_name": "TUNCELİ",
+      "code": "62260",
+      "name": "Tunceli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "62",
+      "city_name": "TUNCELİ",
+      "code": "62261",
+      "name": "Munzur Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63201",
+      "name": "Şehitlik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63280",
+      "name": "Topçu Meydanı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63281",
+      "name": "Göbeklitepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63260",
+      "name": "Siverek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63261",
+      "name": "Viranşehir Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63262",
+      "name": "Birecik Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63263",
+      "name": "Suruç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63282",
+      "name": "Ceylanpınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63283",
+      "name": "Akçakale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63284",
+      "name": "Hilvan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63285",
+      "name": "Bozova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63286",
+      "name": "Halfeti Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "63",
+      "city_name": "ŞANLIURFA",
+      "code": "63287",
+      "name": "Harran Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "64",
+      "city_name": "UŞAK",
+      "code": "64260",
+      "name": "Uşak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "64",
+      "city_name": "UŞAK",
+      "code": "64261",
+      "name": "Banaz Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "64",
+      "city_name": "UŞAK",
+      "code": "64262",
+      "name": "Eşme Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "64",
+      "city_name": "UŞAK",
+      "code": "64263",
+      "name": "Sivaslı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "64",
+      "city_name": "UŞAK",
+      "code": "64264",
+      "name": "Ulubey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "64",
+      "city_name": "UŞAK",
+      "code": "64265",
+      "name": "Karahallı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65260",
+      "name": "Van Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65267",
+      "name": "Akdamar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65201",
+      "name": "Erciş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65261",
+      "name": "Özalp Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65262",
+      "name": "Çaldıran Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65202",
+      "name": "Edremit Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65263",
+      "name": "Muradiye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65264",
+      "name": "Gevaş Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65265",
+      "name": "Gürpınar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "65",
+      "city_name": "VAN",
+      "code": "65266",
+      "name": "Başkale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66260",
+      "name": "Yozgat Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66271",
+      "name": "Çamlık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66261",
+      "name": "Boğazlıyan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66262",
+      "name": "Sorgun Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66263",
+      "name": "Yerköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66264",
+      "name": "Akdağmadeni Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66265",
+      "name": "Şefaatli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66266",
+      "name": "Sarıkaya Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66267",
+      "name": "Çekerek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66268",
+      "name": "Çayıralan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66269",
+      "name": "Aydıncık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "66",
+      "city_name": "YOZGAT",
+      "code": "66270",
+      "name": "Saraykent Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "67",
+      "city_name": "ZONGULDAK",
+      "code": "67201",
+      "name": "Uzunmehmet Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "67",
+      "city_name": "ZONGULDAK",
+      "code": "67280",
+      "name": "Kara Elmas Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "67",
+      "city_name": "ZONGULDAK",
+      "code": "67261",
+      "name": "Ereğli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "67",
+      "city_name": "ZONGULDAK",
+      "code": "67263",
+      "name": "Çaycuma Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "67",
+      "city_name": "ZONGULDAK",
+      "code": "67264",
+      "name": "Devrek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "67",
+      "city_name": "ZONGULDAK",
+      "code": "67265",
+      "name": "Alaplı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "67",
+      "city_name": "ZONGULDAK",
+      "code": "67266",
+      "name": "Gökçebey Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "68",
+      "city_name": "AKSARAY",
+      "code": "68201",
+      "name": "Aksaray Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "68",
+      "city_name": "AKSARAY",
+      "code": "68202",
+      "name": "Ortaköy Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "68",
+      "city_name": "AKSARAY",
+      "code": "68203",
+      "name": "Eskil Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "68",
+      "city_name": "AKSARAY",
+      "code": "68204",
+      "name": "Gülağaç Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "68",
+      "city_name": "AKSARAY",
+      "code": "68205",
+      "name": "Ağaçören Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "68",
+      "city_name": "AKSARAY",
+      "code": "68206",
+      "name": "Güzelyurt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "68",
+      "city_name": "AKSARAY",
+      "code": "68207",
+      "name": "Sultanhanı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "69",
+      "city_name": "BAYBURT",
+      "code": "69201",
+      "name": "Bayburt Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "70",
+      "city_name": "KARAMAN",
+      "code": "70201",
+      "name": "Karaman Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "70",
+      "city_name": "KARAMAN",
+      "code": "70204",
+      "name": "Larende Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "70",
+      "city_name": "KARAMAN",
+      "code": "70202",
+      "name": "Ermenek Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "70",
+      "city_name": "KARAMAN",
+      "code": "70203",
+      "name": "Sarıveliler Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "71",
+      "city_name": "KIRIKKALE",
+      "code": "71201",
+      "name": "Irmak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "71",
+      "city_name": "KIRIKKALE",
+      "code": "71202",
+      "name": "Kaletepe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "71",
+      "city_name": "KIRIKKALE",
+      "code": "71205",
+      "name": "Kırıkkale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "71",
+      "city_name": "KIRIKKALE",
+      "code": "71203",
+      "name": "Keskin Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "71",
+      "city_name": "KIRIKKALE",
+      "code": "71204",
+      "name": "Delice Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "72",
+      "city_name": "BATMAN",
+      "code": "72260",
+      "name": "Batman Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "72",
+      "city_name": "BATMAN",
+      "code": "72262",
+      "name": "Raman Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "72",
+      "city_name": "BATMAN",
+      "code": "72261",
+      "name": "Kozluk Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "73",
+      "city_name": "ŞIRNAK",
+      "code": "73260",
+      "name": "Şırnak Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "73",
+      "city_name": "ŞIRNAK",
+      "code": "73261",
+      "name": "Cizre Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "73",
+      "city_name": "ŞIRNAK",
+      "code": "73262",
+      "name": "Silopi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "73",
+      "city_name": "ŞIRNAK",
+      "code": "73263",
+      "name": "Uludere Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "73",
+      "city_name": "ŞIRNAK",
+      "code": "73264",
+      "name": "İdil Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "74",
+      "city_name": "BARTIN",
+      "code": "74260",
+      "name": "Bartın Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "74",
+      "city_name": "BARTIN",
+      "code": "74261",
+      "name": "Ulus Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "74",
+      "city_name": "BARTIN",
+      "code": "74262",
+      "name": "Amasra Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "75",
+      "city_name": "ARDAHAN",
+      "code": "75201",
+      "name": "Ardahan Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "75",
+      "city_name": "ARDAHAN",
+      "code": "75202",
+      "name": "Göle Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "76",
+      "city_name": "IĞDIR",
+      "code": "76201",
+      "name": "Iğdır Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "76",
+      "city_name": "IĞDIR",
+      "code": "76203",
+      "name": "Aras Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "76",
+      "city_name": "IĞDIR",
+      "code": "76202",
+      "name": "Tuzluca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "77",
+      "city_name": "YALOVA",
+      "code": "77201",
+      "name": "Yalova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "77",
+      "city_name": "YALOVA",
+      "code": "77202",
+      "name": "Çınarcık Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "77",
+      "city_name": "YALOVA",
+      "code": "77203",
+      "name": "Altınova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "77",
+      "city_name": "YALOVA",
+      "code": "77204",
+      "name": "Armutlu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "78",
+      "city_name": "KARABÜK",
+      "code": "78201",
+      "name": "Karabük Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "78",
+      "city_name": "KARABÜK",
+      "code": "78261",
+      "name": "Demirkent Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "78",
+      "city_name": "KARABÜK",
+      "code": "78260",
+      "name": "Safranbolu Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "78",
+      "city_name": "KARABÜK",
+      "code": "78202",
+      "name": "Yenice Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "78",
+      "city_name": "KARABÜK",
+      "code": "78203",
+      "name": "Eskipazar Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "79",
+      "city_name": "KİLİS",
+      "code": "79201",
+      "name": "Kilis Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "80",
+      "city_name": "OSMANİYE",
+      "code": "80201",
+      "name": "Osmaniye Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "80",
+      "city_name": "OSMANİYE",
+      "code": "80205",
+      "name": "Amanos Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "80",
+      "city_name": "OSMANİYE",
+      "code": "80260",
+      "name": "Kadirli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "80",
+      "city_name": "OSMANİYE",
+      "code": "80202",
+      "name": "Düziçi Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "80",
+      "city_name": "OSMANİYE",
+      "code": "80203",
+      "name": "Bahçe Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "80",
+      "city_name": "OSMANİYE",
+      "code": "80204",
+      "name": "Toprakkale Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "81",
+      "city_name": "DÜZCE",
+      "code": "81260",
+      "name": "Düzce Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "81",
+      "city_name": "DÜZCE",
+      "code": "81261",
+      "name": "Akçakoca Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "81",
+      "city_name": "DÜZCE",
+      "code": "81262",
+      "name": "Gölyaka Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "81",
+      "city_name": "DÜZCE",
+      "code": "81263",
+      "name": "Kaynaşlı Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "81",
+      "city_name": "DÜZCE",
+      "code": "81264",
+      "name": "Gümüşova Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "81",
+      "city_name": "DÜZCE",
+      "code": "81265",
+      "name": "Cumayeri Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "81",
+      "city_name": "DÜZCE",
+      "code": "81266",
+      "name": "Çilimli Vergi Dairesi Müdürlüğü",
+      "active": null
+    },
+    {
+      "city_code": "81",
+      "city_name": "DÜZCE",
+      "code": "81267",
+      "name": "Yığılca Vergi Dairesi Müdürlüğü",
+      "active": null
+    }
+  ]
+}

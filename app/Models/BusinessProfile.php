@@ -8,9 +8,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BusinessProfile extends Model
 {
+    protected static function booted(): void
+    {
+        static::updating(function (BusinessProfile $profile): void {
+            if ($profile->isDirty('tax_office') && ! $profile->isDirty(['tax_office_city_code', 'tax_office_code'])) {
+                $profile->tax_office_city_code = null;
+                $profile->tax_office_code = null;
+            }
+        });
+
+        static::updated(function (BusinessProfile $profile): void {
+            if ($profile->wasChanged('tax_number_hash')
+                || ($profile->wasChanged('tax_number') && $profile->tax_number !== $profile->getOriginal('tax_number'))) {
+                $profile->user?->forceFill(['eids_user_code' => null, 'eids_identity_verified_at' => null])->save();
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id', 'office_name', 'license_number', 'tax_office', 'tax_number',
-        'tax_number_hash', 'business_phone', 'city', 'district', 'neighborhood', 'address',
+        'tax_office_city_code', 'tax_office_code', 'tax_number_hash', 'business_phone', 'city', 'district', 'neighborhood', 'address',
         'logo_path', 'approval_status', 'review_note', 'reviewed_by', 'reviewed_at',
     ];
 

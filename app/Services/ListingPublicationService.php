@@ -31,12 +31,15 @@ class ListingPublicationService
         if ($owner?->account_status !== AccountStatus::ACTIVE || ! $owner?->email_verified_at) {
             $errors['account'] = 'Aktif ve e-postası doğrulanmış bir hesap gereklidir.';
         }
-        if (! $listing->eids_exempt && $owner?->role !== UserRole::SUPERVISOR && ! $owner?->eids_identity_verified_at) {
-            $errors['eids_identity'] = 'Önce EİDS kimlik doğrulamasını tamamlayın.';
+        if (! $listing->eids_exempt && $owner?->role !== UserRole::SUPERVISOR && ! $owner?->hasValidEidsIdentity()) {
+            $errors['eids_identity'] = 'Geçerli EİDS hesap doğrulaması bulunamadı. EİDS Kimliğimi Doğrula düğmesiyle güncel işletme/kimlik bilgileriniz için doğrulamayı yenileyin.';
         }
         if ($owner?->role === UserRole::AGENT
             && $owner->businessProfile?->approval_status !== BusinessApprovalStatus::APPROVED) {
             $errors['business'] = 'Emlak işletmesi yönetici tarafından onaylanmamış.';
+        }
+        if (isset($errors['eids_identity'])) {
+            throw ValidationException::withMessages($errors);
         }
         // EİDS kontrolü yayınlama anında yapılır; kullanıcı ayrıca bir sekmeden sorgu başlatmaz.
         if (! $listing->eids_exempt && $listing->eids_status !== 'verified' && ! $this->eidsService->verifyListing($listing)) {

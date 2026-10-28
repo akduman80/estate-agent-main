@@ -34,6 +34,7 @@ class RegistrationController extends Controller
             'documents' => LegalDocument::query()->where('is_active', true)->latest('published_at')->get()->unique('slug'),
             'emailOtpEnabled' => $otpFeatures->emailEnabled(),
             'cities' => TurkeyAddressService::getCities(),
+            'taxDirectory' => app(\App\Services\TaxOfficeDirectory::class),
         ]);
     }
 
@@ -71,14 +72,28 @@ class RegistrationController extends Controller
             $rules += [
                 'office_name' => ['required', 'string', 'max:255'],
                 'license_number' => ['required', 'string', 'max:100', 'unique:business_profiles,license_number'],
-                'tax_office' => ['required', 'string', 'max:150'],
+                'tax_office_city_code' => ['required', 'string', Rule::in(array_keys(app(\App\Services\TaxOfficeDirectory::class)->cities()))],
+                'tax_office_code' => ['bail', 'required', 'string', function ($attribute, $value, $fail) use ($request) {
+                    $city = $request->input('tax_office_city_code');
+                    if (! is_string($city) || ! app(\App\Services\TaxOfficeDirectory::class)->find($city, $value)) {
+                        $fail('Seçtiğiniz ile bağlı geçerli bir vergi dairesi seçin.');
+                    }
+                }],
                 'tax_number' => ['required', 'digits:10'],
                 'business_phone' => ['nullable', 'string', 'max:24'],
                 'address' => ['required', 'string', 'max:1000'],
             ];
         }
 
-        $data = $request->validate($rules);
+        $data = $request->validate($rules, [
+            'tax_office_city_code.required' => 'Vergi dairesi ilini seçin.',
+            'tax_office_city_code.in' => 'Geçerli bir vergi dairesi ili seçin.',
+            'tax_office_code.required' => 'Vergi dairesini seçin.',
+        ]);
+        if ($type === 'business') {
+            $office = app(\App\Services\TaxOfficeDirectory::class)->find($data['tax_office_city_code'], $data['tax_office_code']);
+            $data['tax_office'] = $office['name'];
+        }
 
         $identityHash = hash('sha256', preg_replace('/\D/', '', $data['identity_number']));
         if (User::query()->where('identity_number_hash', $identityHash)->exists()) {
@@ -130,6 +145,8 @@ class RegistrationController extends Controller
                     'office_name' => $data['office_name'],
                     'license_number' => $data['license_number'],
                     'tax_office' => $data['tax_office'],
+                    'tax_office_city_code' => $data['tax_office_city_code'],
+                    'tax_office_code' => $data['tax_office_code'],
                     'tax_number' => $taxNumber,
                     'tax_number_hash' => hash('sha256', $taxNumber),
                     'business_phone' => $data['business_phone'] ?? null,

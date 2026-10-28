@@ -17,7 +17,7 @@ class Dashboard extends BaseDashboard
     {
         return [
             Action::make('verifyEidsIdentity')
-                ->label(auth()->user()?->eids_user_code ? 'EİDS Kimlik Doğrulamasını Yenile' : 'EİDS Kimliğimi Doğrula')
+                ->label(auth()->user()?->hasValidEidsIdentity() ? 'EİDS Kimlik Doğrulamasını Yenile' : 'EİDS Kimliğimi Doğrula')
                 ->icon('heroicon-o-shield-check')
                 ->url(route('account.eids.start')),
         ];
