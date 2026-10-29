@@ -1,7 +1,7 @@
 @props(['post'])
 
 @php
-    $imageUrl = $post->cover_image ? \Illuminate\Support\Facades\Storage::url($post->cover_image) : asset('fe-assets/assets/img/blog2.jpg');
+    $imageUrl = $post->news_poster_url ?: asset('fe-assets/assets/img/blog2.jpg');
     $date = ($post->published_at ?? $post->created_at)?->locale('tr')->translatedFormat('d F Y');
 @endphp
 
@@ -9,6 +9,9 @@
     <a href="{{ route('blogs.show', $post->slug) }}" class="flex h-full flex-col">
         <div class="relative h-52 overflow-hidden">
             <img src="{{ $imageUrl }}" alt="{{ $post->title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy">
+            @if($post->news_video_url || \App\Services\NewsVideo::youtubeId($post->news_media['youtube_url'] ?? null))
+                <span class="absolute bottom-3 left-3 rounded-lg bg-blue-950 px-3 py-2 text-xs font-bold text-white">▶ Videolu Emlak Haberi</span>
+            @endif
             @if($post->category)
                 <span class="absolute left-3 top-3 rounded-lg bg-orange-500 px-2.5 py-1 text-[10px] font-bold uppercase text-white shadow">{{ $post->category->name }}</span>
             @endif

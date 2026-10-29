@@ -14,6 +14,12 @@ class PostResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Emlak Haberi';
+
+    protected static ?string $pluralModelLabel = 'Emlak Haberleri';
+
+    protected static ?string $navigationLabel = 'Emlak Haberleri';
+
     public static function form(Form $form): Form
     {
         return \App\Filament\Editor\Resources\PostResource::form($form);

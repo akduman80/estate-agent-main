@@ -1,6 +1,6 @@
 <x-layouts.modern :title="$post->title.' | ZYDEMLAK'" :description="strip_tags($post->summary ?? '') ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 155)">
     @php
-        $imageUrl = $post->cover_image ? \Illuminate\Support\Facades\Storage::url($post->cover_image) : asset('fe-assets/assets/img/blog2.jpg');
+        $imageUrl = $post->news_poster_url ?: asset('fe-assets/assets/img/blog2.jpg');
         $publishedDate = ($post->published_at ?? $post->created_at)?->locale('tr')->translatedFormat('d F Y');
         $sitePhone = \App\Models\Setting::get('site_phone', '0530 360 77 69');
         $phoneDigits = preg_replace('/\D+/', '', $sitePhone);
@@ -12,6 +12,17 @@
         <meta property="og:description" content="{{ strip_tags($post->summary ?? '') ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 155) }}">
         <meta property="og:image" content="{{ $imageUrl }}">
         <meta property="og:url" content="{{ route('blogs.show', $post->slug) }}">
+        @if($post->news_video_url && $post->news_poster_url && !empty($post->news_media['duration']))
+            <script type="application/ld+json">{!! json_encode([
+                '@context' => 'https://schema.org', '@type' => 'VideoObject',
+                'name' => ($post->news_media['title'] ?? null) ?: $post->title,
+                'description' => ($post->news_media['description'] ?? null) ?: strip_tags($post->summary ?? $post->title),
+                'thumbnailUrl' => [$post->news_poster_url],
+                'uploadDate' => ($post->published_at ?? $post->created_at)->toIso8601String(),
+                'duration' => 'PT'.(int)ceil($post->news_media['duration']).'S',
+                'contentUrl' => $post->news_video_url,
+            ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!}</script>
+        @endif
     @endpush
 
     <section class="border-b border-slate-200 bg-white">
@@ -39,7 +50,10 @@
                         </div>
                     </header>
 
-                    <img src="{{ $imageUrl }}" alt="{{ $post->title }}" class="h-[280px] w-full object-cover sm:h-[420px]">
+                    <x-news-video :post="$post" />
+                    @if($post->cover_image || (!$post->news_video_url && !\App\Services\NewsVideo::youtubeId($post->news_media['youtube_url'] ?? null)))
+                        <img src="{{ $imageUrl }}" alt="{{ $post->title }}" class="h-[280px] w-full object-cover sm:h-[420px]">
+                    @endif
 
                     <div class="article-content p-6 text-[15px] text-slate-700 md:p-8">
                         @if($post->summary)

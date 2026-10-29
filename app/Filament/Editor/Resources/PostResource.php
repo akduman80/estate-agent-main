@@ -3,6 +3,7 @@
 namespace App\Filament\Editor\Resources;
 
 use App\Filament\Editor\Resources\PostResource\Pages;
+use App\Filament\Forms\NewsMediaFields;
 use App\Models\Post;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -22,6 +23,12 @@ class PostResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Emlak Haberi';
+
+    protected static ?string $pluralModelLabel = 'Emlak Haberleri';
+
+    protected static ?string $navigationLabel = 'Emlak Haberleri';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -33,7 +40,11 @@ class PostResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug($state))),
+                            ->afterStateUpdated(function ($state, callable $set, string $operation): void {
+                                if ($operation === 'create') {
+                                    $set('slug', Str::slug($state));
+                                }
+                            }),
 
                         TextInput::make('slug')
                             ->label('URL (Slug)')
@@ -60,6 +71,7 @@ class PostResource extends Resource
                         Forms\Components\Toggle::make('is_featured')
                             ->label('Ana sayfada öne çıkar')
                             ->default(false),
+                        Forms\Components\DateTimePicker::make('published_at')->label('Yayın Tarihi'),
                     ]),
 
                 RichEditor::make('summary')
@@ -75,6 +87,11 @@ class PostResource extends Resource
                     ->label('Kapak Görseli')
                     ->image()
                     ->directory('posts')
+                    ->columnSpanFull(),
+
+                Forms\Components\Section::make('Haber Medyası')
+                    ->description('Görsel eklemek için mevcut kapak ve içerik görsel alanlarını kullanın. Video ve YouTube bağlantısı birlikte eklenebilir. Video yükleme yalnız yetkili admin hesabına açıktır.')
+                    ->schema(NewsMediaFields::schema())
                     ->columnSpanFull(),
             ]);
     }
@@ -97,11 +114,15 @@ class PostResource extends Resource
                         default => 'gray',
                     }),
                 Tables\Columns\IconColumn::make('is_featured')->label('Öne çıkan')->boolean(),
+                Tables\Columns\TextColumn::make('news_media.status')->label('Haber Videosu')
+                    ->formatStateUsing(fn ($state) => NewsMediaFields::status($state))->badge(),
+                Tables\Columns\TextColumn::make('published_at')->label('Yayın Tarihi')->dateTime('d.m.Y H:i'),
                 Tables\Columns\TextColumn::make('created_at')->label('Tarih')->dateTime('d.m.Y H:i'),
             ])
-            ->filters([])
+            ->searchPlaceholder('Haber Ara')
+            ->filters([Tables\Filters\SelectFilter::make('status')->label('Yayın Durumu')->options(['draft' => 'Taslak Haberler', 'in_review' => 'Onay Bekleyen Haberler', 'published' => 'Yayımlanan Haberler'])])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('Haber Düzenle'),
             ]);
     }
 

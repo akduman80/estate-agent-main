@@ -3,17 +3,46 @@
 namespace App\Filament\Editor\Resources\PostResource\Pages;
 
 use App\Filament\Editor\Resources\PostResource;
+use App\Filament\Forms\NewsMediaFields;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPost extends EditRecord
 {
     protected static string $resource = PostResource::class;
 
+    protected static ?string $title = 'Emlak Haberini Düzenle';
+
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Emlak Haberi Kaydedildi';
+    }
+
+    protected function getSaveFormAction(): Action
+    {
+        return parent::getSaveFormAction()->label('Değişiklikleri Kaydet');
+    }
+
+    protected function getCancelFormAction(): Action
+    {
+        return parent::getCancelFormAction()->label('Vazgeç');
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data = NewsMediaFields::sanitize($data, $this->record);
+        if (($data['status'] ?? '') === 'published' && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
+
+        return $data;
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->label('Emlak Haberini Sil')->modalHeading('Emlak Haberini Sil')->modalDescription('Bu emlak haberini silmek istediğinizden emin misiniz?')->modalSubmitActionLabel('Haberi Sil')->modalCancelActionLabel('Vazgeç')->successNotificationTitle('Emlak Haberi Silindi'),
         ];
     }
 }

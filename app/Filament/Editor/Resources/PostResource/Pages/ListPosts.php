@@ -10,10 +10,12 @@ class ListPosts extends ListRecords
 {
     protected static string $resource = PostResource::class;
 
+    protected static ?string $title = 'Tüm Emlak Haberleri';
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Yeni Emlak Haberi Ekle'),
         ];
     }
 }
