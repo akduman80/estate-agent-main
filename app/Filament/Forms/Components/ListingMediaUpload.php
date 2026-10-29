@@ -5,7 +5,7 @@ namespace App\Filament\Forms\Components;
 use App\Models\ListingFormDraft;
 use App\Services\ListingFormDraftService;
 use Closure;
-use Filament\Forms\Components\FileUpload;
+use App\Filament\Forms\Components\PublicMediaUpload as FileUpload;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ListingMediaUpload extends FileUpload

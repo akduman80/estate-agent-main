@@ -6,7 +6,7 @@ use App\Filament\Editor\Resources\PostResource\Pages;
 use App\Filament\Forms\NewsMediaFields;
 use App\Models\Post;
 use Filament\Forms;
-use Filament\Forms\Components\FileUpload;
+use App\Filament\Forms\Components\PublicMediaUpload as FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;

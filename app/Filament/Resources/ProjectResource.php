@@ -6,7 +6,7 @@ use App\Filament\Resources\ProjectResource\Pages;
 use App\Models\Project;
 use App\Services\TurkeyAddressService;
 use Filament\Forms;
-use Filament\Forms\Components\FileUpload;
+use App\Filament\Forms\Components\PublicMediaUpload as FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;

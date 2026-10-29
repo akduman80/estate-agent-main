@@ -198,7 +198,7 @@ class ManageSettings extends Page
                         Forms\Components\Tabs\Tab::make('Genel Bilgiler') // [cite: 15]
                             ->icon('heroicon-o-building-office') // [cite: 15]
                             ->schema([
-                                Forms\Components\FileUpload::make('site_logo')
+                                \App\Filament\Forms\Components\PublicMediaUpload::make('site_logo')
                                     ->label('Site Logosu')
                                     ->image()
                                     ->live()
@@ -211,7 +211,7 @@ class ManageSettings extends Page
                                     ->imageResizeTargetWidth('1000')
                                     ->imageResizeTargetHeight('650')
                                     ->imageResizeUpscale(false)
-                                    ->afterStateUpdated(fn (Forms\Components\FileUpload $component) => $this->saveLogoImmediately($component))
+                                    ->afterStateUpdated(fn (\App\Filament\Forms\Components\PublicMediaUpload $component) => $this->saveLogoImmediately($component))
                                     ->helperText('PNG, JPG veya WEBP (en fazla 5 MB). Logo yüklenince otomatik kaydedilir ve açık renkli arka planı sitede kaldırılır.'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_phone')->label('Telefon Numarası'), // [cite: 15]
                                 Forms\Components\TextInput::make('site_email')->label('E-posta Adresi'), // [cite: 15]
@@ -274,7 +274,7 @@ class ManageSettings extends Page
                                             ->required()
                                             ->maxLength(100),
 
-                                        Forms\Components\FileUpload::make('file')
+                                        \App\Filament\Forms\Components\PublicMediaUpload::make('file')
                                             ->label('Dosya')
                                             ->disk('public')
                                             ->directory('user-documents')
@@ -710,7 +710,7 @@ class ManageSettings extends Page
             ->statePath('data'); // [cite: 15]
     }
 
-    public function saveLogoImmediately(Forms\Components\FileUpload $component): void
+    public function saveLogoImmediately(\App\Filament\Forms\Components\PublicMediaUpload $component): void
     {
         $component->saveUploadedFiles();
 

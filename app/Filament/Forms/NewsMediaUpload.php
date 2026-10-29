@@ -3,7 +3,7 @@
 namespace App\Filament\Forms;
 
 use App\Rules\NewsMediaFile;
-use Filament\Forms\Components\FileUpload;
+use App\Filament\Forms\Components\PublicMediaUpload as FileUpload;
 
 class NewsMediaUpload extends FileUpload
 {
