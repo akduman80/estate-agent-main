@@ -30,6 +30,33 @@ return [
 
     'disks' => [
 
+        // Independent opt-in disks. Existing disks and upload flows remain unchanged.
+        'r2_public' => [
+            'driver' => 's3',
+            'key' => config('cloudflare_r2.key'),
+            'secret' => config('cloudflare_r2.secret'),
+            'region' => 'auto',
+            'bucket' => config('cloudflare_r2.bucket'),
+            'endpoint' => config('cloudflare_r2.endpoint'),
+            'url' => config('cloudflare_r2.public_base_url') ?: null,
+            'use_path_style_endpoint' => true,
+            'throw' => true,
+            'report' => false,
+        ],
+
+        // A PUBLIC bucket cannot protect private files merely by using a prefix.
+        'r2_private' => [
+            'driver' => 's3',
+            'key' => env('R2_PRIVATE_ACCESS_KEY_ID'),
+            'secret' => env('R2_PRIVATE_SECRET_ACCESS_KEY'),
+            'region' => 'auto',
+            'bucket' => env('R2_PRIVATE_BUCKET_NAME'),
+            'endpoint' => config('cloudflare_r2.endpoint'),
+            'use_path_style_endpoint' => true,
+            'throw' => true,
+            'report' => false,
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
@@ -39,7 +66,7 @@ return [
         ],
 
         'public' => [
-            'driver' => 'local',
+            'driver' => config('cloudflare_r2.enabled', false) ? 'r2_media' : 'local',
             'root' => storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',

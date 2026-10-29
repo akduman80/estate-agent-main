@@ -75,7 +75,7 @@ class ListingTools
             'rooms' => $listing->room_count, 'building_age' => $listing->building_age, 'floor' => $listing->floor_number,
             'heating' => $listing->heating_type, 'deed' => $listing->deed_status, 'usage' => $listing->usage_status,
             'date' => $listing->published_at,
-            'image' => $listing->images->first() ? asset('storage/'.$listing->images->first()->image_path) : null,
+            'image' => $listing->images->first() ? \Illuminate\Support\Facades\Storage::disk('public')->url($listing->images->first()->image_path) : null,
         ];
     }
 }

@@ -8,7 +8,7 @@
     $captionLabel = config('news_video.caption_languages')[$media['captions_language'] ?? 'tr'] ?? 'Türkçe';
 @endphp
 @if($videoUrl)
-    <div class="zyd-news-video" data-news-video data-manifest="{{ $videoUrl }}" data-variants="{{ json_encode(array_map(fn ($q) => ['quality' => $q, 'url' => preg_replace('~master\.m3u8$~', $q.'.m3u8', $videoUrl)], $qualities)) }}">
+    <div class="zyd-news-video" data-news-video data-manifest="{{ $videoUrl }}" data-variants="{{ json_encode(array_map(fn ($q) => ['quality' => $q, 'url' => \Illuminate\Support\Facades\Storage::disk($disk)->url(dirname($media['manifest']).'/'.$q.'.m3u8')], $qualities)) }}">
         <video controls playsinline crossorigin="anonymous" preload="none" poster="{{ $post->news_poster_url }}" aria-label="{{ $media['title'] ?? $post->title }}">
             @if(!empty($media['captions']))
                 <track kind="subtitles" src="{{ \Illuminate\Support\Facades\Storage::disk($disk)->url($media['captions']) }}" srclang="{{ $media['captions_language'] ?? 'tr' }}" label="{{ config('news_video.caption_languages')[$media['captions_language'] ?? 'tr'] ?? 'Türkçe' }}">
