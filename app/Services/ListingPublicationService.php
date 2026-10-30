@@ -56,12 +56,18 @@ class ListingPublicationService
             throw ValidationException::withMessages($errors);
         }
 
-        $listing->forceFill([
-            'publication_status' => 'pending_approval',
-            'submitted_at' => now(),
-            'publication_terms_accepted_at' => now(),
-            'is_active' => false,
-        ])->save();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($listing): void {
+            $current = Listing::whereKey($listing->id)->lockForUpdate()->firstOrFail();
+            if ($current->publication_status === 'pending_approval') return;
+            $current->forceFill([
+                'publication_status' => 'pending_approval',
+                'submitted_at' => now(),
+                'publication_terms_accepted_at' => now(),
+                'is_active' => false,
+            ])->save();
+            app(\App\Services\WhatsappNotifications::class)->listing($current);
+        });
+        $listing->refresh();
 
         Mail::to(config('security.approval_email'))->send(new ApprovalRequestedMail('ilan', $user, $listing->id));
     }

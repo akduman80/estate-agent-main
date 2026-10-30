@@ -166,6 +166,8 @@ class RegistrationController extends Controller
                 ]);
             }
 
+            app(\App\Services\WhatsappNotifications::class)->member($user);
+
             return $user;
         });
 

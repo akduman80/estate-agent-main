@@ -37,10 +37,13 @@ class EmailVerificationController extends Controller
         $otpService->verify($user, OtpPurpose::EMAIL_VERIFICATION, $data['code']);
 
         $isBusiness = $user->role === UserRole::AGENT;
-        $user->forceFill([
-            'email_verified_at' => now(),
-            'account_status' => $isBusiness ? AccountStatus::PENDING_APPROVAL : AccountStatus::ACTIVE,
-        ])->save();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($user, $isBusiness): void {
+            $user->forceFill([
+                'email_verified_at' => now(),
+                'account_status' => $isBusiness ? AccountStatus::PENDING_APPROVAL : AccountStatus::ACTIVE,
+            ])->save();
+            app(\App\Services\WhatsappNotifications::class)->member($user);
+        });
 
         $request->session()->forget('verification_user_id');
 
@@ -70,10 +73,13 @@ class EmailVerificationController extends Controller
         $user = User::findOrFail($request->session()->get('verification_user_id'));
         $isBusiness = $user->role === UserRole::AGENT;
 
-        $user->forceFill([
-            'email_verified_at' => now(),
-            'account_status' => $isBusiness ? AccountStatus::PENDING_APPROVAL : AccountStatus::ACTIVE,
-        ])->save();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($user, $isBusiness): void {
+            $user->forceFill([
+                'email_verified_at' => now(),
+                'account_status' => $isBusiness ? AccountStatus::PENDING_APPROVAL : AccountStatus::ACTIVE,
+            ])->save();
+            app(\App\Services\WhatsappNotifications::class)->member($user);
+        });
         $request->session()->forget('verification_user_id');
 
         if ($isBusiness) {
