@@ -25,6 +25,40 @@ class NewsMediaFields
     public static function sanitize(array $data, ?Post $record = null): array
     {
         $record = $record?->fresh();
+        $generation = $data['_news_media_generation'] ?? null;
+        $originalSource = $data['_news_media_source'] ?? null;
+        unset($data['_news_media_generation'], $data['_news_media_source']);
+        if ($record && array_key_exists('source', $data['news_media'] ?? [])
+            && $generation !== ($record->news_media['generation'] ?? null)
+            && ($data['news_media']['source'] ?? null) !== ($record->news_media['source'] ?? null)) {
+            if (($data['news_media']['source'] ?? null) === $originalSource) {
+                // An unchanged old form cannot overwrite newer media.
+                unset($data['news_media']['source']);
+            } else {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'data.news_media.source' => 'Video başka bir oturumda değişti. Sayfayı yenileyip tekrar deneyin.',
+                ]);
+            }
+        }
+        foreach (['cover_image' => '_news_cover_image', 'captions' => '_news_captions'] as $key => $snapshotKey) {
+            $hasSnapshot = array_key_exists($snapshotKey, $data);
+            $original = $data[$snapshotKey] ?? null;
+            unset($data[$snapshotKey]);
+            $current = $key === 'cover_image' ? $record?->cover_image : ($record?->news_media[$key] ?? null);
+            $submitted = $key === 'cover_image' ? ($data[$key] ?? null) : ($data['news_media'][$key] ?? null);
+            if ($record && $hasSnapshot && $original !== $current && $submitted !== $current) {
+                if ($submitted !== $original) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        $key === 'cover_image' ? 'data.cover_image' : 'data.news_media.captions' => 'Medya başka bir oturumda değişti. Sayfayı yenileyip tekrar deneyin.',
+                    ]);
+                }
+                if ($key === 'cover_image') {
+                    $data[$key] = $current;
+                } else {
+                    unset($data['news_media'][$key]);
+                }
+            }
+        }
         $media = array_intersect_key($data['news_media'] ?? [], array_flip(['title', 'description', 'source', 'captions', 'captions_language', 'youtube_url']));
         if (! self::admin()) {
             unset($media['source'], $media['captions']);
@@ -53,6 +87,14 @@ class NewsMediaFields
     public static function schema(): array
     {
         return [
+            \Filament\Forms\Components\Hidden::make('_news_media_generation')
+                ->afterStateHydrated(fn ($component, ?Post $record) => $component->state($record?->news_media['generation'] ?? null)),
+            \Filament\Forms\Components\Hidden::make('_news_media_source')
+                ->afterStateHydrated(fn ($component, ?Post $record) => $component->state($record?->news_media['source'] ?? null)),
+            \Filament\Forms\Components\Hidden::make('_news_cover_image')
+                ->afterStateHydrated(fn ($component, ?Post $record) => $component->state($record?->cover_image)),
+            \Filament\Forms\Components\Hidden::make('_news_captions')
+                ->afterStateHydrated(fn ($component, ?Post $record) => $component->state($record?->news_media['captions'] ?? null)),
             TextInput::make('news_media.title')->label('Video Başlığı')->maxLength(255),
             Textarea::make('news_media.description')->label('Video Açıklaması')->maxLength(2000),
             NewsMediaUpload::make('news_media.source')->label('+ Video Yükle')

@@ -31,7 +31,7 @@ class RichContentHtml
         'ul',
     ];
 
-    public static function render(?string $html): string
+    public static function render(?string $html, bool $newsHeadings = false): string
     {
         if (blank($html)) {
             return '';
@@ -53,7 +53,7 @@ class RichContentHtml
             return e(strip_tags($html));
         }
 
-        self::cleanChildren($body);
+        self::cleanChildren($body, $newsHeadings);
         self::separateAlignedHighlights($body);
 
         $output = '';
@@ -101,20 +101,20 @@ class RichContentHtml
         }
     }
 
-    private static function cleanChildren(DOMNode $node): void
+    private static function cleanChildren(DOMNode $node, bool $newsHeadings = false): void
     {
         foreach (iterator_to_array($node->childNodes) as $child) {
             if ($child instanceof DOMElement) {
-                self::cleanElement($child);
+                self::cleanElement($child, $newsHeadings);
             }
 
             if ($child->parentNode) {
-                self::cleanChildren($child);
+                self::cleanChildren($child, $newsHeadings);
             }
         }
     }
 
-    private static function cleanElement(DOMElement $element): void
+    private static function cleanElement(DOMElement $element, bool $newsHeadings = false): void
     {
         $tag = strtolower($element->tagName);
 
@@ -124,7 +124,7 @@ class RichContentHtml
             return;
         }
 
-        if (! in_array($tag, self::ALLOWED_TAGS, true)) {
+        if (! in_array($tag, self::ALLOWED_TAGS, true) && ! ($newsHeadings && $tag === 'h1')) {
             self::unwrap($element);
 
             return;

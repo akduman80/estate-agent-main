@@ -1,7 +1,7 @@
 @props(['post', 'large' => false])
 
 @php
-    $imageUrl = $post->cover_image ? \Illuminate\Support\Facades\Storage::url($post->cover_image) : asset('fe-assets/assets/img/blog2.jpg');
+    $imageUrl = $post->news_poster_url ? $post->news_poster_url : asset('fe-assets/assets/img/blog2.jpg');
     $date = ($post->published_at ?? $post->created_at)?->locale('tr')->translatedFormat('d F Y');
 @endphp
 

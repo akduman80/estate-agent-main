@@ -31,12 +31,27 @@ class EditPost extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $data = NewsMediaFields::sanitize($data, $this->record);
+        // Media is merged with the current record under the update lock.
         if (($data['status'] ?? '') === 'published' && empty($data['published_at'])) {
             $data['published_at'] = now();
         }
 
         return $data;
+    }
+
+    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($record, $data) {
+            $fresh = \App\Models\Post::query()->lockForUpdate()->findOrFail($record->getKey());
+            $fresh->update(NewsMediaFields::sanitize($data, $fresh));
+            $record->setRawAttributes($fresh->getAttributes(), true);
+            return $record;
+        });
+    }
+
+    protected function afterSave(): void
+    {
+        $this->refreshFormData(['news_media', 'cover_image']);
     }
 
     protected function getHeaderActions(): array

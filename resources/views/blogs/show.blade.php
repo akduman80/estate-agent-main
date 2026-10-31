@@ -7,6 +7,9 @@
     @endphp
 
     @push('head')
+        <style>
+            .article-content h1 { margin: 1.5rem 0 1rem; font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 800; line-height: 1.3; color: #172554; overflow-wrap: anywhere; }
+        </style>
         <meta property="og:type" content="article">
         <meta property="og:title" content="{{ $post->title }}">
         <meta property="og:description" content="{{ strip_tags($post->summary ?? '') ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 155) }}">
@@ -59,7 +62,7 @@
                         @if($post->summary)
                             <div class="article-lead">{!! \App\Support\RichContentHtml::render($post->summary) !!}</div>
                         @endif
-                        {!! \App\Support\RichContentHtml::render($post->content) !!}
+                        {!! \App\Support\RichContentHtml::render($post->content, newsHeadings: true) !!}
 
                         <div class="mt-8 border-t border-slate-100 pt-6">
                             <div class="flex flex-wrap items-center gap-2">

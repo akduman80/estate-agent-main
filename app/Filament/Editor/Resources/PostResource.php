@@ -87,6 +87,27 @@ class PostResource extends Resource
                     ->label('Kapak Görseli')
                     ->image()
                     ->directory('posts')
+                    ->saveUploadedFileUsing(function (\Filament\Forms\Components\BaseFileUpload $component, \Livewire\Features\SupportFileUploads\TemporaryUploadedFile $file): string {
+                        $path = 'posts/'.$component->getUploadedFileNameForStorage($file);
+                        $stream = fopen($file->getRealPath(), 'rb');
+                        try {
+                            $saved = $component->getDisk()->put($path, $stream, ['visibility' => 'public']);
+                        } catch (\Throwable $exception) {
+                            report($exception);
+                            $saved = false;
+                        } finally {
+                            if (is_resource($stream)) {
+                                fclose($stream);
+                            }
+                        }
+                        if (! $saved) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                'data.cover_image' => 'Kapak görseli kaydedilemedi. Lütfen yeniden deneyin.',
+                            ]);
+                        }
+
+                        return $path;
+                    })
                     ->columnSpanFull(),
 
                 Forms\Components\Section::make('Haber Medyası')

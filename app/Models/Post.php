@@ -40,7 +40,7 @@ class Post extends Model
 
     public function getNewsPosterUrlAttribute(): ?string
     {
-        return $this->cover_image ? Storage::url($this->cover_image)
+        return $this->cover_image ? Storage::disk('public')->url($this->cover_image)
             : NewsVideo::outputUrl($this, 'poster');
     }
 
