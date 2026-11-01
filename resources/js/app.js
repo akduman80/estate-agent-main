@@ -253,3 +253,17 @@ document.addEventListener('DOMContentLoaded', () => {
         render(currentCount);
     });
 });
+
+// Deterrence only; keyboard shortcuts and controls remain available.
+document.addEventListener('dragstart', (event) => {
+    if (event.target instanceof Element && event.target.closest('img[data-listing-photo]')) {
+        event.preventDefault();
+    }
+});
+
+// Requested context-menu deterrent applies only to listing photographs.
+document.addEventListener('contextmenu', (event) => {
+    if (event.target instanceof Element && event.target.closest('img[data-listing-photo]')) {
+        event.preventDefault();
+    }
+});
