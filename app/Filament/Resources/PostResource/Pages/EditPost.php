@@ -51,7 +51,7 @@ class EditPost extends EditRecord
 
     protected function afterSave(): void
     {
-        $this->refreshFormData(['news_media', 'cover_image']);
+        $this->refreshFormData(['news_media', 'cover_image', 'published_at']);
     }
 
     protected function getHeaderActions(): array

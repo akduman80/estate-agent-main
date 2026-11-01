@@ -2,7 +2,7 @@
 
 @php
     $imageUrl = $post->news_poster_url ?: asset('fe-assets/assets/img/blog2.jpg');
-    $date = ($post->published_at ?? $post->created_at)?->locale('tr')->translatedFormat('d F Y');
+    $date = ($post->published_at ?? $post->created_at)?->copy()->timezone('Europe/Istanbul')->locale('tr')->translatedFormat('d F Y');
 @endphp
 
 <article class="news-card group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">

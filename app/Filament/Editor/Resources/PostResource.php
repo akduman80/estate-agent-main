@@ -71,7 +71,7 @@ class PostResource extends Resource
                         Forms\Components\Toggle::make('is_featured')
                             ->label('Ana sayfada öne çıkar')
                             ->default(false),
-                        Forms\Components\DateTimePicker::make('published_at')->label('Yayın Tarihi'),
+                        Forms\Components\DateTimePicker::make('published_at')->label('Yayın Tarihi')->timezone('Europe/Istanbul')->helperText('Türkiye saati (UTC+3). İleri tarihli haberler belirtilen saatte görünür.'),
                     ]),
 
                 RichEditor::make('summary')
@@ -137,7 +137,7 @@ class PostResource extends Resource
                 Tables\Columns\IconColumn::make('is_featured')->label('Öne çıkan')->boolean(),
                 Tables\Columns\TextColumn::make('news_media.status')->label('Haber Videosu')
                     ->formatStateUsing(fn ($state) => NewsMediaFields::status($state))->badge(),
-                Tables\Columns\TextColumn::make('published_at')->label('Yayın Tarihi')->dateTime('d.m.Y H:i'),
+                Tables\Columns\TextColumn::make('published_at')->label('Yayın Tarihi')->dateTime('d.m.Y H:i')->timezone('Europe/Istanbul'),
                 Tables\Columns\TextColumn::make('created_at')->label('Tarih')->dateTime('d.m.Y H:i'),
             ])
             ->searchPlaceholder('Haber Ara')

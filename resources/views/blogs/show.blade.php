@@ -1,7 +1,7 @@
 <x-layouts.modern :title="$post->title.' | ZYDEMLAK'" :description="strip_tags($post->summary ?? '') ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 155)">
     @php
         $imageUrl = $post->news_poster_url ?: asset('fe-assets/assets/img/blog2.jpg');
-        $publishedDate = ($post->published_at ?? $post->created_at)?->locale('tr')->translatedFormat('d F Y');
+        $publishedDate = ($post->published_at ?? $post->created_at)?->copy()->timezone('Europe/Istanbul')->locale('tr')->translatedFormat('d F Y');
         $sitePhone = \App\Models\Setting::get('site_phone', '0530 360 77 69');
         $phoneDigits = preg_replace('/\D+/', '', $sitePhone);
     @endphp

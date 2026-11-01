@@ -2,7 +2,7 @@
 
 @php
     $imageUrl = $post->news_poster_url ? $post->news_poster_url : asset('fe-assets/assets/img/blog2.jpg');
-    $date = ($post->published_at ?? $post->created_at)?->locale('tr')->translatedFormat('d F Y');
+    $date = ($post->published_at ?? $post->created_at)?->copy()->timezone('Europe/Istanbul')->locale('tr')->translatedFormat('d F Y');
 @endphp
 
 <a href="{{ route('blogs.show', $post->slug) }}" class="group block">
