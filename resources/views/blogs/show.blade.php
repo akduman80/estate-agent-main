@@ -55,7 +55,11 @@
 
                     <x-news-video :post="$post" />
                     @if($post->cover_image || (!$post->news_video_url && !\App\Services\NewsVideo::youtubeId($post->news_media['youtube_url'] ?? null)))
-                        <img src="{{ $imageUrl }}" alt="{{ $post->title }}" class="h-[280px] w-full object-cover sm:h-[420px]">
+                        <figure data-news-cover style="margin:0">
+                            <a href="{{ $imageUrl }}" target="_blank" rel="noopener" aria-label="Haber kapağını tam boyutta aç">
+                                <img src="{{ $imageUrl }}" alt="{{ $post->title }}" style="display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;background:#f8fafc">
+                            </a>
+                        </figure>
                     @endif
 
                     <div class="article-content p-6 text-[15px] text-slate-700 md:p-8">

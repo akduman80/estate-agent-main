@@ -9,11 +9,14 @@
 @endphp
 @if($videoUrl)
     <div class="zyd-news-video" data-news-video data-manifest="{{ $videoUrl }}" data-variants="{{ json_encode(array_map(fn ($q) => ['quality' => $q, 'url' => \Illuminate\Support\Facades\Storage::disk($disk)->url(dirname($media['manifest']).'/'.$q.'.m3u8')], $qualities)) }}">
-        <video controls playsinline crossorigin="anonymous" preload="none" poster="{{ $post->news_poster_url }}" aria-label="{{ $media['title'] ?? $post->title }}">
+        <video controls playsinline crossorigin="anonymous" preload="none" @if($post->news_video_poster_url) poster="{{ $post->news_video_poster_url }}" @endif @if(!empty($media['width']) && !empty($media['height'])) width="{{ (int) $media['width'] }}" height="{{ (int) $media['height'] }}" @endif aria-label="{{ $media['title'] ?? $post->title }}">
             @if(!empty($media['captions']))
                 <track kind="subtitles" src="{{ \Illuminate\Support\Facades\Storage::disk($disk)->url($media['captions']) }}" srclang="{{ $media['captions_language'] ?? 'tr' }}" label="{{ config('news_video.caption_languages')[$media['captions_language'] ?? 'tr'] ?? 'Türkçe' }}">
             @endif
         </video>
+        @unless($post->news_video_poster_url)
+            <p>Video önizleme karesi bulunmuyor. Videoyu oynatarak izleyebilirsiniz.</p>
+        @endunless
         <div class="zyd-news-video-controls" role="group" aria-label="Video ayarları">
             <button type="button" data-start>▶ Videoyu Oynat</button>
             <button type="button" data-seek="-10" aria-label="10 saniye geri sar">−10 sn</button>

@@ -44,6 +44,11 @@ class Post extends Model
             : NewsVideo::outputUrl($this, 'poster');
     }
 
+    public function getNewsVideoPosterUrlAttribute(): ?string
+    {
+        return NewsVideo::outputUrl($this, 'poster');
+    }
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

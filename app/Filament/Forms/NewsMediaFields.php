@@ -59,9 +59,16 @@ class NewsMediaFields
                 }
             }
         }
-        $media = array_intersect_key($data['news_media'] ?? [], array_flip(['title', 'description', 'source', 'captions', 'captions_language', 'youtube_url']));
+        $media = array_intersect_key($data['news_media'] ?? [], array_flip(['title', 'description', 'source', 'source_name', 'captions', 'captions_name', 'captions_language', 'youtube_url']));
+        foreach (['source', 'captions'] as $key) {
+            if (! array_key_exists($key, $media)) {
+                unset($media[$key.'_name']);
+            } elseif (isset($media[$key.'_name'])) {
+                $media[$key.'_name'] = Str::limit(basename((string) $media[$key.'_name']), 255, '');
+            }
+        }
         if (! self::admin()) {
-            unset($media['source'], $media['captions']);
+            unset($media['source'], $media['source_name'], $media['captions'], $media['captions_name']);
         }
         $data['news_media'] = array_merge($record?->news_media ?? [], $media);
 
@@ -98,6 +105,7 @@ class NewsMediaFields
             TextInput::make('news_media.title')->label('Video Başlığı')->maxLength(255),
             Textarea::make('news_media.description')->label('Video Açıklaması')->maxLength(2000),
             NewsMediaUpload::make('news_media.source')->label('+ Video Yükle')
+                ->storeFileNamesIn('news_media.source_name')
                 ->uploadingMessage('Video yükleniyor...')->uploadProgressIndicatorPosition('center')
                 ->validationMessages(['mimetypes' => 'MP4, MOV, WebM, MKV veya M4V video seçin.', 'max' => 'Video izin verilen dosya boyutunu aşıyor.'])
                 ->disk('local')->visibility('private')->directory('news-video/sources')
@@ -110,11 +118,14 @@ class NewsMediaFields
                     $stream = fopen($file->getRealPath(), 'rb');
                     try {
                         $ok = Storage::disk('local')->put($path, $stream);
+                    } catch (\Throwable $exception) {
+                        report($exception);
+                        $ok = false;
                     } finally {
                         fclose($stream);
                     }
                     if (! $ok) {
-                        throw new \RuntimeException('Video kaydedilemedi.');
+                        throw \Illuminate\Validation\ValidationException::withMessages(['data.news_media.source' => 'Video kalıcı olarak kaydedilemedi. Yeniden deneyin; mevcut video korundu.']);
                     }
 
                     return $path;
@@ -128,6 +139,7 @@ class NewsMediaFields
                     }
                 }]),
             NewsMediaUpload::make('news_media.captions')->mediaKey('captions')->label('Türkçe Altyazı (.vtt)')
+                ->storeFileNamesIn('news_media.captions_name')
                 ->uploadingMessage('Altyazı yükleniyor...')
                 ->disk(config('news_video.disk'))->directory('news-video/captions')->maxSize(1024)
                 ->previewable(false)->fetchFileInformation(false)
@@ -144,12 +156,16 @@ class NewsMediaFields
             Select::make('news_media.captions_language')->label('Altyazı Dili')->options(config('news_video.caption_languages'))->default('tr')->in(array_keys(config('news_video.caption_languages'))),
             Placeholder::make('video_status')->label('Video İşleme Durumu')
                 ->extraAttributes(['wire:poll.10s' => '$refresh'])
-                ->content(function (?Post $record): string {
+                ->content(function (?Post $record, \Filament\Forms\Get $get): string {
                     $record = $record?->fresh();
-
+                    foreach ((array) $get('news_media.source') as $file) {
+                        if ($file instanceof TemporaryUploadedFile) {
+                            return 'Yükleme tamamlandı, kaydetmeniz bekleniyor.'.($record?->news_video_url ? ' Aşağıdaki önizleme mevcut kayıtlı videodur; yeni dosya henüz yayında değildir.' : ' Kaydettikten sonra video işlenecek; henüz yayında değildir.');
+                        }
+                    }
                     return self::status($record?->news_media['status'] ?? null).' '.($record?->news_media['error'] ?? '').(! config('news_video.enabled') ? ' Arka plan video servisi henüz etkinleştirilmedi.' : '');
                 }),
-            Placeholder::make('video_preview')->label('Video Önizleme')
+            Placeholder::make('video_preview')->label('Kaydedilmiş Video Önizlemesi')
                 ->content(fn (?Post $record) => new HtmlString(view('components.news-video', ['post' => $record?->fresh() ?? new Post, 'loadAssets' => true])->render())),
             Actions::make([Actions\Action::make('retryVideo')->label('Video İşlemini Yeniden Dene')
                 ->visible(fn (?Post $record) => self::admin() && ($record?->fresh()?->news_media['status'] ?? '') === 'failed')
