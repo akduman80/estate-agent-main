@@ -99,7 +99,7 @@ class TurkeyAddressService
     public static function getCities(): array
     {
         $cities = array_keys(static::$data);
-        sort($cities, SORT_LOCALE_STRING);
+        static::sortNames($cities);
 
         return array_combine($cities, $cities);
     }
@@ -117,7 +117,7 @@ class TurkeyAddressService
         }
 
         $districts = array_keys(static::getNeighborhoodData()[$cityKey]);
-        sort($districts, SORT_LOCALE_STRING);
+        static::sortNames($districts);
 
         return array_combine($districts, $districts);
     }
@@ -141,6 +141,12 @@ class TurkeyAddressService
 
         $districtKey = $districtIndex[Str::slug($district)] ?? null;
 
+        // Older project records stored e.g. "Osmaniye Merkez". Resolve this
+        // unambiguous parent alias for reading without rewriting the stored value.
+        if ($districtKey === null && Str::slug($district) === $citySlug.'-merkez') {
+            $districtKey = $districtIndex['merkez'] ?? $districtIndex[$citySlug] ?? null;
+        }
+
         // Bazı veri kaynaklarında merkez ilçeler il adıyla tutulabildiği için geriye dönük destek.
         if ($districtKey === null && Str::slug($district) === 'merkez') {
             $districtKey = $districtIndex[$citySlug] ?? null;
@@ -151,9 +157,50 @@ class TurkeyAddressService
         }
 
         $neighborhoods = array_values(array_unique($data[$cityKey][$districtKey]));
-        sort($neighborhoods, SORT_LOCALE_STRING);
+        static::sortNames($neighborhoods);
 
         return array_combine($neighborhoods, $neighborhoods);
+    }
+
+    /** A stable ceiling also covers children loaded after the initial empty form. */
+    public static function getOptionsLimit(): int
+    {
+        static $limit;
+
+        if ($limit !== null) {
+            return $limit;
+        }
+
+        $limit = count(static::$data);
+        foreach (static::getNeighborhoodData() as $districts) {
+            $limit = max($limit, count($districts));
+            foreach ($districts as $names) {
+                $limit = max($limit, count($names));
+            }
+        }
+
+        return ++$limit; // Include the placeholder without truncating the last record.
+    }
+
+    /** Sort without depending on the host process locale; preserve stored names and keys. */
+    public static function sortNames(array &$names): void
+    {
+        if (class_exists(\Collator::class)) {
+            $collator = new \Collator('tr_TR');
+            $collator->sort($names, \Collator::SORT_STRING);
+            return;
+        }
+
+        // Deterministic Turkish alphabet fallback when ext-intl is unavailable.
+        $alphabet = preg_split('//u', 'abcçdefgğhıijklmnoöprsştuüvyz', -1, PREG_SPLIT_NO_EMPTY);
+        $weights = array_flip($alphabet);
+        $key = static function (string $name) use ($weights): string {
+            $name = mb_strtolower(strtr($name, ['I' => 'ı', 'İ' => 'i']), 'UTF-8');
+            return implode('', array_map(static fn (string $letter): string => isset($weights[$letter])
+                ? sprintf('%03d', 100 + $weights[$letter]) : '0'.$letter,
+                preg_split('//u', $name, -1, PREG_SPLIT_NO_EMPTY)));
+        };
+        usort($names, static fn (string $a, string $b): int => strcmp($key($a), $key($b)) ?: strcmp($a, $b));
     }
 
     protected static function getNeighborhoodData(): array
