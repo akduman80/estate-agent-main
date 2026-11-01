@@ -1,7 +1,7 @@
 @php
     $eidsCard = \App\Support\ListingEidsCard::forListing($listing);
     $images = $listing->images->map(fn ($image) => [
-        'url' => \App\Services\ListingMediaService::publicUrl($image->image_path),
+        'url' => \App\Services\ListingPhoto::url($image),
         'alt' => $image->alt_text ?: $listing->title,
     ])->values();
 
@@ -102,8 +102,9 @@
             <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
                 <div class="min-w-0 space-y-7">
                     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" data-listing-gallery>
+                        <p class="px-4 py-2 text-xs text-slate-500">Görseller izinsiz kullanılamaz</p>
                         <div class="relative aspect-[16/10] overflow-hidden bg-slate-100 sm:aspect-[16/9]">
-                            <img data-gallery-main src="{{ $images->first()['url'] }}" alt="{{ $images->first()['alt'] }}" class="h-full w-full object-cover">
+                            <img draggable="false" data-listing-photo data-gallery-main src="{{ $images->first()['url'] }}" alt="{{ $images->first()['alt'] }}" class="h-full w-full object-cover">
                             @if($images->count() > 1)
                                 <button type="button" data-gallery-prev class="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-blue-950/80 text-white shadow transition hover:bg-orange-500" aria-label="Önceki fotoğraf"><i class="fa-solid fa-chevron-left"></i></button>
                                 <button type="button" data-gallery-next class="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-blue-950/80 text-white shadow transition hover:bg-orange-500" aria-label="Sonraki fotoğraf"><i class="fa-solid fa-chevron-right"></i></button>
@@ -114,7 +115,7 @@
                             <div class="flex gap-2 overflow-x-auto p-3">
                                 @foreach($images as $index => $image)
                                     <button type="button" data-gallery-thumb data-index="{{ $index }}" data-src="{{ $image['url'] }}" data-alt="{{ $image['alt'] }}" class="h-20 w-28 shrink-0 overflow-hidden rounded-lg border-2 {{ $index === 0 ? 'border-orange-500' : 'border-transparent' }}" aria-label="{{ $index + 1 }}. fotoğrafı göster">
-                                        <img src="{{ $image['url'] }}" alt="{{ $image['alt'] }}" class="h-full w-full object-cover" loading="lazy">
+                                        <img draggable="false" data-listing-photo src="{{ $image['url'] }}" alt="{{ $image['alt'] }}" class="h-full w-full object-cover" loading="lazy">
                                     </button>
                                 @endforeach
                             </div>

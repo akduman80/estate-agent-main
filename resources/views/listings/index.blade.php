@@ -93,11 +93,11 @@
                             <div class="mt-4 divide-y divide-slate-100">
                                 @foreach($recommendedListings->take(3) as $recommended)
                                     @php
-                                        $recommendedImage = $recommended->images->first()?->image_path;
-                                        $recommendedImageUrl = $recommendedImage ? \Illuminate\Support\Facades\Storage::url($recommendedImage) : asset('fe-assets/assets/img/demo/property-1.jpg');
+                                        $recommendedImage = $recommended->images->first();
+                                        $recommendedImageUrl = $recommendedImage ? \App\Services\ListingPhoto::url($recommendedImage) : asset('fe-assets/assets/img/demo/property-1.jpg');
                                     @endphp
                                     <a href="{{ route('listings.show', $recommended->slug) }}" class="group flex gap-3 py-3 first:pt-0 last:pb-0">
-                                        <img src="{{ $recommendedImageUrl }}" alt="{{ $recommended->title }}" class="h-16 w-20 shrink-0 rounded-lg object-cover" loading="lazy">
+                                        <img draggable="false" data-listing-photo src="{{ $recommendedImageUrl }}" alt="{{ $recommended->title }}" class="h-16 w-20 shrink-0 rounded-lg object-cover" loading="lazy">
                                         <span class="min-w-0"><strong class="line-clamp-2 text-xs leading-5 text-slate-800 transition group-hover:text-orange-600">{{ $recommended->title }}</strong><span class="mt-1 block text-xs font-extrabold text-orange-600">{{ \App\Support\ListingDecimal::format($recommended->price) }} {{ $recommended->currency === 'TRY' || ! $recommended->currency ? 'TL' : $recommended->currency }}</span></span>
                                     </a>
                                 @endforeach

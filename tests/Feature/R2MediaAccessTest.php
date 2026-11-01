@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 class R2MediaAccessTest extends TestCase
 {
+    use \Illuminate\Foundation\Testing\RefreshDatabase;
     protected function setUp(): void
     {
         parent::setUp();
