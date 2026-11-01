@@ -1,7 +1,6 @@
 <?php
 
 return [
-    App\Providers\AddressSelectServiceProvider::class,
     App\Providers\R2MediaServiceProvider::class,
     App\Providers\AppServiceProvider::class,
     App\Providers\Filament\AdminPanelProvider::class,

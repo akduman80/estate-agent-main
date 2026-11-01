@@ -138,11 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             select.innerHTML = `<option value="">${text}</option>`;
         };
 
-        let districtRequest = 0;
-        let neighborhoodRequest = 0;
-
         const loadNeighborhoods = async () => {
-            const request = ++neighborhoodRequest;
             const city = citySelect.value;
             const district = districtSelect.value;
             const selected = neighborhoodSelect.dataset.selected || '';
@@ -158,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (! response.ok) throw new Error('Mahalleler alınamadı.');
 
                 const payload = await response.json();
-                if (request !== neighborhoodRequest || city !== citySelect.value || district !== districtSelect.value) return;
                 neighborhoodSelect.innerHTML = '<option value="">Mahalle / köy seçin</option>';
                 Object.entries(payload.data).forEach(([value, label]) => {
                     neighborhoodSelect.add(new Option(label, value, false, value === selected));
@@ -166,13 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 neighborhoodSelect.disabled = false;
                 neighborhoodSelect.dataset.selected = '';
             } catch (error) {
-                if (request === neighborhoodRequest) setPlaceholder(neighborhoodSelect, 'Mahalleler yüklenemedi');
+                setPlaceholder(neighborhoodSelect, 'Mahalleler yüklenemedi');
             }
         };
 
         const loadDistricts = async () => {
-            const request = ++districtRequest;
-            ++neighborhoodRequest;
             const city = citySelect.value;
             const selected = districtSelect.dataset.selected || '';
 
@@ -187,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (! response.ok) throw new Error('İlçeler alınamadı.');
 
                 const payload = await response.json();
-                if (request !== districtRequest || city !== citySelect.value) return;
                 districtSelect.innerHTML = '<option value="">İlçe seçin</option>';
                 Object.entries(payload.data).forEach(([value, label]) => {
                     districtSelect.add(new Option(label, value, false, value === selected));
@@ -196,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 districtSelect.dataset.selected = '';
                 await loadNeighborhoods();
             } catch (error) {
-                if (request === districtRequest) setPlaceholder(districtSelect, 'İlçeler yüklenemedi');
+                setPlaceholder(districtSelect, 'İlçeler yüklenemedi');
             }
         };
 
