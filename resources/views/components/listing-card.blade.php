@@ -1,8 +1,8 @@
 @props(['listing'])
 
 @php
-    $mainImage = $listing->images->first();
-    $imageUrl  = $mainImage ? \App\Services\ListingPhoto::url($mainImage) : asset('fe-assets/assets/img/demo/property-1.jpg');
+    $mainImage = $listing->images->first()?->image_path;
+    $imageUrl  = $mainImage ? Storage::url($mainImage) : asset('fe-assets/assets/img/demo/property-1.jpg');
     $eidsVerification = $listing->eidsVerification;
 @endphp
 
@@ -10,7 +10,7 @@
     <div class="box-two proerty-item">
         <div class="item-thumb">
             <a href="{{ route('listings.show', $listing->slug) }}">
-                <img draggable="false" data-listing-photo src="{{ $imageUrl }}" alt="{{ $listing->title }}">
+                <img src="{{ $imageUrl }}" alt="{{ $listing->title }}">
             </a>
         </div>
 

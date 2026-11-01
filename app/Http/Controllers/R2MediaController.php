@@ -13,14 +13,6 @@ class R2MediaController
     public function __invoke(Request $request, string $path)
     {
         abort_unless(config('cloudflare_r2.enabled') && R2MediaAdapter::eligible($path), 404);
-        // Preserve signed access/transport; published listing photos use the same branded presentation.
-        if (preg_match('~^listings/.*\.(?:jpe?g|png|webp)$~iD', $path)) {
-            $image = \App\Models\ListingImage::query()->where('image_path', $path)
-                ->whereHas('listing', fn ($q) => $q->published())->first();
-            if ($image) {
-                return app(ListingPhotoController::class)($image, app(\App\Services\ListingPhoto::class));
-            }
-        }
         $disk = config('filesystems.disks.r2_public');
         try {
             R2Connection::validate($disk, (string) config('cloudflare_r2.account_id'));

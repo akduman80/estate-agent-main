@@ -131,7 +131,7 @@
                                     <div class="box-two proerty-item">
                                         <div class="item-thumb">
                                             <a href="{{ route('listings.show', $listing->slug) }}">
-                                                <img draggable="false" data-listing-photo src="{{ $listing->images->first()?->image_path ? \App\Services\ListingPhoto::url($listing->images->first()) : asset('fe-assets/assets/img/demo/property-1.jpg') }}" alt="{{ $listing->title }}">
+                                                <img src="{{ $listing->images->first()?->image_path ? asset('storage/'.$listing->images->first()->image_path) : asset('fe-assets/assets/img/demo/property-1.jpg') }}" alt="{{ $listing->title }}">
                                             </a>
                                         </div>
 

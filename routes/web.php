@@ -108,7 +108,3 @@ Route::get('/mobile-draft-media/{import}/{index}', function (\App\Models\MobileD
 
 require __DIR__.'/document-tools.php';
 require __DIR__.'/assistant.php';
-
-Route::get('/listing-photo/{image}', \App\Http\Controllers\ListingPhotoController::class)->whereNumber('image')->name('listing.photo');
-Route::get('/storage/listings/{path}', \App\Http\Controllers\ListingPhotoSourceController::class)
-    ->where('path', '.*\.(?i:jpe?g|png|webp)')->name('listing.photo.source');
