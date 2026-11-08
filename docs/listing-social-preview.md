@@ -2,6 +2,8 @@
 
 ## Telefon, tablet ve masaüstü paylaşım kartı güncellemesi
 
+Canlı arayüz commit'i: `3c558bc5ed9f0b71a8f2cc3629d0b5dd530b88aa`. Yayın tamamlandı, bakım modu kapalı. Telefon (iPhone), tablet (iPad) ve masaüstü kimlikleriyle alınan canlı HTTP yanıtlarının üçü de 200; paylaşım kartı bir kez ve EİDS bilgi kutusunun ardından geliyor; 9 SVG simgesi mevcut. CSS ve JavaScript dosyaları 200 yanıtıyla doğru içerik türlerinde açılıyor. Bunlar HTTP/HTML kontrolleridir; gerçek ekran görüntüsü testi değildir. Önceki kaynağın yedeği `storage/app/private/social-preview-backups/20261108T113503Z/source-before.tar.gz` altında tutulur.
+
 8 Kasım 2026: Paylaşım kartı “EİDS doğrulamalı ilan” bilgi kutusunun hemen altına taşındı. Fotoğraflı önizleme, dış font/CDN gerektirmeyen SVG platform logoları, WhatsApp/Facebook/Telegram/X bağlantıları, BİP/Messenger için cihaz paylaşım menüsü ve bağlantı kopyalama düğmesi eklendi. Paylaş düğmesi artık tarayıcıda yerel paylaşım desteği bulunmadığında gizlenmiyor; bağlantı seçme/kopyalama penceresi açılıyor.
 
 Kart telefon ve masaüstü yan sütununda iki, tablet genişliğinde üç sütun kullanır; düğmeler en az 48–52 piksel yüksekliktedir. CSS ve JavaScript dosyaları sürüm parametresiyle yüklenir. Kopyalama API'si engellenirse bağlantı elle kopyalanmak üzere seçilir. Logolu platform bağlantıları JavaScript olmadan da çalışır.
@@ -10,7 +12,7 @@ Güncelleme testleri: 42 PHP testi / 244 doğrulama geçti. JavaScript testinde 
 
 Arayüz dosyaları: `resources/views/listings/show.blade.php`, `resources/views/partials/listing-share.blade.php`, `public/css/listing-share.css`, `public/js/listing-share.js`; testler: `tests/Feature/ListingSocialResponseTest.php`, `tests/JavaScript/listing-share.mjs`. EİDS entegrasyonu veya doğrulama metni değiştirilmedi.
 
-8 Kasım 2026. Canlıya yayımlanan commit: `bade540434187575b66dfd8317992a55bf4ab2a2`.
+8 Kasım 2026. İlk önizleme altyapısı commit'i: `bade540434187575b66dfd8317992a55bf4ab2a2`.
 Önceki canlı commit: `762c5d8e`. Yayın SSH üzerinden, yalnız bu görevin dokuz dosyasıyla yapıldı. GitHub main canlıdan 48 commit geride olduğundan webhook körlemesine tetiklenmedi. Yerel main gerçek canlı kaynak ve yeni commit ile eşitlendi; GitHub'a push yapılmadı.
 
 ## Sonuç
