@@ -34,12 +34,16 @@
             <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 2C6.5 2 2 6.1 2 11.2c0 2.9 1.4 5.4 3.6 7.1V22l3.4-1.9c1 .3 2 .4 3 .4 5.5 0 10-4.1 10-9.3S17.5 2 12 2Z"/><path d="m6 14 5-5 3 2 4-2-5 5-3-2-4 2Z" fill="white"/></svg>
             Messenger
         </button>
+        <button class="listing-share__platform listing-share__instagram" type="button" data-share-native aria-label="Instagram için paylaşım menüsünü aç">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            Instagram
+        </button>
         <button class="listing-share__platform listing-share__copy" type="button" data-share-copy>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/></svg>
             Bağlantıyı kopyala
         </button>
     </div>
-    <p class="listing-share__hint">BİP, Messenger ve diğer uygulamalar için Paylaş düğmesini kullanın. Kullanılabilir uygulamalar cihazınıza göre değişir.</p>
+    <p class="listing-share__hint">Instagram, BİP, Messenger ve diğer uygulamalar cihazınızın paylaşım menüsünden seçilir. Uygulama görünmüyorsa bağlantıyı kopyalayıp mesajınıza yapıştırabilirsiniz.</p>
     <p class="listing-share__status" data-share-status role="status" aria-live="polite"></p>
     <dialog class="listing-share__dialog" data-share-dialog aria-labelledby="listing-share-dialog-heading">
         <h3 id="listing-share-dialog-heading">İlan bağlantısını paylaş</h3>

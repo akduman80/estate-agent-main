@@ -11,6 +11,7 @@
 .listing-share__facebook svg { color: #1877f2; }
 .listing-share__telegram svg { color: #0088c7; }
 .listing-share__x svg { color: #111827; }
+.listing-share__instagram svg { color: #c13584; }
 .listing-share__other svg { color: #0076c0; }
 .listing-share__copy { grid-column: 1 / -1; justify-content: center; }
 .listing-share__primary:hover { background: #c2410c; }
