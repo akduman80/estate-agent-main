@@ -22,3 +22,9 @@
 .listing-share__dialog label { display: block; margin-top: 16px; font-size: 14px; font-weight: 700; }
 .listing-share__dialog input { display: block; box-sizing: border-box; width: 100%; min-height: 48px; margin: 8px 0 16px; padding: 10px; border: 1px solid #94a3b8; border-radius: 8px; font-size: 16px; }
 .listing-share__close { display: block; min-height: 44px; margin: 12px auto 0; padding: 8px 20px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; cursor: pointer; }
+
+/* Compact horizontal share icons above news categories. */
+.news-share-position .listing-share__platforms { flex-wrap: nowrap; gap: 8px; max-width: 100%; overflow-x: auto; padding: 2px; scrollbar-width: thin; }
+.news-share-position .listing-share__platform { width: 36px; height: 36px; flex: 0 0 36px; padding: 7px; border-radius: 8px; }
+.news-share-position .listing-share svg { width: 20px; height: 20px; flex: 0 0 20px; }
+@media (max-width: 480px) { .news-share-position .listing-share__platforms { gap: 5px; } .news-share-position .listing-share__platform { width: 32px; height: 32px; flex-basis: 32px; padding: 6px; } .news-share-position .listing-share svg { width: 18px; height: 18px; flex-basis: 18px; } }

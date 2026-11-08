@@ -25,7 +25,7 @@ class SocialShareIconsTest extends TestCase
             'title' => 'Proje test', 'slug' => 'proje-test', 'developer_name' => 'Test',
             'is_published' => true, 'published_at' => now()->subDay(),
         ]);
-        foreach ([route('blogs.show', $post->slug), route('projects.show', $project->slug)] as $url) {
+        foreach ([[route('blogs.show', $post->slug), true], [route('projects.show', $project->slug), false]] as [$url, $isNews]) {
             $response = $this->get($url)->assertOk();
             $doc = new DOMDocument();
             @$doc->loadHTML('<?xml encoding="UTF-8">'.$response->getContent());
@@ -33,6 +33,13 @@ class SocialShareIconsTest extends TestCase
             $cards = $xpath->query('//*[@data-listing-share]');
             $this->assertSame(1, $cards->length);
             $this->assertSame($url, $cards->item(0)->getAttribute('data-url'));
+            $position = $xpath->query('//*[contains(concat(" ",normalize-space(@class)," ")," news-share-position ")]');
+            $this->assertSame($isNews ? 1 : 0, $position->length);
+            if ($isNews) {
+                $category = $xpath->query('//*[contains(concat(" ",normalize-space(@class)," ")," bg-orange-100 ")]');
+                $this->assertSame(1, $category->length);
+                $this->assertGreaterThan($position->item(0)->getLineNo(), $category->item(0)->getLineNo());
+            }
             $controls = $xpath->query('//*[contains(@class,"listing-share__platforms")]/*');
             $this->assertSame(9, $controls->length);
             foreach ($controls as $control) {

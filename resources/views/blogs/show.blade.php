@@ -43,6 +43,9 @@
             <article class="lg:col-span-8">
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <header class="p-6 md:p-8">
+                        <div class="news-share-position mb-4">
+                            @include('partials.social-share', ['shareTitle' => $post->title, 'shareUrl' => route('blogs.show', $post->slug)])
+                        </div>
                         @if($post->category)
                             <a href="{{ route('blogs.index', ['kategori' => $post->category_id]) }}" class="mb-4 inline-block rounded-lg bg-orange-100 px-3 py-1.5 text-xs font-bold uppercase text-orange-600">{{ $post->category->name }}</a>
                         @endif
@@ -77,9 +80,6 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 border-t border-slate-100 pt-6">
-                            @include('partials.social-share', ['shareTitle' => $post->title, 'shareUrl' => route('blogs.show', $post->slug)])
-                        </div>
                     </div>
                 </div>
 
