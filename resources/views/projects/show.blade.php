@@ -79,6 +79,9 @@
                 @if($project->location)<p class="mt-3 text-sm text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-orange-500"></i>{{ $project->location }}</p>@endif
                 @if($project->summary)<div class="mt-6 text-lg font-semibold leading-8 text-slate-700">{!! \App\Support\RichContentHtml::render($project->summary) !!}</div>@endif
                 @if($project->content)<div class="article-content mt-6 text-slate-700">{!! \App\Support\RichContentHtml::render($project->content) !!}</div>@endif
+                <div class="mt-6 border-t border-slate-100 pt-6">
+                    @include('partials.social-share', ['shareTitle' => $project->title, 'shareUrl' => route('projects.show', $project->slug)])
+                </div>
                 @include('partials.mobile-selected-details', ['item' => $project])
             </div>
         </div>

@@ -47,7 +47,7 @@ class ListingSocialResponseTest extends TestCase
             $this->assertStringContainsString('<meta property="og:image:width" content="1200">', $head);
             $this->assertStringContainsString('private', $response->headers->get('Cache-Control'));
             $this->assertStringContainsString('css/listing-share.css?v=', $head);
-            $response->assertSeeInOrder(['EİDS doğrulamalı ilan', 'data-listing-share', 'data-share-native', 'WhatsApp', 'Facebook', 'Telegram', 'Messenger', 'data-share-copy'], false);
+            $response->assertSeeInOrder(['EİDS doğrulamalı ilan', 'data-listing-share', 'WhatsApp', 'Facebook', 'Telegram', 'Messenger', 'Instagram', 'data-share-copy'], false);
             $response->assertSee('js/listing-share.js?v=', false);
             $response->assertDontSee('id="listing-native-share" hidden', false);
         }

@@ -77,14 +77,8 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 flex flex-col justify-between gap-4 border-t border-slate-100 pt-6 sm:flex-row sm:items-center">
-                            <strong class="text-sm text-blue-950">Haberi Paylaş</strong>
-                            <div class="flex gap-2">
-                                <button type="button" data-share="whatsapp" class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500 text-white transition hover:bg-emerald-600" aria-label="WhatsApp'ta paylaş"><i class="fa-brands fa-whatsapp"></i></button>
-                                <button type="button" data-share="facebook" class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-700" aria-label="Facebook'ta paylaş"><i class="fa-brands fa-facebook-f"></i></button>
-                                <button type="button" data-share="copy" class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700 text-white transition hover:bg-slate-800" aria-label="Bağlantıyı kopyala"><i class="fa-solid fa-link"></i></button>
-                                <span data-copy-feedback class="hidden self-center text-xs font-semibold text-emerald-600">Kopyalandı</span>
-                            </div>
+                        <div class="mt-6 border-t border-slate-100 pt-6">
+                            @include('partials.social-share', ['shareTitle' => $post->title, 'shareUrl' => route('blogs.show', $post->slug)])
                         </div>
                     </div>
                 </div>
@@ -147,25 +141,5 @@
         @endif
     </main>
 
-    @push('scripts')
-        <script>
-            document.querySelectorAll('[data-share]').forEach((button) => {
-                button.addEventListener('click', async () => {
-                    const url = encodeURIComponent(window.location.href);
-                    const title = encodeURIComponent(document.title);
 
-                    if (button.dataset.share === 'whatsapp') {
-                        window.open(`https://wa.me/?text=${title}%20${url}`, '_blank', 'noopener');
-                    } else if (button.dataset.share === 'facebook') {
-                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'noopener');
-                    } else {
-                        await navigator.clipboard.writeText(window.location.href);
-                        const feedback = document.querySelector('[data-copy-feedback]');
-                        feedback?.classList.remove('hidden');
-                        window.setTimeout(() => feedback?.classList.add('hidden'), 1800);
-                    }
-                });
-            });
-        </script>
-    @endpush
 </x-layouts.modern>
