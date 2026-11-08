@@ -84,34 +84,6 @@
     @endpush
 
     <main class="flex-1">
-        <nav class="mx-auto flex max-w-7xl flex-wrap gap-4 px-4 py-3 text-sm" aria-label="İlanı paylaş">
-            <a href="https://wa.me/?text={{ rawurlencode($listing->title.' '.$canonicalUrl) }}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ rawurlencode($canonicalUrl) }}" target="_blank" rel="noopener noreferrer">Facebook</a>
-            <a href="https://t.me/share/url?url={{ rawurlencode($canonicalUrl) }}&amp;text={{ rawurlencode($listing->title) }}" target="_blank" rel="noopener noreferrer">Telegram</a>
-            <a href="https://twitter.com/intent/tweet?url={{ rawurlencode($canonicalUrl) }}&amp;text={{ rawurlencode($listing->title) }}" target="_blank" rel="noopener noreferrer">X</a>
-            <button type="button" id="listing-native-share" hidden>Paylaş / BİP</button>
-            <button type="button" id="listing-copy-link">Bağlantıyı kopyala</button>
-            <span id="listing-share-status" role="status"></span>
-        </nav>
-        @push('scripts')
-            <script>
-                (() => {
-                    const url = @json($canonicalUrl);
-                    const title = @json($listing->title);
-                    const status = document.getElementById('listing-share-status');
-                    const native = document.getElementById('listing-native-share');
-                    native.hidden = !navigator.share;
-                    native.addEventListener('click', async () => {
-                        try { await navigator.share({ title, url }); }
-                        catch (error) { if (error.name !== 'AbortError') status.textContent = 'Paylaşım açılamadı. Bağlantıyı kopyalayabilirsiniz.'; }
-                    });
-                    document.getElementById('listing-copy-link').addEventListener('click', async () => {
-                        try { await navigator.clipboard.writeText(url); status.textContent = 'Bağlantı kopyalandı.'; }
-                        catch { status.textContent = url; }
-                    });
-                })();
-            </script>
-        @endpush
         <div class="border-b border-slate-200 bg-white">
             <div class="mx-auto max-w-7xl px-4 py-3 text-xs text-slate-500 sm:px-6 lg:px-8">
                 <a href="{{ route('home') }}" class="hover:text-orange-600">Anasayfa</a>
@@ -250,6 +222,7 @@
                             <div><strong class="block">{{ $listing->eids_exempt ? 'Tapusuz ilan' : 'EİDS doğrulamalı ilan' }}</strong><span class="mt-1 block text-xs leading-5 text-emerald-700">{{ $listing->eids_exempt ? 'Bu ilan tapusuz olduğu için EİDS doğrulaması uygulanmadan yönetici onayıyla yayınlanmıştır.' : 'Bu ilanın yetki ve taşınmaz bilgileri yayınlanmadan önce doğrulanmıştır.' }}</span></div>
                         </div>
                     </section>
+                    @include('partials.listing-share')
                     @endif
                 </aside>
             </div>

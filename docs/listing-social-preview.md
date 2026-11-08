@@ -1,5 +1,15 @@
 # İlan paylaşım önizlemesi — yayın raporu
 
+## Telefon, tablet ve masaüstü paylaşım kartı güncellemesi
+
+8 Kasım 2026: Paylaşım kartı “EİDS doğrulamalı ilan” bilgi kutusunun hemen altına taşındı. Fotoğraflı önizleme, dış font/CDN gerektirmeyen SVG platform logoları, WhatsApp/Facebook/Telegram/X bağlantıları, BİP/Messenger için cihaz paylaşım menüsü ve bağlantı kopyalama düğmesi eklendi. Paylaş düğmesi artık tarayıcıda yerel paylaşım desteği bulunmadığında gizlenmiyor; bağlantı seçme/kopyalama penceresi açılıyor.
+
+Kart telefon ve masaüstü yan sütununda iki, tablet genişliğinde üç sütun kullanır; düğmeler en az 48–52 piksel yüksekliktedir. CSS ve JavaScript dosyaları sürüm parametresiyle yüklenir. Kopyalama API'si engellenirse bağlantı elle kopyalanmak üzere seçilir. Logolu platform bağlantıları JavaScript olmadan da çalışır.
+
+Güncelleme testleri: 42 PHP testi / 244 doğrulama geçti. JavaScript testinde yerel paylaşım, destek bulunmaması, iptal, engellenmiş paylaşım, kopyalama ve elle kopyalama akışları geçti. Blade derlemesi ve fark kontrolü geçti. Gerçek telefon/tablet görsel testi yapılamadı: tarayıcı erişim servisi kullanılamadı; yerel Edge kontrolü de araç mevcut URL'yi güvenilir biçimde belirleyemediği için durduruldu. Bu kontroller başarılı olarak işaretlenmedi. Sosyal medya hesaplarından gerçek mesaj gönderilmedi.
+
+Arayüz dosyaları: `resources/views/listings/show.blade.php`, `resources/views/partials/listing-share.blade.php`, `public/css/listing-share.css`, `public/js/listing-share.js`; testler: `tests/Feature/ListingSocialResponseTest.php`, `tests/JavaScript/listing-share.mjs`. EİDS entegrasyonu veya doğrulama metni değiştirilmedi.
+
 8 Kasım 2026. Canlıya yayımlanan commit: `bade540434187575b66dfd8317992a55bf4ab2a2`.
 Önceki canlı commit: `762c5d8e`. Yayın SSH üzerinden, yalnız bu görevin dokuz dosyasıyla yapıldı. GitHub main canlıdan 48 commit geride olduğundan webhook körlemesine tetiklenmedi. Yerel main gerçek canlı kaynak ve yeni commit ile eşitlendi; GitHub'a push yapılmadı.
 
