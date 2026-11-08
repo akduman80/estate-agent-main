@@ -1,6 +1,8 @@
 <?php
 
 return [
+    // Set to s3 when listing originals are stored on the configured R2/S3 disk.
+    'social_disk' => env('LISTING_SOCIAL_DISK', 'public'),
     'photos' => [
         'max_files' => 35,
         'max_size_kb' => 15360,

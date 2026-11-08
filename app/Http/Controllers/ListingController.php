@@ -82,7 +82,7 @@ class ListingController extends Controller
         ]);
     }
 
-    public function show(Listing $listing): View
+    public function show(Listing $listing): \Illuminate\Http\Response
     {
         abort_unless(Listing::query()->published()->whereKey($listing->getKey())->exists(), 404);
 
@@ -112,6 +112,7 @@ class ListingController extends Controller
             $similarListings = $similarListings->concat($additionalListings);
         }
 
-        return view('listings.show', compact('listing', 'similarListings'));
+        return response()->view('listings.show', compact('listing', 'similarListings'))
+            ->header('Cache-Control', 'private, no-store');
     }
 }

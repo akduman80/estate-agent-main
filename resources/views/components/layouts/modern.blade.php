@@ -1,4 +1,4 @@
-@props(['hideContact' => false])
+@props(['hideContact' => false, 'title' => 'ZYDEMLAK', 'description' => 'Osmaniye emlak ilanları ve güncel gayrimenkul haberleri.'])
 <!DOCTYPE html>
 <html lang="tr">
 <head>

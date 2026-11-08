@@ -1,5 +1,9 @@
 @php
     $eidsCard = \App\Support\ListingEidsCard::forListing($listing);
+    $socialPreview = app(\App\Services\ListingSocialPreview::class);
+    $socialImage = $socialPreview->image($listing);
+    $socialDescription = $socialPreview->description($listing);
+    $canonicalUrl = $socialPreview->url('listings.show', ['listing' => $listing->slug]);
     $images = $listing->images->map(fn ($image) => [
         'url' => \App\Services\ListingPhoto::url($image),
         'alt' => $image->alt_text ?: $listing->title,
@@ -58,16 +62,56 @@
     }
 @endphp
 
-<x-layouts.modern :hide-contact="!empty($details['hide_phone'])" :title="$listing->title.' | ZYDEMLAK'" :description="\Illuminate\Support\Str::limit(strip_tags($listing->description ?: $listing->title), 155)">
+<x-layouts.modern :hide-contact="!empty($details['hide_phone'])" :title="$listing->title.' | ZİYADE EMLAK'" :description="$socialDescription">
     @push('head')
         <meta property="og:type" content="product">
         <meta property="og:title" content="{{ $listing->title }}">
-        <meta property="og:description" content="{{ \Illuminate\Support\Str::limit(strip_tags($listing->description ?: $listing->title), 155) }}">
-        <meta property="og:image" content="{{ $images->first()['url'] }}">
-        <meta property="og:url" content="{{ route('listings.show', $listing->slug) }}">
+        <meta property="og:description" content="{{ $socialDescription }}">
+        <meta property="og:image" content="{{ $socialImage['url'] }}">
+        <meta property="og:image:secure_url" content="{{ $socialImage['url'] }}">
+        <meta property="og:image:type" content="image/jpeg">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="{{ $listing->title }}">
+        <meta property="og:url" content="{{ $canonicalUrl }}">
+        <meta property="og:site_name" content="ZİYADE EMLAK">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $listing->title }}">
+        <meta name="twitter:description" content="{{ $socialDescription }}">
+        <meta name="twitter:image" content="{{ $socialImage['url'] }}">
+        <meta name="twitter:image:alt" content="{{ $listing->title }}">
+        <link rel="canonical" href="{{ $canonicalUrl }}">
     @endpush
 
     <main class="flex-1">
+        <nav class="mx-auto flex max-w-7xl flex-wrap gap-4 px-4 py-3 text-sm" aria-label="İlanı paylaş">
+            <a href="https://wa.me/?text={{ rawurlencode($listing->title.' '.$canonicalUrl) }}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ rawurlencode($canonicalUrl) }}" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a href="https://t.me/share/url?url={{ rawurlencode($canonicalUrl) }}&amp;text={{ rawurlencode($listing->title) }}" target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href="https://twitter.com/intent/tweet?url={{ rawurlencode($canonicalUrl) }}&amp;text={{ rawurlencode($listing->title) }}" target="_blank" rel="noopener noreferrer">X</a>
+            <button type="button" id="listing-native-share" hidden>Paylaş / BİP</button>
+            <button type="button" id="listing-copy-link">Bağlantıyı kopyala</button>
+            <span id="listing-share-status" role="status"></span>
+        </nav>
+        @push('scripts')
+            <script>
+                (() => {
+                    const url = @json($canonicalUrl);
+                    const title = @json($listing->title);
+                    const status = document.getElementById('listing-share-status');
+                    const native = document.getElementById('listing-native-share');
+                    native.hidden = !navigator.share;
+                    native.addEventListener('click', async () => {
+                        try { await navigator.share({ title, url }); }
+                        catch (error) { if (error.name !== 'AbortError') status.textContent = 'Paylaşım açılamadı. Bağlantıyı kopyalayabilirsiniz.'; }
+                    });
+                    document.getElementById('listing-copy-link').addEventListener('click', async () => {
+                        try { await navigator.clipboard.writeText(url); status.textContent = 'Bağlantı kopyalandı.'; }
+                        catch { status.textContent = url; }
+                    });
+                })();
+            </script>
+        @endpush
         <div class="border-b border-slate-200 bg-white">
             <div class="mx-auto max-w-7xl px-4 py-3 text-xs text-slate-500 sm:px-6 lg:px-8">
                 <a href="{{ route('home') }}" class="hover:text-orange-600">Anasayfa</a>

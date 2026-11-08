@@ -53,6 +53,8 @@ Route::get('/dokumanlar/{index}/indir', DocumentDownloadController::class)
     ->name('documents.download');
 
 Route::get('/ilanlar', [ListingController::class, 'index'])->name('listings.index');
+Route::get('/ilan/{listing:slug}/paylasim-gorseli/{version}.jpg', \App\Http\Controllers\ListingSocialImageController::class)
+    ->where('version', '[a-f0-9]{64}')->name('listings.social-image');
 Route::get('/ilan/{listing:slug}', [ListingController::class, 'show'])->name('listings.show');
 
 Route::get('/login', LoginRedirectController::class)->name('login');
