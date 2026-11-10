@@ -17,6 +17,7 @@
                     <div class="home-search-neighborhood"><label for="home-neighborhood" class="mb-1 block text-xs font-bold text-blue-950">Mahalle / Köy</label><select id="home-neighborhood" name="neighborhood" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-700" data-neighborhood-select disabled><option value="">Önce ilçe seçin</option></select></div>
                     <button type="submit" class="home-search-button flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3 font-extrabold text-white shadow-sm transition hover:bg-orange-600"><i class="fa-solid fa-magnifying-glass"></i><span>İlan Ara</span></button>
                 </form>
+                @include('partials.property-tools')
             </div>
         </section>
 
@@ -25,7 +26,7 @@
                 @if($rentRateNumber !== null)
                     <article class="home-overview-card home-rent">
                         <div class="min-w-0 flex-1"><h2 class="text-sm font-extrabold text-blue-950"><span class="phone-rent-title">Kira Artış Oranı</span><span class="desktop-rent-title">{{ $rentPeriod }} Kira Artış Oranı</span></h2><p class="mt-2 text-3xl font-black text-orange-600">%{{ number_format($rentRateNumber, 2, ',', '.') }}</p><p class="phone-rent-title mt-1 text-xs font-semibold text-blue-950">{{ $rentPeriod }}</p></div>
-                        <div class="mt-auto pt-3 text-[11px] text-slate-500">@if($rentUpdatedAt)<span class="block">Güncelleme: {{ \Illuminate\Support\Carbon::parse($rentUpdatedAt)->format('d.m.Y') }}</span>@endif<a href="{{ route('blogs.index', ['ara' => 'kira']) }}" class="mt-1 inline-flex items-center gap-1 font-bold text-orange-600">Detaylar <i class="fa-solid fa-arrow-right"></i></a></div>
+                        <div class="mt-auto pt-3 text-[11px] text-slate-500">@if($rentUpdatedAt)<span class="block">Güncelleme: {{ \Illuminate\Support\Carbon::parse($rentUpdatedAt)->format('d.m.Y') }}</span>@endif<a href="{{ route('tools.rent') }}" class="mt-1 inline-flex items-center gap-1 font-bold text-orange-600">Kira Artışını Hesapla <i class="fa-solid fa-arrow-right"></i></a></div>
                     </article>
                 @endif
                 <article class="home-overview-card home-rayic">

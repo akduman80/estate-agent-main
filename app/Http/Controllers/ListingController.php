@@ -7,6 +7,8 @@ use App\Models\Setting;
 use App\Services\TurkeyAddressService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class ListingController extends Controller
 {
@@ -46,6 +48,7 @@ class ListingController extends Controller
             ->when($request->input('sort') === 'price_asc', fn ($query) => $query->orderBy('price'))
             ->when(in_array($request->input('sort'), ['price', 'price_desc'], true), fn ($query) => $query->orderByDesc('price'))
             ->when($request->input('sort') === 'area_desc', fn ($query) => $query->orderByDesc('square_meters'))
+            ->when($request->input('sort') === 'likes', fn ($query) => $query->orderByDesc(DB::table('property_likes')->selectRaw('count(*)')->whereColumn('property_likes.listing_id', 'listings.id'))->orderByDesc('listings.id'))
             ->when(! in_array($request->input('sort'), ['price', 'price_desc', 'price_asc', 'area_desc'], true), fn ($query) => $query->latest())
             ->paginate(12)
             ->withQueryString();
@@ -82,7 +85,7 @@ class ListingController extends Controller
         ]);
     }
 
-    public function show(Listing $listing): \Illuminate\Http\Response
+    public function show(Listing $listing): Response
     {
         abort_unless(Listing::query()->published()->whereKey($listing->getKey())->exists(), 404);
 

@@ -19,6 +19,13 @@
 /storage/*.key
 /storage/pail
 /vendor
+
+# Local verification runtimes and generated artifacts for property tools.
+/output/six-*
+/output/mysql-qa*
+/output/media-qa/
+/output/pdf-qa/
+/output/pdf/kira-artisi-test.*
 Homestead.json
 Homestead.yaml
 Thumbs.db

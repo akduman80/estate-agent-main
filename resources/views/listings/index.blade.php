@@ -32,6 +32,7 @@
                 <div>
                     <p class="text-xs font-bold uppercase tracking-[0.22em] text-orange-400">Güvenilir gayrimenkul ilanları</p>
                     <h1 class="mt-3 text-3xl font-extrabold sm:text-4xl">Tüm İlanlar</h1>
+                    @include('partials.property-tools')
                     <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300">Satılık ve kiralık taşınmazları karşılaştırın; konum, fiyat ve özellik filtreleriyle aradığınız ilana daha hızlı ulaşın.</p>
                 </div>
                 <div class="flex shrink-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur">
@@ -122,6 +123,7 @@
                                 <option value="price_desc" @selected(in_array(request('sort'), ['price', 'price_desc']))>Fiyat: yüksekten düşüğe</option>
                                 <option value="price_asc" @selected(request('sort') === 'price_asc')>Fiyat: düşükten yükseğe</option>
                                 <option value="area_desc" @selected(request('sort') === 'area_desc')>Metrekare: büyükten küçüğe</option>
+                                <option value="likes" @selected(request('sort') === 'likes')>En Çok Beğenilenler</option>
                             </select>
                         </form>
                     </div>

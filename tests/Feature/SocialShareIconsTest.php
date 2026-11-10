@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\User;
@@ -17,7 +18,9 @@ class SocialShareIconsTest extends TestCase
     public function test_news_and_project_pages_share_the_correct_content_with_icons_only(): void
     {
         $this->withoutVite();
+        $category = Category::create(['name' => 'Emlak', 'slug' => 'emlak']);
         $post = Post::withoutEvents(fn () => Post::create([
+            'category_id' => $category->id,
             'user_id' => User::factory()->create()->id, 'title' => 'Haber test',
             'slug' => 'haber-test', 'content' => 'İçerik', 'status' => 'published', 'published_at' => now()->subDay(),
         ]));
@@ -27,7 +30,7 @@ class SocialShareIconsTest extends TestCase
         ]);
         foreach ([[route('blogs.show', $post->slug), true], [route('projects.show', $project->slug), false]] as [$url, $isNews]) {
             $response = $this->get($url)->assertOk();
-            $doc = new DOMDocument();
+            $doc = new DOMDocument;
             @$doc->loadHTML('<?xml encoding="UTF-8">'.$response->getContent());
             $xpath = new DOMXPath($doc);
             $cards = $xpath->query('//*[@data-listing-share]');

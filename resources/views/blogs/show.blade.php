@@ -93,6 +93,7 @@
                         @endif
                     </nav>
                 @endif
+                <livewire:property-discussion target-type="post" :target-id="$post->id" />
             </article>
 
             <aside class="space-y-6 lg:col-span-4">

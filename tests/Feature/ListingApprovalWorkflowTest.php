@@ -27,7 +27,7 @@ class ListingApprovalWorkflowTest extends TestCase
         config()->set('services.eids.company_code', 'company-code');
         config()->set('services.eids.username', 'eids-user');
         config()->set('services.eids.password', 'eids-pass');
-        config()->set('services.eids.user_code', 'member-guid');
+        config()->set('services.eids.user_code', '11111111-1111-4111-8111-111111111111');
         config()->set('services.eids.base_url', 'https://eids.test');
         config()->set('services.eids.verify_path', '/verify');
         Http::fake([
@@ -41,7 +41,7 @@ class ListingApprovalWorkflowTest extends TestCase
             'role' => UserRole::INDIVIDUAL,
             'account_status' => AccountStatus::ACTIVE,
             'email_verified_at' => now(),
-            'eids_user_code' => 'member-guid',
+            'eids_user_code' => '11111111-1111-4111-8111-111111111111',
             'eids_identity_verified_at' => now(),
         ]);
         $listing = Listing::withoutEvents(fn () => Listing::create([
@@ -75,7 +75,7 @@ class ListingApprovalWorkflowTest extends TestCase
             'role' => UserRole::INDIVIDUAL,
             'account_status' => AccountStatus::ACTIVE,
             'email_verified_at' => now(),
-            'eids_user_code' => 'member-guid',
+            'eids_user_code' => '11111111-1111-4111-8111-111111111111',
             'eids_identity_verified_at' => now(),
         ]);
         $admin = User::factory()->create([

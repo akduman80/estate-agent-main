@@ -23,6 +23,7 @@
                         <h2 class="text-2xl font-bold text-blue-950">Son Haberler</h2>
                         <p class="mt-1 text-xs text-slate-500">En güncel emlak ve gayrimenkul haberleri</p>
                     </div>
+                    <label class="block"><span class="sr-only">Haber sıralaması</span><select wire:model.live="sort" class="w-full rounded-xl border border-slate-200 p-3"><option value="newest">En yeni haberler</option><option value="likes">En çok beğenilenler</option><option value="comments">En çok yorumlananlar</option></select></label>
                     <label class="relative block">
                         <span class="sr-only">Haber ara</span>
                         <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>

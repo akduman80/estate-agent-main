@@ -3,6 +3,7 @@
 namespace App\Filament\Portal\Resources\ListingResource\Schemas\Steps;
 
 use App\Filament\Forms\Components\ListingMediaUpload;
+use App\Filament\Forms\PhotoSuggestionFields;
 use App\Models\Listing;
 use App\Rules\ListingVideo;
 use App\Services\ListingFormDraftService;
@@ -90,6 +91,7 @@ class MediaStep
                     ->label('YouTube Video Linki')
                     ->placeholder('https://www.youtube.com/watch?v=...')
                     ->url(),
+                ...PhotoSuggestionFields::make(),
                 TextInput::make('form_details.virtual_tour')
                     ->label('Sanal tur bağlantısı (isteğe bağlı)')
                     ->helperText('HTTPS Matterport veya Immoviewer bağlantısı. Boş bırakarak tursuz devam edebilirsiniz.')

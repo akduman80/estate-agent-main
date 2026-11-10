@@ -185,6 +185,10 @@
                             @endif
                         </section>
                     @endif
+                    @if(empty($isPreview))
+                        <livewire:property-discussion target-type="listing" :target-id="$listing->id" />
+                        @if(in_array($listing->category, ['Arsa', 'Tarla'], true))<a href="{{ route('tools.parcel') }}" class="my-3 inline-block rounded-xl border p-3 font-bold text-blue-950">Arsa ve Parsel Sorgula</a>@endif
+                    @endif
                 </div>
 
                 <aside class="space-y-5 lg:sticky lg:top-28 lg:self-start">
