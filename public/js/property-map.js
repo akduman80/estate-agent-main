@@ -1,13 +1,8 @@
 (async () => {
     const root=document.querySelector('[data-property-map]'); if(!root)return;
     const status=root.querySelector('[data-map-status]'), form=root.querySelector('form'), cards=root.querySelector('[data-map-cards]'), more=root.querySelector('[data-map-more]');
-    const loadStyle=url=>{const el=document.createElement('link');el.rel='stylesheet';el.href=url;document.head.append(el);};
-    const loadScript=url=>new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=url;el.onload=resolve;el.onerror=reject;document.head.append(el);});
     try {
-        loadStyle('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
-        loadStyle('https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css');loadStyle('https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css');
-        if(!window.L)await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
-        if(!L.markerClusterGroup)await loadScript('https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js');
+        if(!window.L?.markerClusterGroup)throw new Error('Yerel harita dosyaları yüklenemedi.');
         const map=L.map(root.querySelector('[data-map-canvas]')).setView([39,35],6);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıcıları'}).addTo(map);
         const cluster=L.markerClusterGroup({chunkedLoading:true}).addTo(map);let page=1,controller,timer;

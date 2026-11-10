@@ -75,6 +75,16 @@ class PropertyToolsTest extends TestCase
         $this->getJson(route('tools.map.records', ['south' => 999]))->assertUnprocessable();
     }
 
+    public function test_map_loads_licensed_leaflet_assets_from_the_application(): void
+    {
+        $this->get(route('tools.map'))
+            ->assertOk()
+            ->assertSee('vendor/leaflet/leaflet.css')
+            ->assertSee('vendor/leaflet/leaflet.js')
+            ->assertSee('vendor/leaflet-markercluster/leaflet.markercluster.js')
+            ->assertDontSee('unpkg.com/leaflet');
+    }
+
     public function test_like_is_idempotent_persistent_and_distinct_from_favourites(): void
     {
         $owner = $this->member();
@@ -192,10 +202,32 @@ class PropertyToolsTest extends TestCase
         $this->assertEquals(65.07, $service->calculate($data)['cap']);
     }
 
-    public function test_missing_future_and_special_rent_cases_do_not_produce_guesses(): void
+    public function test_official_historical_rent_archive_has_each_period_and_bulletin_date(): void
+    {
+        $this->assertDatabaseCount('rent_period_rates', 95);
+        $this->assertDatabaseHas('rent_period_rates', [
+            'period' => '2019-01-01', 'rate' => '16.33', 'published_on' => '2019-01-03',
+            'source_url' => 'https://veriportali.tuik.gov.tr/Bulten/Index?p=T%C3%BCketici-Fiyat-Endeksi-Aral%C4%B1k-2018-30848&dil=1',
+        ]);
+        $this->assertDatabaseHas('rent_period_rates', [
+            'period' => '2022-05-01', 'rate' => '34.46', 'published_on' => '2022-05-05',
+        ]);
+        $this->assertDatabaseHas('rent_period_rates', [
+            'period' => '2026-11-01', 'rate' => '31.23', 'published_on' => '2026-11-03',
+        ]);
+
+        $result = app(RentIncreaseCalculator::class)->calculate([
+            'rent' => '10000', 'kind' => 'home', 'renewal_date' => '2022-05-12', 'contract_rate' => '',
+        ]);
+        $this->assertEquals(34.46, $result['cpi']);
+        $this->assertEquals(34.46, $result['applied']);
+        $this->assertSame('2022-05-05', $result['published_on']);
+    }
+
+    public function test_future_and_special_rent_cases_do_not_produce_guesses(): void
     {
         Livewire::test(RentCalculator::class)->set('rent', '10000')->set('renewal_date', '2026-12-01')->call('calculate')->assertHasErrors('renewal_date')->assertSet('result', null);
-        Livewire::test(RentCalculator::class)->set('rent', '10000')->set('renewal_date', '2026-10-01')->call('calculate')->assertHasErrors('renewal_date');
+        Livewire::test(RentCalculator::class)->set('rent', '10000')->set('renewal_date', '2026-10-01')->call('calculate')->assertHasNoErrors()->assertSet('result.cpi', 31.49);
         Livewire::test(RentCalculator::class)->set('rent', '10000')->set('special', true)->call('calculate')->assertHasErrors('special');
     }
 

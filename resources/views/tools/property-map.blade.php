@@ -20,6 +20,13 @@
         <button type="button" data-map-more hidden class="my-3 rounded-xl border p-3">Bu bölgedeki diğer ilanları yükle</button>
         <p class="my-3 text-xs text-slate-500">Harita: OpenStreetMap katkıcıları. Harita hizmeti üçüncü taraf sunuculardan yüklenir. Toplu indirme veya çevrimdışı kullanım sunulmaz.</p>
     </main>
-    @push('head')<style>.property-map-expanded{position:fixed;inset:0;z-index:9999;overflow:auto;background:white}.property-map-expanded [data-map-canvas], [data-map-stage]:fullscreen [data-map-canvas]{height:70vh!important}[data-map-stage]:fullscreen{overflow:auto;background:white}</style>@endpush
-    @push('scripts')<script src="{{ asset('js/property-map.js') }}" defer></script>@endpush
+    @push('head')
+        <link rel="stylesheet" href="{{ asset('vendor/leaflet/leaflet.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/leaflet-markercluster/MarkerCluster.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/leaflet-markercluster/MarkerCluster.Default.css') }}">
+        <style>.property-map-expanded{position:fixed;inset:0;z-index:9999;overflow:auto;background:white}.property-map-expanded [data-map-canvas], [data-map-stage]:fullscreen [data-map-canvas]{height:70vh!important}[data-map-stage]:fullscreen{overflow:auto;background:white}</style>
+        <script src="{{ asset('vendor/leaflet/leaflet.js') }}" defer></script>
+        <script src="{{ asset('vendor/leaflet-markercluster/leaflet.markercluster.js') }}" defer></script>
+        <script src="{{ asset('js/property-map.js') }}" defer></script>
+    @endpush
 </x-layouts.modern>
