@@ -14,4 +14,4 @@
         <button type="button" data-voice-close class="rounded-lg border p-3">Kapat</button>
     </dialog>
 </div>
-@once @push('scripts')<script src="{{ asset('js/property-voice.js') }}" defer></script>@endpush @endonce
+@once @push('scripts')<script src="{{ asset('js/property-voice.js') }}" defer></script><script src="{{ asset('js/property-search-voice.js') }}" defer></script>@endpush @endonce

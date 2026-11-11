@@ -50,7 +50,7 @@
                             <span><i class="fa-solid fa-sliders mr-2 text-orange-400"></i>İlanları Filtrele</span>
                             <i class="fa-solid fa-chevron-down text-xs transition group-open:rotate-180"></i>
                         </summary>
-                        <form action="{{ route('listings.index') }}" method="get" class="space-y-5 p-5" data-location-selects>
+                        <form action="{{ route('listings.index') }}" method="get" class="space-y-5 p-5" data-location-selects data-search-voice>
                             <label class="block">
                                 <span class="text-xs font-bold text-slate-700">Kelime / İlan No</span>
                                 <span class="relative block"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 mt-0.5 -translate-y-1/2 text-xs text-slate-400"></i><input type="search" name="q" value="{{ request('q') }}" placeholder="Örn: 3+1, Kadirli, 123..." class="{{ $inputClass }} pl-9"></span>
@@ -82,7 +82,11 @@
                             </fieldset>
 
                             @if(request('sort'))<input type="hidden" name="sort" value="{{ request('sort') }}">@endif
-                            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-extrabold text-white shadow transition hover:bg-orange-600"><i class="fa-solid fa-magnifying-glass"></i>İlanları göster</button>
+                            <div class="flex gap-2">
+                                <button type="button" data-search-voice-button aria-label="Arama alanını sesle doldur" aria-pressed="false" title="Arama alanını sesle doldur" class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-950 text-blue-950 transition hover:bg-blue-50"><i class="fa-solid fa-microphone" aria-hidden="true"></i></button>
+                                <button type="submit" class="inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-extrabold text-white shadow transition hover:bg-orange-600"><i class="fa-solid fa-magnifying-glass"></i>İlanları göster</button>
+                            </div>
+                            <p data-search-voice-status role="status" aria-live="polite" class="text-xs text-slate-600" hidden></p>
                             @if($activeFilters->isNotEmpty())<a href="{{ route('listings.index') }}" class="block text-center text-xs font-bold text-slate-500 hover:text-orange-600"><i class="fa-solid fa-rotate-left mr-1"></i>Filtreleri temizle</a>@endif
                         </form>
                     </details>

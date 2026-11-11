@@ -149,9 +149,12 @@
     .home-search-form label { display: none; }
     .home-search-keyword,
     .home-search-neighborhood,
-    .home-search-button { grid-column: 1 / -1; }
+    .home-search-actions,
+    .home-search-voice-status { grid-column: 1 / -1; }
     .home-search-form input,
     .home-search-form select { min-width: 0; font-size: 16px; padding-top: .65rem; padding-bottom: .65rem; }
+    .home-search-actions { align-items: stretch; }
+    .home-search-voice-button,
     .home-search-button { min-height: 2.8rem; }
 
     .home-market-section > div { gap: .55rem; }

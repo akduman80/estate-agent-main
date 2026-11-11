@@ -61,6 +61,27 @@ class PropertyToolsTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_main_listing_search_forms_include_an_inline_voice_input_control(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('data-search-voice', false)
+            ->assertSee('data-search-voice-button', false)
+            ->assertSee('name="q"', false)
+            ->assertSee('data-search-voice-status', false)
+            ->assertSee('js/property-search-voice.js');
+
+        $this->get(route('listings.index'))
+            ->assertOk()
+            ->assertSee('data-search-voice', false)
+            ->assertSee('data-search-voice-button', false)
+            ->assertSee('name="q"', false)
+            ->assertSee('data-search-voice-status', false)
+            ->assertSee('js/property-search-voice.js');
+
+        $this->assertFileExists(public_path('js/property-search-voice.js'));
+    }
+
     public function test_map_omits_hidden_unpublished_and_missing_coordinates_and_filters_area(): void
     {
         $owner = $this->member();
