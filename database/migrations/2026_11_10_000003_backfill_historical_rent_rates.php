@@ -112,7 +112,7 @@ return new class extends Migration
     {
         DB::transaction(function (): void {
             foreach (self::RATES as [$period, $rate, $publishedOn, $sourceUrl]) {
-                $existing = DB::table('rent_period_rates')->where('period', $period)->first(['rate', 'published_on']);
+                $existing = DB::table('rent_period_rates')->where('period', $period)->first(['id', 'rate', 'published_on']);
                 if ($existing) {
                     if (abs((float) $existing->rate - (float) $rate) > 0.0001 || $existing->published_on !== $publishedOn) {
                         throw new \RuntimeException("Existing official rent rate conflicts with the historical TÜİK series for {$period}.");

@@ -222,6 +222,12 @@ class PropertyToolsTest extends TestCase
         $this->assertEquals(34.46, $result['cpi']);
         $this->assertEquals(34.46, $result['applied']);
         $this->assertSame('2022-05-05', $result['published_on']);
+
+        $existingRateId = DB::table('rent_period_rates')->where('period', '2024-07-01')->value('id');
+        DB::table('rent_rate_logs')->where('rate_id', $existingRateId)->delete();
+        $migration = require database_path('migrations/2026_11_10_000003_backfill_historical_rent_rates.php');
+        $migration->up();
+        $this->assertDatabaseHas('rent_rate_logs', ['rate_id' => $existingRateId]);
     }
 
     public function test_future_and_special_rent_cases_do_not_produce_guesses(): void
