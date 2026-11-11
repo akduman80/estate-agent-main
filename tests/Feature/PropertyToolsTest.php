@@ -82,20 +82,21 @@ class PropertyToolsTest extends TestCase
         $this->assertFileExists(public_path('js/property-search-voice.js'));
     }
 
-    public function test_homepage_map_link_is_below_search_and_rent_calculator_link_is_highlighted(): void
+    public function test_homepage_map_link_sits_under_search_button_and_rent_link_stays_with_rate(): void
     {
         $response = $this->get('/')->assertOk();
         $html = $response->getContent();
-        $searchEnd = strpos($html, '</form>');
+        $searchButton = strpos($html, '<span>İlan Ara</span>');
         $mapLink = strpos($html, 'home-search-map-link');
-        $parcelLink = strpos($html, 'Arsa ve Parsel Sorgula');
+        $searchEnd = strpos($html, '</form>');
 
-        $this->assertNotFalse($searchEnd);
+        $this->assertNotFalse($searchButton);
         $this->assertNotFalse($mapLink);
-        $this->assertNotFalse($parcelLink);
-        $this->assertGreaterThan($searchEnd, $mapLink);
-        $this->assertGreaterThan($mapLink, $parcelLink);
+        $this->assertNotFalse($searchEnd);
+        $this->assertLessThan($mapLink, $searchButton);
+        $this->assertLessThan($searchEnd, $mapLink);
         $this->assertStringNotContainsString('>Sesle Ara</button>', $html);
+        $this->assertStringNotContainsString('Arsa ve Parsel Sorgula', $html);
         $this->assertStringContainsString('home-rent-calculator-link', $html);
         $this->assertStringContainsString('font-extrabold text-orange-700', $html);
     }
