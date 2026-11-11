@@ -21,6 +21,7 @@
                     </div>
                     <p data-search-voice-status role="status" aria-live="polite" class="home-search-voice-status text-xs text-blue-950 lg:col-span-full" hidden></p>
                 </form>
+                <a href="{{ route('tools.map') }}" class="home-search-map-link mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/30 bg-white px-5 py-3 font-extrabold text-blue-950 shadow-sm transition hover:bg-blue-50 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-orange-400"><i class="fa-solid fa-map-location-dot text-orange-600" aria-hidden="true"></i>Haritada Ara</a>
                 @include('partials.property-tools')
             </div>
         </section>
@@ -30,7 +31,7 @@
                 @if($rentRateNumber !== null)
                     <article class="home-overview-card home-rent">
                         <div class="min-w-0 flex-1"><h2 class="text-sm font-extrabold text-blue-950"><span class="phone-rent-title">Kira Artış Oranı</span><span class="desktop-rent-title">{{ $rentPeriod }} Kira Artış Oranı</span></h2><p class="mt-2 text-3xl font-black text-orange-600">%{{ number_format($rentRateNumber, 2, ',', '.') }}</p><p class="phone-rent-title mt-1 text-xs font-semibold text-blue-950">{{ $rentPeriod }}</p></div>
-                        <div class="mt-auto pt-3 text-[11px] text-slate-500">@if($rentUpdatedAt)<span class="block">Güncelleme: {{ \Illuminate\Support\Carbon::parse($rentUpdatedAt)->format('d.m.Y') }}</span>@endif<a href="{{ route('tools.rent') }}" class="mt-1 inline-flex items-center gap-1 font-bold text-orange-600">Kira Artışını Hesapla <i class="fa-solid fa-arrow-right"></i></a></div>
+                        <div class="mt-auto pt-3 text-[11px] text-slate-500">@if($rentUpdatedAt)<span class="block">Güncelleme: {{ \Illuminate\Support\Carbon::parse($rentUpdatedAt)->format('d.m.Y') }}</span>@endif<a href="{{ route('tools.rent') }}" class="home-rent-calculator-link mt-2 inline-flex items-center gap-2 rounded-lg bg-orange-50 px-3 py-2 font-extrabold text-orange-700 ring-1 ring-orange-200 transition hover:bg-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"><i class="fa-solid fa-calculator" aria-hidden="true"></i>Kira Artışını Hesapla <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
                     </article>
                 @endif
                 <article class="home-overview-card home-rayic">

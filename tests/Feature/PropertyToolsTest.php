@@ -82,6 +82,23 @@ class PropertyToolsTest extends TestCase
         $this->assertFileExists(public_path('js/property-search-voice.js'));
     }
 
+    public function test_homepage_map_link_is_below_search_and_rent_calculator_link_is_highlighted(): void
+    {
+        $response = $this->get('/')->assertOk();
+        $html = $response->getContent();
+        $searchEnd = strpos($html, '</form>');
+        $mapLink = strpos($html, 'home-search-map-link');
+        $parcelLink = strpos($html, 'Arsa ve Parsel Sorgula');
+
+        $this->assertNotFalse($searchEnd);
+        $this->assertNotFalse($mapLink);
+        $this->assertNotFalse($parcelLink);
+        $this->assertGreaterThan($searchEnd, $mapLink);
+        $this->assertGreaterThan($mapLink, $parcelLink);
+        $this->assertStringNotContainsString('>Sesle Ara</button>', $html);
+        $this->assertStringContainsString('home-rent-calculator-link', $html);
+        $this->assertStringContainsString('font-extrabold text-orange-700', $html);
+    }
     public function test_map_omits_hidden_unpublished_and_missing_coordinates_and_filters_area(): void
     {
         $owner = $this->member();
