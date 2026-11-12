@@ -8,7 +8,7 @@
             </div>
         </section>
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <div id="project-map" class="mb-8" data-zyd-map data-config="{{ json_encode(['projects' => $mapProjects], JSON_UNESCAPED_UNICODE) }}"></div>
+            <div id="project-map" class="mb-8 zyd-projects-map" data-zyd-map data-config="{{ json_encode(['projects' => $mapProjects], JSON_UNESCAPED_UNICODE) }}"></div>
             <a href="{{ route('shared-map') }}" class="mb-4 inline-block font-bold text-blue-700">İlan ve proje haritasını aç</a>
 
             <form method="GET" action="{{ route('projects.index') }}" class="mb-8 grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-4" aria-label="Proje konum filtreleri">
@@ -50,5 +50,110 @@
         </section>
     </main>
 
-    @push('head') @include('partials.zyd-map-assets') @endpush
+    @push('head')
+        @include('partials.zyd-map-assets')
+        <style>
+            #project-map.zyd-projects-map .zyd-shared-map {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 72dvh;
+                min-height: 560px;
+                max-height: 900px;
+            }
+
+            #project-map.zyd-projects-map .zyd-map-top,
+            #project-map.zyd-projects-map .zyd-map-controls {
+                flex: 0 0 auto;
+            }
+
+            #project-map.zyd-projects-map .zyd-map-canvas {
+                flex: 1 1 auto;
+                width: 100%;
+                min-height: 240px;
+                height: auto !important;
+            }
+
+            #project-map.zyd-projects-map .zyd-map-card {
+                position: relative;
+                inset: auto;
+                flex: 1 1 0;
+                width: auto;
+                max-width: none;
+                max-height: none;
+                min-height: 120px;
+                margin: 0 12px 12px;
+                overflow: auto;
+                overscroll-behavior: contain;
+            }
+
+            #project-map.zyd-projects-map:has(.zyd-map-card) .zyd-map-canvas {
+                flex: 0 0 48%;
+                min-height: 230px;
+            }
+
+            #project-map.zyd-projects-map .zyd-shared-map.zyd-map-expanded {
+                z-index: 10000;
+                width: 100vw;
+                height: 100dvh;
+                min-height: 0;
+                max-height: none;
+                border-radius: 0;
+            }
+
+            @media (max-width: 640px) {
+                #project-map.zyd-projects-map .zyd-shared-map {
+                    height: 70dvh;
+                    min-height: 460px;
+                    max-height: none;
+                }
+
+                #project-map.zyd-projects-map .zyd-map-top {
+                    gap: 8px;
+                    padding: 10px;
+                }
+
+                #project-map.zyd-projects-map .zyd-map-controls {
+                    gap: 6px;
+                    padding: 8px;
+                }
+
+                #project-map.zyd-projects-map .zyd-map-controls button {
+                    min-width: 0;
+                    padding: 9px 6px;
+                    font-size: 12px;
+                }
+
+                #project-map.zyd-projects-map:has(.zyd-map-card) .zyd-map-canvas {
+                    flex-basis: 42%;
+                    min-height: 190px;
+                }
+
+                #project-map.zyd-projects-map .zyd-map-card {
+                    min-height: 100px;
+                    margin: 0 8px 8px;
+                    padding: 10px;
+                }
+            }
+        </style>
+        <script>
+            (() => {
+                const host = document.getElementById('project-map');
+                if (!host || !('ResizeObserver' in window)) return;
+
+                let observedCanvas = null;
+                const observer = new ResizeObserver(() => window.dispatchEvent(new Event('resize')));
+                const syncCanvas = () => {
+                    const canvas = host.querySelector('.zyd-map-canvas');
+                    if (canvas === observedCanvas) return;
+                    observer.disconnect();
+                    observedCanvas = canvas;
+                    if (canvas) observer.observe(canvas);
+                };
+
+                new MutationObserver(syncCanvas).observe(host, { childList: true, subtree: true });
+                syncCanvas();
+            })();
+        </script>
+    @endpush
 </x-layouts.modern>
