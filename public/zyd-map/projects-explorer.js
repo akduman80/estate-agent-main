@@ -98,7 +98,71 @@
                 node.textContent = `${doorChoices.length} kapı kaydı var. Aşağıdan seçin.`;
             }
         });
-        find('[data-google]').href = `https://www.google.com/maps?q=${encodeURIComponent(`${selected.latitude},${selected.longitude}`)}`;
+        const coordinates = encodeURIComponent(`${selected.latitude},${selected.longitude}`);
+        find('[data-google]').href = `https://www.google.com/maps?q=${coordinates}`;
+        find('[data-directions]').href = `https://www.google.com/maps/dir/?api=1&destination=${coordinates}&dir_action=navigate`;
+    };
+    const createShareCard = async () => {
+        const rows = [...locationDetails.querySelectorAll('[data-field]')].map(node => ({
+            label: node.parentElement.querySelector('dt')?.textContent.trim() || node.dataset.field,
+            value: node.textContent.trim() || 'Bulunamadı',
+        }));
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('Konum kartı görseli bu tarayıcıda hazırlanamadı.');
+        const wrap = (text, width) => {
+            const lines = [];
+            let line = '';
+            for (const word of text.split(/\s+/)) {
+                const candidate = line ? `${line} ${word}` : word;
+                if (line && context.measureText(candidate).width > width) {
+                    lines.push(line);
+                    line = word;
+                } else line = candidate;
+            }
+            if (line) lines.push(line);
+            return lines;
+        };
+        context.font = '32px Inter, Arial, sans-serif';
+        const layout = rows.map(row => {
+            const lines = wrap(row.value, 674);
+            return { ...row, lines, height: Math.max(94, lines.length * 42 + 38) };
+        });
+        const note = find('[data-address-source]').textContent.trim();
+        context.font = '22px Inter, Arial, sans-serif';
+        const notes = wrap(note, 984);
+        canvas.width = 1080;
+        canvas.height = 170 + layout.reduce((height, row) => height + row.height, 0) + 100 + notes.length * 32;
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = '#172f65';
+        context.fillRect(0, 0, canvas.width, 154);
+        context.fillStyle = '#fff';
+        context.font = '700 30px Inter, Arial, sans-serif';
+        context.fillText('ZYDEMLAK', 48, 55);
+        context.font = '700 44px Inter, Arial, sans-serif';
+        context.fillText('Seçilen Konum', 48, 113);
+        let y = 170;
+        for (const row of layout) {
+            context.fillStyle = '#172f65';
+            context.font = '700 28px Inter, Arial, sans-serif';
+            context.fillText(row.label, 48, y + 51);
+            context.fillStyle = '#172f45';
+            context.font = '32px Inter, Arial, sans-serif';
+            row.lines.forEach((line, index) => context.fillText(line, 358, y + 51 + index * 42));
+            context.fillStyle = '#d7e0ed';
+            context.fillRect(48, y + row.height - 1, 984, 1);
+            y += row.height;
+        }
+        context.fillStyle = '#f1f5fb';
+        context.fillRect(0, y + 16, 1080, canvas.height - y - 16);
+        context.fillStyle = '#52657a';
+        context.font = '22px Inter, Arial, sans-serif';
+        notes.forEach((line, index) => context.fillText(line, 48, y + 55 + index * 32));
+        context.fillText('Konum bağlantısı paylaşım metnindedir.', 48, canvas.height - 25);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (!blob) throw new Error('Konum kartı görseli hazırlanamadı. Tekrar deneyin.');
+        return { blob, text: rows.map(row => `${row.label}\n${row.value}`).join('\n\n') };
     };
     const useAddress = result => {
         const address = result?.address || {};
@@ -205,6 +269,7 @@
         choicesInParcel = false;
         addressLabels.clearLayers();
         find('[data-door-choice-label]').hidden = true;
+        find('[data-share-fallback]').hidden = true;
         find('[data-address-source]').textContent = 'TKGM sokak ve kapı numarası sorgulanıyor…';
         selectedMarker?.remove();
         boundary?.remove();
@@ -422,16 +487,48 @@
             try { recognition.start(); button.disabled = true; status('Dinleniyor…'); }
             catch { button.disabled = false; status('Mikrofon başlatılamadı. Adresi yazarak arayabilirsiniz.'); }
         }
-        if (button.dataset.transfer && selected) {
+        if (action === 'share-location' && selected) {
             button.disabled = true;
-            const snapshot = { ...selected };
-            const allowed = ['latitude', 'longitude', 'address', 'city', 'district', 'neighborhood', 'block', 'parcel', 'area', 'quality'];
-            const payload = { target: button.dataset.transfer };
-            allowed.forEach(key => { if (snapshot[key] !== undefined && snapshot[key] !== null) payload[key] = snapshot[key]; });
+            const location = selected;
+            const url = `https://www.google.com/maps?q=${encodeURIComponent(`${location.latitude},${location.longitude}`)}`;
             try {
-                const reply = await json(root.dataset.transferUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': root.dataset.csrf }, body: JSON.stringify(payload) });
-                window.location.assign(reply.url);
-            } catch (error) { status(error.message); }
+                const card = await createShareCard();
+                const file = new File([card.blob], 'zydemlak-secilen-konum.png', { type: 'image/png' });
+                const text = `${card.text}\n\n${url}`;
+                if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                    try {
+                        await navigator.share({ title: 'Seçilen konum kartı', text, files: [file] });
+                        if (selected === location) status('Konum kartı tüm bilgileriyle paylaşıldı.');
+                        return;
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            if (selected === location) status('Paylaşım iptal edildi.');
+                            return;
+                        }
+                    }
+                }
+                const download = document.createElement('a');
+                const imageUrl = URL.createObjectURL(card.blob);
+                download.href = imageUrl;
+                download.download = file.name;
+                document.body.append(download);
+                download.click();
+                download.remove();
+                setTimeout(() => URL.revokeObjectURL(imageUrl), 30000);
+                try {
+                    await navigator.clipboard.writeText(text);
+                    if (selected === location) status('Konum kartı PNG olarak indirildi. Kartın tüm bilgileri ve konum bağlantısı kopyalandı.');
+                } catch {
+                    if (selected === location) {
+                        const input = find('[data-share-content]');
+                        input.value = text;
+                        find('[data-share-fallback]').hidden = false;
+                        input.focus();
+                        input.select();
+                        status('Konum kartı PNG olarak indirildi. Tüm kart bilgilerini aşağıdan kopyalayabilirsiniz.');
+                    }
+                }
+            } catch (error) { if (selected === location) status(error.message || 'Konum kartı paylaşılamadı.'); }
             finally { button.disabled = false; }
         }
     });

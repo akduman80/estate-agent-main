@@ -16,10 +16,10 @@
 .project-explorer__panel { flex: 0 0 360px; position: relative; min-width: 0; padding: 18px; overflow-y: auto; overscroll-behavior: contain; border-left: 1px solid #d7e0ed; }
 .project-explorer .project-explorer__close { position: absolute; top: 8px; right: 8px; width: 36px; min-height: 36px; padding: 0; font-size: 25px; }
 .project-explorer__panel label { display: block; margin-bottom: 12px; font-size: 13px; font-weight: 700; }
-.project-explorer__panel input:not([type="checkbox"]), .project-explorer__panel select { display: block; width: 100%; min-width: 0; margin-top: 6px; padding: 10px; border: 1px solid #bccbdf; border-radius: 8px; background: #fff; color: #172f45; font-size: 16px; }
+.project-explorer__panel input:not([type="checkbox"]), .project-explorer__panel select, .project-explorer__panel textarea { display: block; width: 100%; min-width: 0; margin-top: 6px; padding: 10px; border: 1px solid #bccbdf; border-radius: 8px; background: #fff; color: #172f45; font-size: 16px; }
 .project-explorer__search-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
 .project-explorer__search-row > input { flex: 1 1 100%; }
-.project-explorer__search-row > label, .project-explorer__search-row > button { flex: 1; min-width: 0; }
+.project-explorer__search-row > label, .project-explorer__search-row > button, .project-explorer__search-row > a { flex: 1; min-width: 0; text-align: center; }
 .project-explorer__panel dl { margin: 0 0 16px; }
 .project-explorer__panel dl > div { display: grid; grid-template-columns: 95px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-bottom: 1px solid #edf0f5; font-size: 13px; }
 .project-explorer__panel dt { font-weight: 700; }

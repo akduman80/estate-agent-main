@@ -94,6 +94,8 @@ class ProjectMapToolsTest extends TestCase
     {
         $this->get('/projeler?city=Osmaniye')->assertOk()->assertSee('Projeler Haritası')
             ->assertSee('data-layer="ilan"', false)->assertSee('data-layer="proje"', false)
+            ->assertSee('Seçilen Konumu Paylaş')->assertSee('Seçilen Konuma Git')
+            ->assertDontSee('İlana Aktar')->assertDontSee('Projeye Aktar')
             ->assertSee('projects-explorer.js')->assertSee('Proje konum filtreleri')->assertDontSee('ZYDEMLAK Ultra Pro');
     }
 

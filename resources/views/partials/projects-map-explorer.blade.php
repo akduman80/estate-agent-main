@@ -1,7 +1,7 @@
 <section id="projects-map-explorer" class="project-explorer mb-8" aria-label="Projeler Haritası"
     data-records="{{ json_encode($mapProjects, JSON_UNESCAPED_UNICODE) }}"
     data-parcel-url="{{ route('projects.parcel.lookup') }}" data-regions-url="{{ route('projects.map.regions') }}"
-    data-transfer-url="{{ route('projects.map.transfer') }}" data-address-url="{{ route('projects.map.address') }}" data-csrf="{{ csrf_token() }}">
+    data-address-url="{{ route('projects.map.address') }}">
     <div class="project-explorer__header">
         <h2>Projeler Haritası</h2>
         <button type="button" data-action="expand" aria-pressed="false">Tam ekran</button>
@@ -57,9 +57,10 @@
                 <p class="project-explorer__hint" data-address-source></p>
                 <a data-google target="_blank" rel="noopener noreferrer">Google Haritalar’da Aç ↗</a>
                 <div class="project-explorer__search-row">
-                    <button type="button" data-transfer="listing">İlana Aktar</button>
-                    <button type="button" data-transfer="project">Projeye Aktar</button>
+                    <button type="button" data-action="share-location">Seçilen Konumu Paylaş</button>
+                    <a data-directions target="_blank" rel="noopener noreferrer">Seçilen Konuma Git</a>
                 </div>
+                <label data-share-fallback hidden>Konum kartı bilgileri<textarea data-share-content rows="8" readonly aria-label="Paylaşılacak konum kartının tüm bilgileri"></textarea></label>
             </section>
             <section data-record-details hidden></section>
         </aside>
