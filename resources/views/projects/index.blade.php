@@ -8,6 +8,41 @@
             </div>
         </section>
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <section class="zyd-location-tools mb-8" data-location-tools data-parcel-url="{{ route('projects.parcel.lookup') }}" aria-label="Harita konum arama">
+                <div class="zyd-location-tools__bar">
+                    <button type="button" class="zyd-location-tools__toggle" data-location-open aria-expanded="false">Konum ara</button>
+                    <button type="button" class="zyd-location-tools__toggle" data-location-card-open hidden>Seçilen konumu aç</button>
+                    <form class="zyd-location-tools__search" data-address-search hidden>
+                        <label for="project-location-query">Adresle git</label>
+                        <div class="zyd-location-tools__input-row">
+                            <input id="project-location-query" name="q" type="search" autocomplete="street-address" placeholder="İl, ilçe, mahalle, sokak, kapı no" required>
+                            <button type="button" data-voice-input aria-label="Sesle adres gir" hidden>🎙</button>
+                            <button type="submit">Git</button>
+                        </div>
+                        <p class="zyd-location-tools__hint">Adres çözümlemesi için seçilen koordinat OpenStreetMap Nominatim’e gönderilir. Kadastro alanları TKGM’nin kamuya açık servisinden alınır; bu bilgiler resmî işlem belgesi değildir.</p>
+                        <a class="zyd-location-tools__parcel-link" href="{{ route('tools.parcel') }}" target="_blank" rel="noopener noreferrer">Ada / parsel sorgulama aracını aç</a>
+                        <button type="button" class="zyd-location-tools__close" data-location-close aria-label="Arama panelini kapat">×</button>
+                    </form>
+                </div>
+                <aside class="zyd-location-card" data-location-card hidden aria-live="polite">
+                    <button type="button" class="zyd-location-tools__close" data-location-close aria-label="Konum kartını kapat">×</button>
+                    <h2>Seçilen konum</h2>
+                    <dl>
+                        <div><dt>Adres</dt><dd data-location-address>—</dd></div>
+                        <div><dt>İl / İlçe</dt><dd data-location-district>—</dd></div>
+                        <div><dt>Mahalle</dt><dd data-location-neighborhood>—</dd></div>
+                        <div><dt>Sokak / Kapı No</dt><dd data-location-street>—</dd></div>
+                        <div><dt>Ada / Parsel</dt><dd><span data-parcel-block>—</span> / <span data-parcel-parcel>—</span></dd></div>
+                        <div><dt>Parsel alanı</dt><dd data-parcel-area>—</dd></div>
+                        <div><dt>Nitelik</dt><dd data-parcel-quality>—</dd></div>
+                        <div><dt>Pafta</dt><dd data-parcel-sheet>—</dd></div>
+                        <div><dt>Mevkii</dt><dd data-parcel-locality>—</dd></div>
+                        <div><dt>Koordinat</dt><dd data-location-coordinates>—</dd></div>
+                    </dl>
+                    <p class="zyd-location-tools__hint" data-location-parcel-status role="status">Parsel bilgisi seçilen konum için sorgulanır.</p>
+                    <a data-google-maps target="_blank" rel="noopener noreferrer" hidden>Google Haritalar’da Aç</a>
+                </aside>
+            </section>
             <div id="project-map" class="mb-8 zyd-projects-map" data-zyd-map data-config="{{ json_encode(['projects' => $mapProjects], JSON_UNESCAPED_UNICODE) }}"></div>
             <a href="{{ route('shared-map') }}" class="mb-4 inline-block font-bold text-blue-700">İlan ve proje haritasını aç</a>
 
@@ -52,6 +87,8 @@
 
     @push('head')
         @include('partials.zyd-map-assets')
+        <link rel="stylesheet" href="{{ asset('zyd-map/zyd-location-tools.css') }}?v={{ file_exists(public_path('zyd-map/zyd-location-tools.css')) ? filemtime(public_path('zyd-map/zyd-location-tools.css')) : 1 }}">
+        <script src="{{ asset('zyd-map/zyd-location-tools.js') }}?v={{ file_exists(public_path('zyd-map/zyd-location-tools.js')) ? filemtime(public_path('zyd-map/zyd-location-tools.js')) : 1 }}" defer></script>
         <style>
             #project-map.zyd-projects-map .zyd-shared-map {
                 display: flex;

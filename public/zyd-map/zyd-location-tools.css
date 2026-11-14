@@ -1,0 +1,38 @@
+.zyd-location-tools { position: relative; z-index: 600; color: #fff; }
+.zyd-location-tools__bar { display: flex; flex-wrap: wrap; gap: .5rem; }
+.zyd-location-tools button,
+.zyd-location-tools a { min-height: 2.75rem; border: 1px solid #37617c; border-radius: .7rem; background: #075fc5; color: #fff; padding: .65rem 1rem; font-weight: 700; text-decoration: none; }
+.zyd-location-tools button:hover,
+.zyd-location-tools a:hover { background: #084b91; }
+.zyd-location-tools button:focus-visible,
+.zyd-location-tools a:focus-visible,
+.zyd-location-tools input:focus-visible { outline: 3px solid #ffd044; outline-offset: 2px; }
+.zyd-location-tools__search,
+.zyd-location-card { position: relative; box-sizing: border-box; width: min(100%, 30rem); margin-top: .6rem; border: 1px solid #37617c; border-radius: 1rem; background: #051b2e; box-shadow: 0 12px 32px #051b2e44; padding: 1rem; }
+.zyd-location-tools__search label,
+.zyd-location-card h2 { display: block; margin: 0 2.25rem .65rem 0; color: #ffd044; font-weight: 800; }
+.zyd-location-tools__input-row { display: flex; gap: .4rem; }
+.zyd-location-tools input { min-width: 0; flex: 1; border: 1px solid #7791a5; border-radius: .65rem; background: #fff; color: #102a3f; padding: .7rem; font-size: 1rem; }
+.zyd-location-tools__hint { margin: .65rem 0 0; color: #d5e0e9; font-size: .78rem; line-height: 1.45; }
+.zyd-location-tools__parcel-link { display: inline-block; margin-top: .65rem; color: #ffd044 !important; text-decoration: underline !important; }
+.zyd-location-tools__close { position: absolute; top: .45rem; right: .45rem; width: 2.25rem; min-height: 2.25rem !important; padding: .2rem !important; font-size: 1.4rem; line-height: 1; }
+.zyd-location-card dl { display: grid; gap: .45rem; margin: 0 0 .8rem; }
+.zyd-location-card dl > div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: .5rem; border-bottom: 1px solid #37617c; padding-bottom: .4rem; }
+.zyd-location-tools__hint[data-location-parcel-status] { margin-bottom: 0; }
+.zyd-location-card [data-google-maps] { display: inline-block; margin-top: .35rem; color: #ffd044; font-weight: 800; text-decoration: underline; }
+.zyd-location-card dt { color: #d5e0e9; font-weight: 700; }
+.zyd-location-card dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.zyd-shared-map .zyd-map-controls button:first-child,
+.zyd-shared-map .zyd-map-controls button:nth-child(2),
+.zyd-shared-map .zyd-map-controls button:nth-child(3) { background: #075fc5; }
+.zyd-shared-map .zyd-map-controls button:hover { background: #084b91; }
+.zyd-shared-map .zyd-map-controls button[aria-pressed="true"] { box-shadow: 0 0 0 2px #ffd044; }
+@media (max-width: 640px) {
+    .zyd-location-tools__bar { display: grid; grid-template-columns: 1fr 1fr; }
+    .zyd-location-tools__bar > button { width: 100%; }
+    .zyd-location-tools__input-row { flex-wrap: wrap; }
+    .zyd-location-tools__input-row input { flex-basis: 100%; }
+    .zyd-location-tools__input-row button { flex: 1; }
+    .zyd-location-card dl > div { grid-template-columns: 7.1rem minmax(0, 1fr); }
+    .zyd-location-card:not([hidden]) { position: fixed; z-index: 1100; right: .5rem; bottom: max(.5rem, env(safe-area-inset-bottom)); left: .5rem; width: auto; max-height: min(58dvh, 36rem); overflow: auto; overscroll-behavior: contain; }
+}
