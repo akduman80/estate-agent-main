@@ -16,13 +16,13 @@ class ProjectParcelLookupController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         $coordinates = $request->validate([
-            'lat' => ['required', 'regex:/^-?\d{1,3}(?:\.\d{1,8})?$/'],
-            'lon' => ['required', 'regex:/^-?\d{1,3}(?:\.\d{1,8})?$/'],
+            'lat' => ['required', 'numeric', 'between:-90,90'],
+            'lon' => ['required', 'numeric', 'between:-180,180'],
         ]);
         $lat = (float) $coordinates['lat'];
         $lon = (float) $coordinates['lon'];
 
-        abort_unless(is_finite($lat) && $lat >= -90 && $lat <= 90 && is_finite($lon) && $lon >= -180 && $lon <= 180, 422);
+        abort_unless(is_finite($lat) && is_finite($lon), 422);
 
         $cacheKey = 'project-parcel:'.number_format($lat, 8, '.', '').':'.number_format($lon, 8, '.', '');
         $cached = Cache::get($cacheKey);
