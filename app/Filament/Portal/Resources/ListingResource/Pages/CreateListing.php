@@ -39,6 +39,9 @@ class CreateListing extends CreateRecord
 
         parent::mount();
         $this->startWorkspace();
+        if (session()->has('project-map-transfer.listing')) {
+            $this->form->fill(\App\Support\ProjectMapTransfer::apply($this->data ?? [], 'listing'));
+        }
     }
 
     protected function getFormActions(): array

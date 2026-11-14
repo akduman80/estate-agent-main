@@ -16,15 +16,21 @@ class ProjectParcelLookupController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         $coordinates = $request->validate([
-            'lat' => ['required', 'numeric', 'between:-90,90'],
-            'lon' => ['required', 'numeric', 'between:-180,180'],
+            'lat' => ['required_without:neighborhood_id', 'numeric', 'between:-90,90'],
+            'lon' => ['required_without:neighborhood_id', 'numeric', 'between:-180,180'],
+            'neighborhood_id' => ['nullable', 'regex:/^(?:\d{1,12}|\{?[a-fA-F0-9-]{36}\}?)$/'],
+            'block' => ['required_with:neighborhood_id', 'regex:/^\d{1,12}$/'],
+            'parcel' => ['required_with:neighborhood_id', 'regex:/^\d{1,12}$/'],
         ]);
-        $lat = (float) $coordinates['lat'];
-        $lon = (float) $coordinates['lon'];
+        $lat = (float) ($coordinates['lat'] ?? 0);
+        $lon = (float) ($coordinates['lon'] ?? 0);
 
         abort_unless(is_finite($lat) && is_finite($lon), 422);
 
-        $cacheKey = 'project-parcel:'.number_format($lat, 8, '.', '').':'.number_format($lon, 8, '.', '');
+        $path = filled($coordinates['neighborhood_id'] ?? null)
+            ? rawurlencode($coordinates['neighborhood_id']).'/'.$coordinates['block'].'/'.$coordinates['parcel']
+            : rawurlencode((string) $lat).'/'.rawurlencode((string) $lon).'/';
+        $cacheKey = 'project-parcel:'.hash('sha256', $path);
         $cached = Cache::get($cacheKey);
         if (is_array($cached)) {
             return response()->json($cached);
@@ -36,7 +42,7 @@ class ProjectParcelLookupController extends Controller
                 ->connectTimeout(4)
                 ->timeout(8)
                 ->withOptions(['allow_redirects' => false])
-                ->get(self::ENDPOINT.rawurlencode((string) $lat).'/'.rawurlencode((string) $lon).'/');
+                ->get(self::ENDPOINT.$path);
         } catch (Throwable $exception) {
             Log::notice('TKGM parcel lookup failed.', ['exception' => $exception::class]);
 

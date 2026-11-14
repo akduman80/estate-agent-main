@@ -12,6 +12,8 @@ Route::get('/araclar/parsel', fn () => view('tools.parcel'))->name('tools.parcel
 Route::get('/araclar/kira-artisi', RentCalculator::class)->name('tools.rent');
 Route::get('/ilan-haritasi', [PropertyMapController::class, 'index'])->name('tools.map');
 Route::get('/api/projeler/parsel-sorgula', ProjectParcelLookupController::class)->middleware('throttle:20,1')->name('projects.parcel.lookup');
+Route::get('/api/projeler/idari-bolgeler', \App\Http\Controllers\ProjectMapRegionsController::class)->middleware('throttle:30,1')->name('projects.map.regions');
+Route::post('/projeler/konum-aktar', \App\Http\Controllers\ProjectMapTransferController::class)->middleware(['auth', 'throttle:20,1'])->name('projects.map.transfer');
 Route::get('/ilan-haritasi/kayitlar', [PropertyMapController::class, 'records'])->middleware('throttle:60,1')->name('tools.map.records');
 Route::middleware(['auth', 'throttle:30,1'])->group(function () {
     Route::get('/hesap/etkilesim-bildirimleri', [PropertyNotificationsController::class, 'index'])->name('property.notifications');
