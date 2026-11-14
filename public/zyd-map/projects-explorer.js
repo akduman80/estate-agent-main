@@ -21,6 +21,9 @@
     };
     let basemap = basemaps.normal.addTo(map);
     const groups = { ilan: L.layerGroup().addTo(map), proje: L.layerGroup().addTo(map) };
+    const addressLabels = L.layerGroup().addTo(map);
+    let doorChoices = [];
+    let choicesInParcel = false;
     let selected = null;
     let selectedMarker = null;
     let boundary = null;
@@ -91,6 +94,9 @@
         root.querySelectorAll('[data-field]').forEach(node => {
             node.textContent = fields[node.dataset.field] ?? 'Bulunamadı';
             if (node.textContent === '') node.textContent = 'Bulunamadı';
+            if (node.dataset.field === 'door' && !fields.door && choicesInParcel && doorChoices.length > 1) {
+                node.textContent = `${doorChoices.length} kapı kaydı var. Aşağıdan seçin.`;
+            }
         });
         find('[data-google]').href = `https://www.google.com/maps?q=${encodeURIComponent(`${selected.latitude},${selected.longitude}`)}`;
     };
@@ -101,9 +107,81 @@
             city: address.province || address.state || address.city || null,
             district: address.town || address.county || address.city_district || address.city || null,
             neighborhood: address.neighbourhood || address.quarter || address.suburb || address.village || null,
-            street: address.road || address.pedestrian || null, door: address.house_number || null,
+            street: address.road || address.pedestrian || address.residential || address.footway || null, door: address.house_number || null,
         });
     };
+    const pointInRing = (ring, lat, lon) => {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            const a = ring[i], b = ring[j];
+            if ((a[1] > lat) !== (b[1] > lat) && lon < (b[0] - a[0]) * (lat - a[1]) / (b[1] - a[1]) + a[0]) inside = !inside;
+        }
+        return inside;
+    };
+    const inParcel = (geometry, lat, lon) => {
+        const polygons = geometry?.type === 'Polygon' ? [geometry.coordinates] : geometry?.type === 'MultiPolygon' ? geometry.coordinates : [];
+        return polygons.some(polygon => polygon.length && pointInRing(polygon[0], lat, lon)
+            && !polygon.slice(1).some(hole => pointInRing(hole, lat, lon)));
+    };
+    const applyDoor = door => {
+        selected.street = door.street;
+        selected.door = door.door;
+        selected.address = [door.street, `No ${door.door}`, selected.neighborhood, selected.district, selected.city].filter(Boolean).join(', ');
+        find('[data-address-source]').textContent = 'Sokak ve kapı numarası TKGM MAKS numarataj kaydından alındı.';
+        renderLocation();
+    };
+    const showOfficialAddresses = (reply, geometry) => {
+        if (!reply) return;
+        addressLabels.clearLayers();
+        const candidates = reply.candidates || [];
+        for (const street of reply.streets || []) {
+            const label = document.createElement('span');
+            label.textContent = street.name;
+            L.marker([street.latitude, street.longitude], { interactive: false, keyboard: false,
+                icon: L.divIcon({ className: 'project-explorer__street-label', html: label, iconSize: [0, 0] }) }).addTo(addressLabels);
+        }
+        for (const door of candidates) {
+            const label = document.createElement('span');
+            label.textContent = door.door;
+            L.marker([door.latitude, door.longitude], { title: `${door.street} No ${door.door}`, alt: `${door.street} No ${door.door}`,
+                icon: L.divIcon({ className: 'project-explorer__door-label', html: label, iconSize: [0, 0] }) }).addTo(addressLabels)
+                .on('click', () => selectPoint(door.latitude, door.longitude));
+        }
+        const exact = candidates.filter(door => door.distance <= 3);
+        const matching = candidates.filter(door => inParcel(geometry, door.latitude, door.longitude));
+        choicesInParcel = matching.length > 0;
+        const applicable = exact.length ? exact : matching;
+        const unique = new Map();
+        for (const door of applicable.length ? applicable : candidates) {
+            const key = `${door.street}\n${door.door}`;
+            if (!unique.has(key)) unique.set(key, door);
+        }
+        doorChoices = [...unique.values()];
+        const choice = find('[data-door-choice]');
+        choice.replaceChildren(new Option('Sokak ve kapı kaydı seçin', ''));
+        doorChoices.forEach((door, index) => choice.add(new Option(`${door.street} · No ${door.door}`, String(index))));
+        find('[data-door-choice-label]').hidden = doorChoices.length === 0 || (applicable.length > 0 && doorChoices.length === 1);
+        find('[data-door-choice-label]').firstChild.textContent = choicesInParcel || exact.length ? 'Konumdaki kapı kaydını seçin' : 'Yakındaki kapı kaydını haritada açın';
+        if (applicable.length && doorChoices.length === 1) {
+            applyDoor(doorChoices[0]);
+        } else {
+            const streets = [...new Set(applicable.map(door => door.street))];
+            if (streets.length === 1) selected.street = streets[0];
+            else if (!selected.street && reply.street) selected.street = reply.street;
+            find('[data-address-source]').textContent = applicable.length
+                ? 'Bu konumda birden fazla numarataj kaydı var. Kapı kaydını seçin.'
+                : candidates.length ? 'Yakındaki gerçek kapı numaraları haritada gösteriliyor. Adresi açmak için numaraya dokunun.'
+                    : 'TKGM bu konum çevresinde kayıtlı kapı numarası döndürmedi.';
+        }
+        renderLocation();
+    };
+    find('[data-door-choice]').addEventListener('change', event => {
+        if (event.target.value === '') return;
+        const door = doorChoices[Number(event.target.value)];
+        if (!door || !selected) return;
+        if (choicesInParcel || door.distance <= 3) applyDoor(door);
+        else selectPoint(door.latitude, door.longitude);
+    });
     const useParcel = result => {
         if (!result?.found || !result.parcel) return;
         const parcel = result.parcel;
@@ -123,29 +201,48 @@
         if (!validPoint(lat, lon)) return;
         const request = beginRequest();
         selected = { latitude: lat, longitude: lon };
+        doorChoices = [];
+        choicesInParcel = false;
+        addressLabels.clearLayers();
+        find('[data-door-choice-label]').hidden = true;
+        find('[data-address-source]').textContent = 'TKGM sokak ve kapı numarası sorgulanıyor…';
         selectedMarker?.remove();
         boundary?.remove();
         boundary = null;
         selectedMarker = L.marker([lat, lon], { icon: pin('selected', '●'), title: 'Seçilen konum', alt: 'Seçilen konum' }).addTo(map);
         selectedMarker.on('click', () => { setPanel('location'); renderLocation(); });
-        map.setView([lat, lon], Math.max(16, map.getZoom()));
+        map.setView([lat, lon], Math.max(18, map.getZoom()));
         find('[data-action="selected"]').hidden = false;
         setPanel('location');
         if (address) useAddress(address);
         if (parcel) useParcel(parcel);
         renderLocation();
         status('Konum bilgileri sorgulanıyor…');
-        const addressRequest = address ? Promise.resolve(address) : geocode('reverse', { lat, lon }, request.signal);
+        const addressRequest = (address ? Promise.resolve(address) : geocode('reverse', { lat, lon }, request.signal)).then(reply => {
+            if (request.id === generation) { useAddress(reply); renderLocation(); }
+            return reply;
+        });
         const parcelRequest = parcel ? Promise.resolve(parcel) : json(`${root.dataset.parcelUrl}?${new URLSearchParams({ lat: lat.toFixed(7), lon: lon.toFixed(7) })}`, { signal: AbortSignal.any([request.signal, AbortSignal.timeout(12000)]) });
-        const replies = await Promise.allSettled([addressRequest, parcelRequest]);
+        const progressiveParcel = parcelRequest.then(reply => {
+            if (request.id === generation) { useParcel(reply); renderLocation(); }
+            return reply;
+        });
+        const officialRequest = json(`${root.dataset.addressUrl}?${new URLSearchParams({ lat: lat.toFixed(7), lon: lon.toFixed(7) })}`, {
+            signal: AbortSignal.any([request.signal, AbortSignal.timeout(45000)]),
+        });
+        const replies = await Promise.allSettled([addressRequest, progressiveParcel, officialRequest]);
         if (request.id !== generation) return;
         if (replies[0].status === 'fulfilled') useAddress(replies[0].value);
         if (replies[1].status === 'fulfilled') useParcel(replies[1].value);
+        if (replies[2].status === 'fulfilled') showOfficialAddresses(replies[2].value, replies[1].status === 'fulfilled' ? replies[1].value.geometry : null);
+        else find('[data-address-source]').textContent = 'TKGM sokak ve kapı servisine ulaşılamadı. Yeniden konum seçerek tekrar deneyin.';
         renderLocation();
         const messages = [];
         if (replies[0].status === 'rejected') messages.push('Adres servisine ulaşılamadı.');
         if (replies[1].status === 'rejected') messages.push(replies[1].reason.message || 'Kadastro servisine ulaşılamadı.');
         else if (!replies[1].value.found) messages.push(replies[1].value.message || 'Bu noktada parsel bulunamadı.');
+        if (replies[2].status === 'rejected') messages.push('Sokak ve kapı numarası sorgusu tamamlanamadı.');
+        if (replies[2].status === 'fulfilled' && replies[2].value.partial) messages.push('Bazı numarataj kayıtlarına ulaşılamadı. Tekrar deneyebilirsiniz.');
         status(messages.join(' ') || 'Seçilen konum bilgileri hazır.');
     };
     const showRecord = record => {

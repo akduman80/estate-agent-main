@@ -1,7 +1,7 @@
 <section id="projects-map-explorer" class="project-explorer mb-8" aria-label="Projeler Haritası"
     data-records="{{ json_encode($mapProjects, JSON_UNESCAPED_UNICODE) }}"
     data-parcel-url="{{ route('projects.parcel.lookup') }}" data-regions-url="{{ route('projects.map.regions') }}"
-    data-transfer-url="{{ route('projects.map.transfer') }}" data-csrf="{{ csrf_token() }}">
+    data-transfer-url="{{ route('projects.map.transfer') }}" data-address-url="{{ route('projects.map.address') }}" data-csrf="{{ csrf_token() }}">
     <div class="project-explorer__header">
         <h2>Projeler Haritası</h2>
         <button type="button" data-action="expand" aria-pressed="false">Tam ekran</button>
@@ -53,6 +53,8 @@
                         <div><dt>{{ $label }}</dt><dd data-field="{{ $field }}">Bulunamadı</dd></div>
                     @endforeach
                 </dl>
+                <label data-door-choice-label hidden>Kapı kaydı seçin<select data-door-choice aria-label="Kayıtlı sokak ve kapı numarası"></select></label>
+                <p class="project-explorer__hint" data-address-source></p>
                 <a data-google target="_blank" rel="noopener noreferrer">Google Haritalar’da Aç ↗</a>
                 <div class="project-explorer__search-row">
                     <button type="button" data-transfer="listing">İlana Aktar</button>
