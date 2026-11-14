@@ -56,9 +56,9 @@
                 <label data-door-choice-label hidden>Kapı kaydı seçin<select data-door-choice aria-label="Kayıtlı sokak ve kapı numarası"></select></label>
                 <p class="project-explorer__hint" data-address-source></p>
                 <a data-google target="_blank" rel="noopener noreferrer">Google Haritalar’da Aç ↗</a>
-                <div class="project-explorer__search-row">
-                    <button type="button" data-action="share-location">Seçilen Konumu Paylaş</button>
-                    <a data-directions target="_blank" rel="noopener noreferrer">Seçilen Konuma Git</a>
+                <div class="project-explorer__location-actions">
+                    <button type="button" data-action="share-location">Konumu Paylaş</button>
+                    <a data-directions target="_blank" rel="noopener noreferrer">Konuma Git</a>
                 </div>
                 <label data-share-fallback hidden>Konum kartı bilgileri<textarea data-share-content rows="8" readonly aria-label="Paylaşılacak konum kartının tüm bilgileri"></textarea></label>
             </section>
